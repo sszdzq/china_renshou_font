@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>业务功能</title>
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/ztree/css/zTreeStyle.css" type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/ztreeManageDiy.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+
+
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+		<!-- ztreejs -->
+		<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+		<script src="../../shared/ztree/js/jquery.ztree.excheck.min.js" type="text/javascript"></script>
+
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+<style type="text/css">
+a{
+	color: blue !important;
+	font-weight: normal;
+	margin-right: 5px;
+}
+</style>
+
+</head>
+<body>
+<form id="jdxxForm" >
+	<input type="hidden" name="flag" id="flag" value="add"></input>
+	<input type="hidden" id="allData" name="allData" class="form_input" >
+	<input type="hidden" id="jdid" name="jdid" value="">
+	<input type="hidden" id="express" name="express" value="1.0">
+	<input type="hidden" id="expsm" name="expsm" value="无条件">
+	<input type="hidden" id="gzlid" name="gzlid" value="">
+	<table  id="jdxxTable" class="table_insert">
+		<tr>
+			<td class="tdtitle must" width="20%">功能名称：</td>
+			<td width="30%">
+				<input type="hidden" id="gnmc" name="gnmc"  value="">
+				<select id="gnid" name="gnid" checktype="b" onchange="gnchange();" val="" >
+					<option></option>
+				</select>
+			</td>
+			<td align="right" class="tdtitle must" width="20%">节点名称：</td>
+			<td width="30%">
+				<input type="text" id="jdsm" checktype="b" name="jdsm" class="form_input"  value="">
+			</td>
+		</tr>
+		<tr>
+			<td align="right" class="tdtitle must">角色类型：</td>
+			<td>
+				<select id="jslx" name="jslx" class="form_input" onchange="changeJS();">
+					<option value="G">角色</option>
+					<option value="P">人员</option>
+				</select>
+			</td>
+			<td class="tdtitle must" width="10%">单据状态：</td>
+			<td width="23%">
+				<input type="text" id="djzt" name="djzt" class="form_input" disabled="disabled" value="">
+			</td>
+			<td align="right" class="tdtitle must">当前状态：</td>
+			<td>
+				<select id="dqzt" name="dqzt" class="form_input" val="">
+					<option value="1">有效</option>
+					<option value="0">无效</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6" height="300px">
+				<table style="width:100%;height:100%" >
+					<tr height="10px">
+						<th id="zTreeName" style="width:27%" align="center">
+							<label>可选部门</label>
+						</th>
+						<th id="JSYH" style="width:33%" align="center">
+							<label>可选用户</label>
+						</th>
+						<th id="JSGW" style="width:33%;display: none" align="center">
+							<label>可选角色</label>
+						</th>
+						<th id="YXYH" style="width:40%" align="center">
+							<label>已选用户</label>
+						</th>
+						<th id="YXGW" style="width:40%;display: none" align="center">
+							<label>已选角色</label>
+						</th>
+					</tr>
+					<!-- 人员 -->
+					<tr>
+						<td style="vertical-align:top">
+							<div id="ztreeDiv" class="ztree">
+								<ul id="zTree" class="ztree"></ul>
+							</div>
+						</td>
+						<td id="alldata2">
+							<div class="gridcontent">
+								<table id="invoice_grid"></table>
+							</div>
+						</td>
+						<td >
+							<div class="gridcontent">
+								<table id="invoice_grid_jdry"></table>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td align="right" class="tdtitle must">过滤方式：</td>
+			<td>
+				<select id="dwglfs" name="dwglfs" class="form_input" val="">
+					<option value="3">不过滤</option>
+					<option value="1">按送审用户的单位过滤</option>
+					<option value="2">按启用流程的单位过滤</option>
+				</select>
+			</td>
+			<td class="tdtitle must" align="right">处理方式：</td>
+			<td>
+				<select id="etype" name="etype" class="form_input" val="">
+					<option value="one">一个人</option>
+					<option value="all">所有人</option>
+				</select>
+			</td>
+			<td align="right" class="tdtitle must">处理时限：</td>
+			<td>
+				<input type="text" id="clsy" name="clsy" class="form_input" checktype="b" value="10">小时
+			</td>
+		</tr>
+		<tr>
+			<td class="tdtitle must" align="right">允许选择：</td>
+			<td>
+				<select id="yxxz" name="yxxz" class="form_input" val="">
+					<option value="Y">是</option>
+					<option value="N">否</option>
+				</select>
+			</td>
+			<td class="tdtitle must" align="right">允许调整人员：</td>
+			<td>
+				<select id="tzry" name="tzry" class="form_input" val="">
+					<option value="N">否</option>
+					<option value="Y">是</option>
+				</select>
+			</td>
+			<td align="right" class="tdtitle must">允许退回：</td>
+			<td>
+				<select id="yxth" name="yxth" class="form_input" val="">
+					<option value="Y">是</option>
+					<option value="N">否</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</form>
+<script type="text/javascript">
+    //初始化，用于验证输入数据是否符合要求
+    $("#jdxxForm").formInit();
+	var urlPath=getUrlPath();
+    var rowid_ = 0;
+    var delJsid_ = [];
+    var iii_ = 0;
+
+    function gnchange(){
+        var selectOption=$("#gnid").find("option:selected");
+        $("#gnmc").val(selectOption.text());
+        $("#djzt").val(selectOption.attr("name"));
+        if($("#jdsm").val()==""){
+            $("#jdsm").val($("#gnmc").val());
+
+        }
+    }
+
+    //向主页面返回数据
+    function saveData(){
+        //给功能名称复制
+        $("#gnmc").val($("#gnid").find("option:selected").text());
+
+        var jfobj=$("#jdxxForm");
+        var addjdryList=new Array();
+        if(jfobj.validate()){
+
+            var resultData=jfobj.getData();
+
+
+            var _flags = $("#flag").val();
+
+            //保存节点处理人信息
+            var jdryxx = $("#invoice_grid_jdry").jqGrid("getRowData");
+
+            var jdrylen = jdryxx.length;
+            for(var i=1;i<(jdrylen+1);i++){
+                var row = $("#invoice_grid_jdry").jqGrid('getRowData', i);
+                if(!$.isEmptyObject(row)){
+                    var data = {jdid:row.jdid,objid:row.objid,objmc:row.objmc,jslx:row.jslx,dwmc:row.dwmc,dwid:row.dwid,sexpress:row.sexpress,sexpsm:row.sexpsm};
+                    addjdryList.push(data);
+                }
+            }
+            resultData['delJsid_']=JSON.stringify(delJsid_);
+            resultData['jslx']=$("#jslx").val();
+            resultData['addjdryList']=JSON.stringify(addjdryList);
+
+            delJsid_ = [];
+            iii_ = 0;
+
+            //返回form中的值，在主页面保存节点信息
+            return resultData;
+        }else{
+            return null;
+        }
+    }
+
+    //根据人员--岗位显示不同的数据
+    function changeJS(){
+        if($("#jslx").val() == "P"){
+            init_dept_tree();
+            //重载jqGird
+            $("#invoice_grid").jqGrid('GridUnload');
+            $("#invoice_grid_jdry").jqGrid('GridUnload');
+            document.getElementById("JSYH").style.display="";
+            document.getElementById("JSGW").style.display="none";
+            document.getElementById("YXYH").style.display="";
+            document.getElementById("YXGW").style.display="none";
+            document.getElementById("zTreeName").style.visibility="visible";
+            document.getElementById("zTree").style.visibility="visible";
+            //将删除时用到的参数，还原默认值
+            delJsid_ = [];
+            iii_ = 0;
+
+            rowid_ = 0;
+            //加载用户
+            loadGrid_yh();
+            loadGrid_jdry();
+
+            $(window).resize(function() {
+                $("#invoice_grid").jqGrid("autoSize");
+            }).trigger('resize');
+        }else if($("#jslx").val() == "G"){
+            //重载清空jqGird
+            $("#invoice_grid").jqGrid('GridUnload');
+            $("#invoice_grid_jdry").jqGrid('GridUnload');
+            document.getElementById("JSYH").style.display="none";
+            document.getElementById("JSGW").style.display="";
+            document.getElementById("YXYH").style.display="none";
+            document.getElementById("YXGW").style.display="";
+            document.getElementById("zTreeName").style.visibility="hidden";
+            document.getElementById("zTree").style.visibility="hidden";
+            //将删除时用到的参数，还原默认值
+            delJsid_ = [];
+            iii_ = 0;
+
+            rowid_ = 0;
+            //加载岗位
+            loadGrid_gw();
+            loadGrid_jdry();
+            $("#invoice_grid").jqGrid('setGridParam', {
+                datatype : 'json' //将datatype重置为json,这样就可以显示数据了
+                //grid的查询时的参数sss
+            }).trigger("reloadGrid");
+            $(window).resize(function() {
+                $("#invoice_grid").jqGrid("autoSize");
+            }).trigger('resize');
+        }
+    }
+
+	/*********************************************************************************************************************/
+
+    /**
+     * zTree树
+     */
+        // zTree 的参数配置
+		var zTree;
+    var setting = {
+            async: {
+                enable: true,
+                url:urlPath + "/departments",
+                dataType:"json",
+                type:"GET",
+                autoParam:["id"],
+                otherParam:{displayOrg:true,level:1},
+                dataFilter:ret_filter
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "code",
+                    nocheck:false
+                }
+            },
+            check: {
+                enable: true,
+                chkStyle: "radio",  //单选框
+                radioType: "all"   //对所有节点设置单选
+            },
+            callback:{
+                onClick: function (e, treeId, treeNode, clickFlag) {
+                    zTree.checkNode(treeNode, !treeNode.checked, true);
+                    if($("#jslx").val() == "P"){
+                        $("#invoice_grid").jqGrid('setGridParam', {
+                            postData : {
+                                page : 1,
+                                dwid : treeNode.id
+                            },
+                            datatype : 'json' //将datatype重置为json,这样就可以显示数据了
+                        }).trigger("reloadGrid");
+                    }
+                }
+            }
+        };
+
+    function ret_filter(treeId, parentNode, childNodes) {
+        if (!childNodes||childNodes.length==0){
+            var nodes=[];
+            var node=new Object();
+            node.id=parentNode.id+"_nochild";
+            node.code=parentNode.id;
+            node.name="无下级";
+            node.nocheck = true;
+            nodes.push(node);
+            return nodes;
+        };
+        for (var i=0, l=childNodes.length; i<l; i++) {
+            childNodes[i].isParent=true;
+        }
+        return childNodes;
+    }
+
+    function init_dept_tree(){
+        zTree=$.fn.zTree.init($("#zTree"), setting);
+    }
+
+    //点击树绑定事件
+    function zTreeOnClick(event, treeId, treeNode) {
+        var info=JSON.stringify(treeNode);
+        layer.alert(info, {icon: 5});
+    }
+   /* //加载ztree
+    $(document).ready(function() {
+        init_dept_tree();
+    });*/
+
+
+    //点击树绑定事件
+  /*  function zTreeOnClick(event, treeId, treeNode) {
+        $("#invoice_grid").jqGrid('setGridParam', {
+            postData : {
+                dwid : treeNode.dwid,
+            },
+            datatype : 'json' //将datatype重置为json,这样就可以显示数据了
+            //grid的查询时的参数sss
+        }).trigger("reloadGrid");
+    };*/
+
+	/*********************************************************************************************************************/
+
+    //单位---用户
+    function loadGrid_yh() {
+        $("#invoice_grid").jqGrid({
+            url : urlPath+'/LcjkController/getUserList',
+            datatype : "local",
+            colNames : [ '用户ID', '用户姓名',"所属单位",'单位ID'],
+            colModel : [
+                {name : 'userid',index : 'userid',width : 80,align : "center",hidden : true},
+                {name : 'username',index : 'username',width : 150},
+                {name : 'deptname',index : 'deptname',width : 200},
+                {name : 'deptid',index : 'deptid',width : 150,hidden : true}],
+            pager : '#allmap',
+            multiselect : false, //多行
+            rownumbers : true, //显示行号
+            rowNum : 300, //显示行数
+            ondblClickRow : function(id){
+                //双击添加节点处理人员
+                var row = $("#invoice_grid").jqGrid('getRowData', id);
+                var jdid = $("#jdid").val();
+                var jslx = $("#jslx").val();
+                var expsm = $("#expsm").val();
+                var express = $("#express").val();
+
+                //检查树是否重复
+                var inspect = $("#invoice_grid_jdry").jqGrid("getRowData");
+                var inspectlen = inspect.length;
+                var count = null;
+                for(var i=0;i<inspectlen;i++){
+                    var row_jdry =inspect[i];
+                    if(row_jdry.objid != row.userid){
+                        count += 1;
+                    }
+                }
+                if(inspectlen == 0){
+                    //增加一行数据
+                    if(rowid_ == 0){
+                        rowid_ = 1;
+                    }
+
+                    $("#invoice_grid_jdry").addRowData(rowid_,{'jdid':jdid,'objid':row.userid,'objmc':row.username,'jslx':jslx,'dwmc':row.deptname,'dwid':row.deptid,'sexpress':express,'sexpsm':expsm});
+                    rowid_ += 1;
+                }else if(count == inspectlen){
+                    //增加一行数据
+                    if(rowid_ == 0){
+                        rowid_ = 1;
+                    }
+
+                    $("#invoice_grid_jdry").addRowData(rowid_,{'jdid':jdid,'objid':row.userid,'objmc':row.username,'jslx':jslx,'dwmc':row.deptname,'dwid':row.deptid,'sexpress':express,'sexpsm':expsm});
+                    rowid_ += 1;
+                }else{
+                    msg("'"+row.username+"'，以添加！");
+                }
+            }
+        });
+    }
+
+    //岗位
+    function loadGrid_gw() {
+        $("#invoice_grid").jqGrid({
+            url : urlPath+'/roles',
+            datatype : "json",//页面加载的时候不显示数据
+            colNames : [ '角色id', '单位id', '角色名称','approleRole'],
+            colModel : [
+                {name : 'id',index : 'id',width : 100,hidden : true},
+                {name : 'departmentId',index : 'departmentId',hidden : true},
+                {name : 'name',index : 'name',width : 150},
+                {name : 'approleRole',index : 'approleRole',hidden : true}
+            ],
+            pager : '#allmap',
+            multiselect : false, //多行
+            rownumbers : true, //显示行号
+            rowNum : 300, //显示行数
+            ondblClickRow : function(id){
+                //双击添加节点处理人员
+                var row_gw = $("#invoice_grid").jqGrid('getRowData', id);
+                var jdid = $("#jdid").val();
+                var jslx = $("#jslx").val();
+                var expsm = $("#expsm").val();
+                var express = $("#express").val();
+
+                //检查树是否重复
+                var inspect = $("#invoice_grid_jdry").jqGrid("getRowData");
+                var inspectlen = inspect.length;
+                var count = null;
+                for(var i=0;i<inspectlen;i++){
+                    var row_jdry =inspect[i];
+                    if(row_jdry.objid != row_gw.id){
+                        count += 1;
+                    }
+                }
+                if(inspectlen == 0){
+                    //增加一行数据
+                    if(rowid_ == 0){
+                        rowid_ = 1;
+                    }
+                    $("#invoice_grid_jdry").addRowData(rowid_,{'jdid':jdid,'objid':row_gw.id,'objmc':row_gw.name,'jslx':jslx,'dwid':row_gw.departmentId,'sexpress':express,'sexpsm':expsm});
+                    rowid_ += 1;
+                }else if(count == inspectlen){
+                    //增加一行数据
+                    if(rowid_ == 0){
+                        rowid_ = 1;
+                    }
+                    $("#invoice_grid_jdry").addRowData(rowid_,{'jdid':jdid,'objid':row_gw.id,'objmc':row_gw.name,'jslx':jslx,'dwid':row_gw.departmentId,'sexpress':express,'sexpsm':expsm});
+                    rowid_ += 1;
+                }else{
+                    msg("'"+row_gw.name+"'，以添加！");
+                }
+            }
+        });
+    }
+
+    //节点处理人员
+    function loadGrid_jdry() {
+        $("#invoice_grid_jdry").jqGrid({
+            url : urlPath+'/LcpzController/jdryQueryPage',
+            datatype : "local",  //页面加载的时候不显示数据
+            colNames : [ '角色ID', '节点ID', '对象ID', '对象名称','角色类型',"所属单位",'单位ID','表达式','表达式说明'],
+            colModel : [
+                {name : 'jsid',index : 'jsid',width : 100,hidden : true},
+                {name : 'jdid',index : 'jdid',width : 100,hidden : true},
+                {name : 'objid',index : 'objid',width : 200},
+                {name : 'objmc',index : 'objmc',width : 100},
+                {name : 'jslx',index : 'jslx',width : 100,align : "center",formatter : function(cellvalue, options, rowObject){
+                    if (cellvalue == "P") {
+                        return "人员";
+                    }
+                    if (cellvalue == "G") {
+                        return "角色";
+                    }
+                }},
+                {name : 'dwmc',index : 'dwmc',width : 100,hidden : true},
+                {name : 'dwid',index : 'dwid',width : 100,hidden : true},
+                {name : 'sexpress',index : 'sexpress',width : 100,hidden : true},
+                {name : 'sexpsm',index : 'sexpsm',width : 100,hidden : true}
+            ],
+            pager : '#jdrymap',
+            multiselect : false, //多行
+            rownumbers : true, //显示行号
+            ondblClickRow : function(id){
+                //双击删除
+                delJdry(id);
+            }
+        });
+    }
+    function GetQueryString(name){
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  decodeURI(r[2]); return null;
+    }
+    //加载jqGrid
+    $(document).ready(function() {
+        var gzlid=GetQueryString("gzlid");
+        var jdid=GetQueryString("jdid");
+        $("#gzlid").val(gzlid);
+        //加载功能数据
+        $.ajax({
+            type : "POST",
+            url : urlPath+"/LcpzController/getGnsByGzl?_rdm="+Math.random(),
+            data : {gzlid:gzlid},
+            dataType : "json",
+            async : false,
+            success :function(retval){
+                if(retval.flag){
+                    var tgnobj=$("#gnid");
+                    var curgn=tgnobj.attr("val");
+                    for(var i=0;i<retval.data.length;i++){
+                        if(retval.data[i].gnid==curgn){
+                            tgnobj.append("<option value='"+retval.data[i].gnid+"' name='"+retval.data[i].gnzt+"' selected='true'>"+retval.data[i].gnmc+"</option>");
+                        	$("#djzt").val(retval.data[i].bz);
+                        }else{
+                            tgnobj.append("<option value='"+retval.data[i].gnid+"' name='"+retval.data[i].gnzt+"'  >"+retval.data[i].gnmc+"</option>");
+                        }
+                    }
+                }else{
+                    window.parent.alert(retval.msg);
+                }
+            }
+        });
+
+
+        fromInit(jdid);
+
+        //loadGrid_yh();
+       // loadGrid_jdry();
+        changeJS();
+
+        $(window).resize(function() {
+            $("#invoice_grid").jqGrid("autoSize");
+        }).trigger('resize');
+
+        msg("双击增加或者删除数据！");
+        $(window).resize(function() {
+            $("#invoice_grid_jdry").jqGrid("autoSize");
+        }).trigger('resize');
+
+
+    });
+	function fromInit(jdid){
+        if(jdid != ""&&jdid!="undefined"){
+            // 修改时，先获取数据，在向jgrid放入值，以便于修改删除时，使用
+            $("#flag").val("update");
+            $("#jdid").val(jdid);
+            var jdids = jdid;
+            $.ajax({
+                type : "POST",
+                url : urlPath+"/LcpzController/getJdryData",
+                data : {jdid:jdids},
+                dataType : "json",
+                async:false,
+                success : function(retdata) {
+                    if (retdata.flag == true) {
+                        var jdxx =retdata.jdxx;
+
+                        $("#gzlid").val(jdxx.gzlid);
+                        $("#gnmc").val(jdxx.gnmc);
+                        $("#gnid").val(jdxx.gnid);
+                        $("#jdsm").val(jdxx.jdsm);
+                        $("#jslx").val(retdata.jslx);
+                        $("#djzt").val(jdxx.djzt);
+                        $("#dqzt").val(jdxx.dqzt);
+                        $("#dwglfs").val(jdxx.dwglfs);
+                        $("#etype").val(jdxx.etype);
+                        $("#clsy").val(jdxx.clsy);
+                        $("#yxxz").val(jdxx.yxxz);
+                        $("#tzry").val(jdxx.tzry);
+                        $("#yxth").val(jdxx.yxth);
+                        $("#express").val(jdxx.jdid);
+                        $("#expsm").val(jdxx.jdid);
+
+                    } else {
+                        window.parent.alert(retdata.message);
+                    }
+                }
+            });
+            $.ajax({
+                type : "POST",
+                url : urlPath+"/LcpzController/jdryData",
+                data : {jdid:jdids},
+                dataType : "json",
+                success : function(retdata) {
+                    if (retdata.flag == true) {
+                        //刷新jqGrid
+                        var data = retdata.data;
+                        var datalen = data.length;
+
+                        for(var i=0;i<=datalen;i++){
+                            $("#invoice_grid_jdry").addRowData((i+1),data[i]);
+                        }
+                        rowid_ = datalen;
+                    } else {
+                        window.parent.alert(retdata.message);
+                    }
+                }
+            });
+        }
+	}
+
+    //节点处理人员  ---删除操作
+    function delJdry(id){
+        if($("#flag").val() == "add"){
+            //新增时，删除操作
+            $("#invoice_grid_jdry").jqGrid("delRowData",id);
+
+        }else{
+            //先将要删除的数据存起来，在提交的时候，传入后台在进行删除操作
+            delJsid_[iii_] = $("#invoice_grid_jdry").jqGrid('getRowData',id).jsid;
+            iii_ += 1;
+
+            //更新时，删除操作
+            $("#invoice_grid_jdry").jqGrid("delRowData",id);
+
+        }
+    }
+</script>
+</body>
+</html>

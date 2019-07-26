@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>发送消息</title>
+
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet" />
+<link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+	<style>
+		.TableBlock{
+			width:40% !important;
+			text-align: center;
+
+		}
+		.TableControl{
+			background-color: #e6e6e6;
+			text-align: center;
+			border: 1px solid #ddd !important;
+		}
+		.TableData{border: 1px solid #ddd !important;}
+		#page_info>.TableBlock{
+			width:70% !important;
+			text-align: center;
+
+		}
+
+</style>
+</head>
+<body >
+<div class="pagecontent" id="divcontent2" style="overflow: auto">
+
+
+	<OBJECT CLASSID="clsid:5FBCF366-2579-4D9E-A6E8-01523C74A74E" codeBase='../../loadocx/32/BarcodeReader.ocx#version=1,0,0,2' id="BarCodeReadCtrl1" VIEWASTEXT width = "0" height = "0"></OBJECT>
+		<br/>
+		<table class="TableBlock" border=0 width="30%" align="center">
+			<tr>
+				<td  class="TableHeader" colspan="2">&nbsp;连接扫描枪属性</td>
+			</tr>
+			<tr>
+				<td class="TableContent" width="100" align="center">每秒位数：</td>
+				<td class="TableData">
+					<select id="Baud">
+						<option value="4800">4800</option>
+						<option value="9600">9600</option>
+						<option value="19200" selected>19200</option>
+						<option value="38400">38400</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="TableContent" align="center">COM：</td>
+				<td class="TableData">
+					<select id="ComNo">
+						<option value="1">1</option>
+						<option value="2" selected>2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="TableContent" colspan="2" style="text-align: center">
+					<input  class="btn" type="button" value="启动监听" onclick="EnableComCtrl_onclick(1)">&nbsp;&nbsp;
+					<input  class="btn" type="button" value="停止监听" onclick="EnableComCtrl_onclick(0)">
+				</td>
+			</tr>
+		</table>
+	<div id="page_info" name="page_info">
+		<table class="TableBlock" align="center">
+				<tr><td nowrap class="TableControl" colspan="2" align="center">扫描信息</td>
+					<td nowrap class="TableControl" rowspan="1" align="center">电子文档对应内容</td>
+				</tr>
+				<tr>
+					<td nowrap class="TableData" colspan="1" align="center">签名证书序列号：</td>
+					<td nowrap class="TableData" colspan="1"><input type="text" size="25" id="CertSerial" name="CertSerial"><span></td>';
+					<td nowrap class="TableData" style="width:700px;height:500px;" rowspan="7" align="center">
+						<OBJECT id="HWPostil1" align="middle" style="LEFT: 0px; WIDTH: 0; TOP: 0px; HEIGHT: 0;" classid=clsid:FF1FE7A0-0578-4FEE-A34E-FB21B277D561 codeBase="../../loadocx/32/HWPostil-clent.ocx#version=3,1,0,6"></OBJECT>
+					</td>
+				</tr>
+				<tr>
+					<td nowrap class="TableData" colspan="1" align="center">打印人姓名：</td>
+					<td nowrap class="TableData" colspan="1"><input type="text" id="PrintName" name="PrintName"></td>
+				</tr>
+				<tr>
+					<td nowrap class="TableData" colspan="1" align="center">文档打印时间：</td>
+					<td nowrap class="TableData" colspan="1"><input type="text" id="PrintTime" name="PrintTime"></td>
+				</tr>
+				<tr>
+					<td nowrap class="TableData" colspan="1" align="center">扫描页数：</td>
+					<td nowrap class="TableData" colspan="1"><input type="text" size="5" id="PrintPageNo" name="PrintPageNo">&nbsp;&nbsp;&nbsp;<a href="#" onclick="gopage()">跳转到当前页</a></td>
+				</tr>
+				<tr>
+					<td nowrap class="TableControl" colspan="2" align="center">扫描页内容</td>
+				</tr>
+				<tr>
+					<td nowrap class="TableData" colspan="2" align="center"><textarea id="PrintContent" name="PrintContent" style="width: 98%;height:300px" readonly></textarea></td>
+				</tr>
+			</table>
+		</div>
+</div>
+<script type="text/javascript">
+    var urlPath=getUrlPath();
+ /* var cert_sn='61F5 4CC0 0003 0000 2008';
+    $(document).ready(function(){
+        $.get( urlPath+'/getUserBySn/'+cert_sn+'?noCache='+new Date().getTime(), show_msg);
+	});*/
+    function EnableComCtrl_onclick(iIsEnable){
+        try{
+            var obj;
+            obj = document.getElementById("BarCodeReadCtrl1");
+            if(obj){
+                if(iIsEnable==1){
+                    obj.Baud=document.all.Baud.value;
+                    obj.ComNo=document.all.ComNo.value;
+                }
+                obj.EnableComCtrl(iIsEnable);
+            }
+        }catch(e){
+            alert("异常\r\nError:"+e+"\r\nError Code:"+e.number+"\r\nError Des:"+e.description);
+            return -1;
+        }
+    }
+    function show_msg(data)
+    {
+        if(data.code==200)
+        {
+            document.getElementById("PrintName").value=data.name;
+        }else{
+            msg(data.message);
+		}
+    }
+    function loadFile(data)
+    {
+        if(data.base64!=null && data.base64!="")
+        {
+            var aipobj = $("HWPostil1");
+            aipobj.style.width="100%";
+            aipobj.style.height="100%";
+            aipobj.CloseDoc(0);
+			aipobj.LoadFileBase64(data.base64);
+        }else{
+            msg("未查询相关文档");
+        }
+    }
+    function gopage(){
+        var aipobj = $("HWPostil1");
+        aipobj.CurrPage=document.getElementById("PrintPageNo").value-1;
+    }
+</script>
+<SCRIPT LANGUAGE=javascript FOR=BarCodeReadCtrl1 EVENT=BarcodeTextChanged>
+    document.getElementById("page_info").style.display="";
+    document.getElementById("CertSerial").value=document.all.BarCodeReadCtrl1.CertSerial;
+    document.getElementById("PrintTime").value=document.all.BarCodeReadCtrl1.PrintTime;
+    document.getElementById("PrintPageNo").value=document.all.BarCodeReadCtrl1.PrintPageNo;
+    document.getElementById("PrintContent").value=document.all.BarCodeReadCtrl1.PrintContent;
+    $.get( urlPath+'/getUserBySn/'+document.all.BarCodeReadCtrl1.CertSerial+'?noCache='+new Date().getTime(), show_msg);
+    $.get( urlPath+'/files/'+document.all.BarCodeReadCtrl1.PrintDocID+'?noCache='+new Date().getTime(), loadFile);
+
+
+</SCRIPT>
+<SCRIPT LANGUAGE=javascript FOR=HWPostil1 EVENT=NotifyCtrlReady>
+    var aipobj = $("HWPostil1");
+    aipobj.SilentMode = 1;
+    aipobj.ShowDefMenu = false; //隐藏菜单
+    aipobj.ShowToolBar = false; //隐藏工具条
+    aipobj.ShowScrollBarButton=1;
+    aipobj.CurrPage=document.getElementById("PrintPageNo").value-1;
+</SCRIPT>
+</body>
+</html>

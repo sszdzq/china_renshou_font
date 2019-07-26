@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>印模审批</title>
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+<style type="text/css">
+</style>   
+</head>
+<body>
+<div class="pagecontent" id="divcontent2">
+		<div class="middleLayer" style="padding:0 0 13px 0">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars" style="margin-top:8px">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on">名称</span>
+					<input type="text" name="name" id="name" style="width: 80px" placeholder="印模名称"> 
+					<span class="add-on" id="type">类别</span>
+					<select id="type">
+						<option value="">请选择</option>
+						<option label="公章" value="1">公章</option>
+						<option label="公章(法人章)" value="2">公章(法人章)</option>
+						<option label="公章(合同章)" value="3">公章(合同章)</option>
+						<option label="公章(党章)" value="4">公章(党章)</option>
+						<option label="公章(财务章)" value="5">公章(财务章)</option>
+						<option label="公章(工会章)" value="6">公章(工会章)</option>
+						<option label="个人章" value="7">个人章</option>
+						<option label="个人章(手写签名)" value="8">个人章(手写签名)</option>
+						<option label="个人章(文字签名)" value="9">个人章(文字签名)</option>
+					</select>
+					<span class="add-on" style="margin-left:5px;">创建时间</span>
+					<input type="text"  id="starttime" name="starttime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',maxDate: '#F{$dp.$D(\'endtime\')}' }) ">
+					至
+					<input type="text" name="endtime" id="endtime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'starttime\') }'}) ">
+
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style=" float:right;"> 查询</button>
+			</div>
+			<!-- 页面主内容 -->	
+			<div style="padding:0px 5px 0px 5px;" id="tab-content">
+				<ul id="tab_1" class="nav nav-tabs" style="margin-bottom:0px;margin-top:5px">			
+					<li  class="active" onclick="approvalState (0, false) ">
+						<a data-toggle="tab" href="#tab_mylog">待审批</a>
+					</li>
+					<li id="jbsq"   onclick = "approvalState (1, false) ">
+						<a data-toggle="tab" href="#tab_departmentlog">已通过</a>
+					</li>
+					<li id="bdsq"  onclick="approvalState (2, false) ">
+						<a data-toggle="tab" href="#tab_alllog" >未通过</a>
+					</li>
+				</ul>
+			</div>
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="mold_approval"></table>
+				<div id="mold_approval_page"></div>
+			</div>
+		</div>
+		<div class="modal right fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
+			<div class="modal-dialog" >
+				<div class="modal-content">
+					<div class="modal-header">
+					    <button type="button" class="close"  aria-label="Close" onclick='closeModal()'><span aria-hidden="true">×</span>
+					    </button>
+					    <h4 class="modal-title" id="myModalLabel">审批意见</h4>
+					</div>
+					<div class="modal-body">
+					                <textarea id="approvalIdea" class="form-control" 
+					                          rows="6" placeholder="请输入具体意见，不输入则默认为：同意申请" style = "width:95%;resize: none;dispaly:none"></textarea>
+					                <textarea id="refuseIdea" class="form-control" 
+					                          rows="6" placeholder="请输入具体意见，不输入则默认为：拒绝申请" style = " width:95%; resize: none;display:none"></textarea>
+					</div>
+					<div class="modal-footer text-align-center">
+					    <button id="approval" type="button" 
+					            class="btn col-padding-3 margin-right-2 btn-primary" onclick="approvalOperate()" style="display:none">确定</button>
+					    <button id="refuse" type="button" 
+					            class="btn col-padding-3 margin-right-2 ng-binding btn-danger" onclick="approvalOperate()" style="display:none">退回</button>
+					    <button type="button" class="btn btn-default col-padding-3" onclick="closeModal()">取消</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+	</div>
+</body>
+<script type="text/javascript">
+	var urlPath=getUrlPath();
+	var optType=0;
+	var targetId='';
+	var operatStatus='';
+	function loadGrid_mold() {
+		$("#mold_approval").jqGrid(
+			{
+				url : urlPath+'/seal_images_approval',
+				datatype : "json",//页面加载的时候不显示数据
+				colNames : [ 'id','印模名称','印模类型','所属部门','申请人','状态','申请时间','操作'],
+				postData:{status:optType},
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,width : 200,hidden:true},
+							 {name : 'name',index : 'name',width : 200,align : "center"},
+							 {name : 'type',index : 'type',width : 150,align : "center",formatter:typeFormatter},
+				             {name : 'departmentId',index : 'departmentId',align : "center",width : 150},
+				             {name : 'createdBy',index : 'createdBy',width : 150,align:"center"},
+				             {name : 'status',index : 'status',width : 100,align:"center",formatter:statusFormatter},
+				             {name : 'createdAt',index : 'createdAt',width : 150,align : "center",formatter:timeFormatter},
+				             {name : 'operate',index : 'operate',width : 180,align:"center" ,formatter:opFormatter}
+
+				          ],
+				pager : '#mold_approval_page'
+			//	rowList : [ 1, 15,30 ],
+			});
+	}
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid_mold();
+		$(window).resize(function() {
+	        $("#mold_approval").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+	
+	//操作格式化
+	function opFormatter(cellvalue, options, rowobj) {
+		var detailOpt="<a href=\"javascript:showDetail('"+rowobj.id+"');\" style='color:blue'>详情</a>";
+		var segmentation= "<span style='margin-left: 7px;'>|<span style='margin-left: 7px;'>";
+		var approvalOpt= "<a href=\"javascript:approval('"+rowobj.id+"');\" style='color:blue'>批准</a>";
+		var refuseOpt= "<a href=\"javascript:refuse('"+rowobj.id+"');\" style='color:blue'>退回</a>";
+		if(optType==0){
+			return detailOpt+segmentation+approvalOpt+segmentation+refuseOpt;
+		}else{
+			return detailOpt;
+		}
+	}
+	//查看用户详细信息
+	function showDetail(id){
+		var index = layer.open({
+			title:'印模详情',
+			type: 2,
+			content: './mold_details.html?sealId='+id,
+			area: ['1200px', '85%'],
+			btn: ['关闭']//底部按钮区域
+		});
+	}
+	
+	function approval(id){
+		$('#refuse').hide();
+		$('#refuseIdea').hide();
+		$('#approval').show();
+		$('#approvalIdea').show();
+		$('#myModal').modal("show");
+		targetId=id;
+		operatStatus=1;
+	}
+	function refuse(id){
+		$('#approval').hide();
+		$('#approvalIdea').hide();
+		$('#refuse').show();
+		$('#refuseIdea').show();
+		$('#myModal').modal("show");
+		targetId=id;
+		operatStatus=2;
+	}
+	function closeModal(){
+		$('#myModal').modal("hide");
+	}
+	function approvalState(type,status){
+		optType=type;
+		search();
+	}
+	function approvalOperate(){
+		$('#myModal').modal("hide");
+		var idArr=new Array();
+		var data={};
+		data['id']=targetId;
+		if(operatStatus==1){
+			data['approvalIdea']=$("#approvalIdea").val();
+		}else if(operatStatus==2){
+			data['approvalIdea']=$("#refuseIdea").val();
+		}
+		data['status']=operatStatus;
+		idArr.push(data);
+		var res=JSON.stringify(idArr);
+		//console.log($("#approvalIdea").val()+"--"+targetId+"---"+operatStatus);
+		//console.log(res);
+		$.ajax({
+			type : "PUT",
+			url : urlPath+"/seal_image",
+			data : res,
+			contentType:"application/json;charset=UTF-8",
+			dataType : "json",
+			success : function(retdata) {
+				//console.log(retdata);
+				if(retdata){
+					layer.msg('操作成功！');
+					doFresh();
+				}
+			}
+		});
+	}
+	//刷新页面	
+	function doFresh(){
+		 $("#mold_approval").jqGrid('setGridParam',{									 
+				postData:{}
+		}).trigger("reloadGrid"); 
+	}
+	function search(){
+		var postData = $('#mold_approval').jqGrid("getGridParam", "postData");
+        $.each(postData, function (k, v) {
+            delete postData[k];
+        });
+		var formData = getFormData("search_form");
+	    var starttime=new Date(Date.parse(formData.starttime.replace(/-/g,"/"))).getTime()/1000;
+	    var endtime=new Date(Date.parse(formData.endtime.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+		   var data={};
+		   if(formData.type!=""){
+			   data['type']=formData.type;
+		   }
+		   if(formData.name!=""){
+			   data['name']=formData.name;
+		   }
+		   if(formData.starttime!=""){
+			   data['startTime']=starttime;
+		   }
+		   if(formData.endtime!=""){
+			   data['endTime']=endtime;
+		   }
+		   if(formData.lowerLevel!=""){
+			   data['lowerLevel']=formData.lowerLevel;
+		   }
+		   data['status']=optType;
+			$("#mold_approval").jqGrid('setGridParam', {
+				    page : 1,
+				    postData :data
+			}).trigger("reloadGrid");	
+
+		}
+	//类型格式化
+	function typeFormatter(cellvalue, options, rowObject) {
+		switch(cellvalue){
+			case 1:return '公章';
+			case 2:return '公章(法人章)';
+			case 3:return '公章(合同章)';
+			case 4:return '公章(党章)';
+			case 5:return '公章(财务章)';
+			case 6:return '公章(工会章)';
+			case 7:return '个人章';
+			case 8:return '个人章(手写签名)';
+			case 9:return '个人章(文字签名)';
+		}
+	}
+	//状态格式化
+	function statusFormatter(cellvalue, options, rowObject) {
+		switch(cellvalue){
+			case 0:return '申请中';
+			case 1:return '审批通过';
+			case 2:return '已拒绝';
+		}
+	}
+	$("#section").click(function(){
+		var index = window.parent.layer.open({
+			title:'选择部门',
+			type: 2,
+			content: '../../partials/select-section-modal.html',
+			area: ['1000px', '500px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	//获取单位数据 
+            	var res = window.parent["layui-layer-iframe" + index].getData();
+            	 if(res==null){
+            		 window.parent.layer.alert("请选择部门",{icon:6});
+            	 }else{
+            		 $("#departmentName").val(res.name);
+            		 $("#departmentId").val(res.id);
+            		 if(res.lowerLevel != null && res.lowerLevel != undefined){
+            			 $("#lowerLevel").val(res.lowerLevel);
+            		 } 
+
+            		 window.parent.layer.close(index);	 
+            	 }
+            }
+		});
+	});
+	//时间格式化
+	function timeFormatter(cellvalue, options, rowObject) {
+		var unixTimestamp = new Date(cellvalue*1000) ;
+		return unixTimestamp.toLocaleString();	
+	}
+	
+   Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+
+       return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+   };
+   
+   if( !('placeholder' in document.createElement('input')) ){   
+
+	    $('input[placeholder],textarea[placeholder]').each(function(){    
+	      var that = $(this),    
+	      text= that.attr('placeholder');    
+	      if(that.val()===""){    
+	        that.val(text).addClass('placeholder');    
+	      }    
+	      that.focus(function(){    
+	        if(that.val()===text){    
+	          that.val("").removeClass('placeholder');    
+	        }    
+	      })    
+	      .blur(function(){    
+	        if(that.val()===""){    
+	          that.val(text).addClass('placeholder');    
+	        }    
+	      })    
+	      .closest('form').submit(function(){    
+	        if(that.val() === text){    
+	          that.val('');    
+	        }    
+	      });    
+	    });    
+	  }  
+</script>
+</html>

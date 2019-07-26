@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<title>规则管理</title>
+
+<link rel="stylesheet"
+	href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"
+	type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"
+	rel="stylesheet" />
+<link
+	href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css"
+	type="text/css" rel="stylesheet" />
+
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js"
+	type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js"
+	type="text/javascript"></script>
+<script type="text/javascript"
+	src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"
+	type="text/javascript"></script>
+
+<style type="text/css">
+.error {
+	color: red;
+}
+
+span {
+	color: red;
+	font-size: 13px;
+}
+</style>
+</head>
+<body>
+	<div class="pagecontent" id="divcontent">
+		<form id="addForm">
+			<input type="hidden" id="id" name="id">
+			<table id="table" class="table_insert">
+				<tbody>
+					<tr>
+						<td class="tdtitle" align="right">规则号：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="number" name="number"
+									placeholder="请输入规则号(最长32位)" onchange="addRuleValidateOptions()"
+									style="width: 230px;">
+							</div> <span id="numberMsg"></span>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" class="tdtitle">规则名称：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="name" name="name"
+									placeholder="请输入规则名称" style="width: 230px;">
+							</div> <span id="namemsg""></span>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="tdtitle" align="right">选择印章</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" readonly="readonly"
+									name="sealName" id="sealName" placeholder="请点击按钮选择"
+									onclick="emptyInput()" style="width: 230px;">
+								<button type="button" class="btn" onclick="selectSeal();">选择</button>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" class="tdtitle">印章ID：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="sealId" name="sealId"
+									placeholder="请输入印章ID" onchange="getSeal();"
+									style="width: 230px;" readonly>
+							</div> <span id="sealIdMsg"></span>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" class="tdtitle">RSA证书：</td>
+						<td><select id="certId" name="certId" class="form_input"
+							style="width: 245px;">
+								<option value="">请选择</option>
+						</select> <span id="certIdMsg"></span></td>
+					</tr>
+					<!-- 					<tr hidden="true">
+						<td align="right" class="tdtitle" >SM2证书</td>
+						<td>
+						   <input type="hidden" name="sm2CertId" id="sm2CertId">  
+						
+							<div class="input-append">
+								<input type="text" class="span2" id="addRuleCertIdSM2" name="certId" placeholder="请输入规则名称" style="width: 230px;" >
+							</div>
+						</td>
+					</tr> -->
+					<tr>
+						<td class="tdtitle" align="right">盖章类型：</td>
+						<td><select id="type" name="type" class="form_input"
+							onchange="typeChange()" style="width: 245px;">
+								<option value="1">绝对坐标</option>
+								<option value="3">骑缝章</option>
+								<option value="4">文字(覆盖)</option>
+								<option value="5">文字(之后)</option>
+								<option value="6">多页绝对坐标</option>
+								<option value="7">多页骑缝章</option>
+						</select></td>
+
+					</tr>
+					<tr id="sealPageTr">
+						<td align="right" class="tdtitle">盖章页码:</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="sealPage" name="sealPage"
+									placeholder="请输入盖章页码,-1标识最后一页" style="width: 230px;"
+									onchange="sealPageClick()">
+							</div> <span id="sealPageMsg"></span>
+
+						</td>
+					</tr>
+					<tr style="display:none;"  id="intervalTypeTr">
+						<td align="right" class="tdtitle">间隔类型：</td>
+						<td><select id="intervalType" name="intervalType"
+							class="form_input" onchange="intervalTypeChange()"  style="width: 245px;">
+<!-- 								<option value="">请选择</option>
+								<option value="1">奇数</option>
+								<option value="2">偶数</option> -->
+								<option value="3">指定间隔</option>
+						</select> <span id="intervalTypeMsg"></span></td>
+					</tr>
+					<tr style="display:none;" id="intervalPageTrTwo">
+						<td align="right" class="tdtitle">间隔页数：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="intervalPage"
+									name="intervalPage" placeholder="请输入间隔页数" style="width: 230px;">
+							</div> <span id="intervalPageMsg"></span>
+
+						</td>
+					</tr>
+					<tr id="distance">
+						<td align="right" class="tdtitle">横向距离：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="horizontalDistance"
+									name="horizontalDistance" placeholder="超出0-49999取边界值"
+									style="width: 230px;">
+							</div> <span id="horizontalDistanceMsg"></span>
+						</td>
+					</tr>
+					<tr id="distanceTwo">
+						<td align="right" class="tdtitle">纵向距离：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="verticalDistance"
+									name="verticalDistance" placeholder="超出0-49999取边界值"
+									style="width: 230px;">
+							</div> <span id="verticalDistanceMsg"></span>
+						</td>
+
+					</tr>
+
+					<tr id="documentTypeTr" style="display:none;">
+						<td align="right" class="tdtitle">文档类型：</td>
+						<td><select id="documentType" name="documentType"
+							class="form_input"  style="width: 245px;">
+								<option value="">请选择...</option>
+								<option value="0">单面</option>
+								<option value="1">双面</option>
+						</select> <span id="documentTypeMsg"></span></td>
+					</tr>
+					<tr id="positionQifeng" style="display:none;">
+						<td align="right" class="tdtitle">骑缝章模式：</td>
+						<td><select id="qifengType" name="qifengType"
+							class="form_input"  style="width: 245px;">
+								<option value="">请选择...</option>
+								<option value="2">上骑缝</option>
+								<option value="4">下骑缝</option>
+								<option value="1">左骑缝</option>
+								<option value="3">右骑缝</option>
+						</select> <span id="qifengTypeMsg"></span></td>
+					</tr>
+
+                    <tr id="firstPercentQifeng" style="display:none;">
+                        <td align="right" class="tdtitle">首页百分比：</td>
+                        <td>
+                            <div class="input-append">
+                                <input type="text" class="span2" id="firstPercent" name="firstPercent"
+                                       placeholder="1~99整数" style="width: 230px;">
+                            </div> <span id="firstPercentMsg"></span>
+                        </td>
+                    </tr>
+
+					<tr id="positionQifengTwo" style="display:none;">
+						<td align="right" class="tdtitle">盖章位置：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="position" name="position"
+									placeholder="超出0-49999取边界值" style="width: 230px;">
+							</div> <span id="positionMsg"></span>
+						</td>
+					</tr>
+					<tr id="matchingTextTr" style="display:none;">
+						<td align="right" class="tdtitle">匹配文字：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="matchingText"
+									name="matchingText" placeholder="请输入需要匹配的文字"
+									style="width: 230px;">
+							</div> <span id="matchingTextMsg"></span>
+						</td>
+
+					</tr>
+					<tr style="display:none;" id="beginEnd">
+						<td align="right" class="tdtitle">起始页：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="beginPage" name="beginPage"
+									placeholder="1为第一页" 
+									style="width: 230px;" onchange="beginPageClick()">
+							</div> <span id="beginPageMsg"></span>
+
+						</td>
+					</tr>
+					<tr id="beginEndTwo" style="display:none;">
+						<td align="right" class="tdtitle">结束页：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="endPage" name="endPage"
+									placeholder="1开始-1表示最后一页" 
+									style="width: 230px;" onchange="endPageClick()">
+							</div> <span id="endPageMsg"></span>
+						</td>
+					</tr>
+
+					<tr id="verticalOffsetTr" style="display:none;">
+						<td align="right" class="tdtitle">上下偏移：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="verticalOffset"
+									name="verticalOffset" placeholder="负数表示向上偏移"
+									style="width: 230px;">
+							</div> <span id="verticalOffsetMsg"></span>
+
+						</td>
+					</tr>
+					<tr id="horizontalOffsetTr" style="display:none;">
+						<td align="right" class="tdtitle">左右偏移：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="horizontalOffset"
+									name="horizontalOffset" placeholder="负数表示向左偏移"
+									style="width: 230px;">
+							</div> <span id="horizontalOffsetMsg"></span>
+						</td>
+					</tr>
+
+					<tr id="pageNumTr" style="display:none;">
+						<td align="right" class="tdtitle">单张页数：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="pageNum" name="pageNum"
+									placeholder="请输入单张页数" style="width: 230px;"
+									onchange="pageNumChange()">
+							</div> <span id="pageNumMsg"></span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</div>
+	<script type="text/javascript">
+		var urlPath = getUrlPath();
+		$(document).ready(function() {
+
+			addDataInit();//初始化数据
+			queryCerts(); //初始化选择RSA证书
+		});
+		function checkSpace(val) {
+			var regu = "^[ ]+$";
+			var re = new RegExp(regu);
+			return re.test(val);
+		}
+
+
+		function getData() {
+			if (check()) { //检查是否输入数据
+				var data = $("#addForm").getData(); //获取输入的表单数据
+				var rule = {}//将input值复制进data对象中
+				if (data.id !== null && data.id != "") {
+					rule['id'] = data.id;
+				}
+				rule['number'] = data.number;
+				rule['name'] = data.name;
+				rule['sealId'] = data.sealId;
+				rule['certId'] = data.certId;
+				/* rule['sm2CertId'] = data.sm2CertId; */
+				rule['sealName'] = data.sealName;
+				rule['type'] = data.type;
+				rule['state'] = data.state;
+				rule['versionNumber'] = data.versionNumber;
+				rule['parameterDescription'] = getParameterDescription(data);
+
+				return rule;
+			} else {
+				return null;
+			}
+		}
+
+		function getParameterDescription(data) {
+			var paramObj = {};
+			switch (parseFloat(data.type)) {
+			case 1:
+				paramObj.sealPage = parseFloat(data.sealPage);
+				paramObj.horizontalDistance =parseFloat( data.horizontalDistance);
+				paramObj.verticalDistance = parseFloat(data.verticalDistance);
+				break;
+			case 2:
+				paramObj.bookmark = parseFloat(data.bookmark);
+				break;
+			case 3:
+				paramObj.documentType = parseFloat(data.documentType);
+				paramObj.qifengType = parseFloat(data.qifengType);
+				paramObj.position = parseFloat(data.position);
+				paramObj.beginPage = parseFloat(data.beginPage);
+				paramObj.endPage = parseFloat(data.endPage);
+				paramObj.firstPercent = parseFloat(data.firstPercent);
+				break;
+			case 4:
+				paramObj.matchingText = data.matchingText;
+				paramObj.beginPage = parseFloat(data.beginPage);
+				paramObj.endPage = parseFloat(data.endPage);
+				paramObj.verticalOffset = parseFloat(data.verticalOffset);
+				paramObj.horizontalOffset = parseFloat(data.horizontalOffset);
+				break;
+			case 5:
+				paramObj.matchingText = data.matchingText;
+				paramObj.beginPage = parseFloat(data.beginPage);
+				paramObj.endPage =  parseFloat(data.endPage);
+                paramObj.horizontalOffset = parseFloat(data.horizontalOffset);
+				break;
+			case 6:
+				paramObj.intervalType = parseFloat(data.intervalType);
+				paramObj.intervalPage = parseFloat(data.intervalPage);
+				paramObj.horizontalDistance = parseFloat(data.horizontalDistance);
+				paramObj.verticalDistance = parseFloat(data.verticalDistance);
+				paramObj.beginPage = parseFloat(data.beginPage);
+				paramObj.endPage = parseFloat(data.endPage);
+				break;
+			case 7:
+				paramObj.documentType = parseFloat(data.documentType);
+				paramObj.qifengType = parseFloat(data.qifengType);
+				paramObj.position = parseFloat(data.position);
+				paramObj.beginPage = parseFloat(data.beginPage);
+				paramObj.endPage = parseFloat(data.endPage);
+				paramObj.pageNum = parseFloat(data.pageNum);
+                paramObj.firstPercent = parseFloat(data.firstPercent);
+				break;
+			}
+			return JSON.stringify(paramObj);
+		}
+
+		//盖章规则号校验
+		function addRuleValidateOptions() {
+			var res = {};
+			res['field'] = 'number';
+			res['value'] = $("#number").val();
+
+			if (res['value'].length > 32) {
+				$("#numberMsg").html("长度不能超过32");
+			} else if (res['value'].length == 0) {
+				$("#numberMsg").html("长度限制为32");
+			} else {
+				$.ajax({
+					type : "GET",
+					url : urlPath + "/sealRule/exist?noCache="
+							+ new Date().getTime(),
+					data : res,
+					contentType : "application/json",
+					dataType : "json",
+					success : function(retdata) {
+						$("#numberMsg").html("");
+					},
+					error : function(xmlhttp, textStatus, errorThrown) {
+						$("#number").val(null);
+						$("#numberMsg").html(
+								($.parseJSON(xmlhttp.responseText)).message);
+					}
+				});
+			}
+		};
+		function check() {
+			if ($("#number").val() == '' || checkSpace($("#number").val())) {
+				$("#numberMsg").text('输入不可为空！');
+			} else {
+				$("#numberMsg").text("");
+			}
+
+			if ($("#name").val() == '' || checkSpace($("#name").val())) {
+				$("#namemsg").text('输入不可为空！');
+			} else {
+				$("#namemsg").text("");
+			}
+
+			if (!($("#beginEnd").is(":hidden"))) {
+				if ($("#beginPage").val() == ''
+						|| checkSpace($("#beginPage").val())) {
+					$("#beginPageMsg").text('输入不可为空！');
+				} else {
+					$("#beginPageMsg").text("");
+				}
+				if ($("#endPage").val() == ''
+						|| checkSpace($("#endPage").val())) {
+					$("#endPageMsg").text('输入不可为空！');
+				} else {
+					$("#endPageMsg").text("");
+				}
+			}else{
+				$("#endPageMsg").text("");
+				$("#beginPageMsg").text("");
+			}
+
+			if ($("#sealPage").val() == '' || checkSpace($("#sealPage").val())) {
+				if (!($("#sealPage").is(":hidden"))) {
+					$("#sealPageMsg").text('输入不可为空！');
+				}
+			} else {
+				$("#sealPageMsg").text("");
+			}
+
+			if ($("#sealId").val() == '' || checkSpace($("#sealId").val())) {
+				$("#sealIdMsg").text('输入不可为空！');
+			} else {
+				$("#sealIdMsg").text("");
+			}
+
+			if ($("#certId").val() == '' || checkSpace($("#certId").val())) {
+				$("#certIdMsg").text('请选择RSA证书');
+			} else {
+				$("#certIdMsg").text("");
+			}
+
+			if (!($("#intervalTypeTr").is(":hidden"))) {
+				if ($("#intervalType").val() == ''
+						|| checkSpace($("#intervalType").val())) {
+					$("#intervalTypeMsg").text('请选择间隔类型');
+				} else {
+					$("#intervalTypeMsg").text("");
+				}
+			}else{
+				$("#intervalTypeMsg").text("");
+			}
+
+			if (!($("#intervalPageTrTwo").is(":hidden"))) {
+				var reg = /^\+?[1-9][0-9]*$/;
+				var registerNum = parseInt($("#intervalPage").val());
+				if (!reg.test(registerNum)) {
+					$("#intervalPageMsg").text('请输入大于0的正整数!');
+				} else {
+					$("#intervalPageMsg").text("");
+				}
+			}else{
+				$("#intervalPageMsg").text("");
+			}
+
+			if (!($("#distance").is(":hidden"))) {
+				if ($("#horizontalDistance").val() == ''
+						|| checkSpace($("#horizontalDistance").val())) {
+					$("#horizontalDistanceMsg").text('输入不可为空！');
+				} else {
+					$("#horizontalDistanceMsg").text("");
+				}
+				if ($("#verticalDistance").val() == ''
+						|| checkSpace($("#verticalDistance").val())) {
+					$("#verticalDistanceMsg").text('输入不可为空！');
+				} else {
+					$("#verticalDistanceMsg").text("");
+				}
+			}else{
+				$("#verticalDistanceMsg").text("");
+				$("#horizontalDistanceMsg").text("");
+			}
+
+			if (!($("#positionQifeng").is(":hidden"))) {
+				if ($("#qifengType").val() == ''
+						|| checkSpace($("#qifengType").val())) {
+					$("#qifengTypeMsg").text('请选择骑缝章模式！');
+				} else {
+					$("#qifengTypeMsg").text("");
+				}
+				if ($("#position").val() == ''
+						|| checkSpace($("#position").val())) {
+					if (!($("#qifengType").is(":hidden"))) {
+						$("#positionMsg").text('输入不可为空！');
+					}
+				} else {
+					$("#positionMsg").text("");
+				}
+			}else{
+				$("#qifengTypeMsg").text("");
+				$("#positionMsg").text("");
+			}
+
+			if (!($("#matchingTextTr").is(":hidden"))) {
+				if ($("#matchingText").val() == ''
+						|| checkSpace($("#matchingText").val())) {
+					$("#matchingTextMsg").text('输入不可为空！');
+				} else {
+					$("#matchingTextMsg").text("");
+				}
+			}else{
+				$("#matchingTextMsg").text("");
+			}
+
+            if (!($("#firstPercentQifeng").is(":hidden"))) {
+                var reg = /^[1-9][0-9]?$/;
+                var registerNum = parseInt($("#firstPercent").val());
+                if (!reg.test(registerNum)) {
+                    $("#firstPercentMsg").text('请输入1~99的正整数!');
+                } else {
+                    $("#firstPercentMsg").text("");
+                }
+            }else{
+                $("#firstPercentMsg").text("");
+            }
+			if (!($("#verticalOffsetTr").is(":hidden"))) {
+				if ($("#verticalOffset").val() == ''
+						|| checkSpace($("#verticalOffset").val())) {
+					$("#verticalOffsetMsg").text('输入不可为空！');
+				} else {
+					$("#verticalOffsetMsg").text("");
+				}
+			}else{
+				$("#verticalOffsetMsg").text("");
+			}
+
+			if (!($("#horizontalOffsetTr").is(":hidden"))) {
+				if ($("#horizontalOffset").val() == ''
+						|| checkSpace($("#horizontalOffset").val())) {
+					$("#horizontalOffsetMsg").text('输入不可为空！');
+				} else {
+					$("#horizontalOffsetMsg").text("");
+				}
+			}else{
+				$("#horizontalOffsetMsg").text("");
+			}
+
+			if (!($("#documentTypeTr").is(":hidden"))) {
+				if ($("#documentType").val() == ''
+						|| checkSpace($("#documentType").val())) {
+					$("#documentTypeMsg").text('请选择文档类型！');
+				} else {
+					$("#documentTypeMsg").text("");
+				}
+			} else{
+				$("#documentTypeMsg").text("");
+			}
+
+			if (!($("#pageNumTr").is(":hidden"))) {
+				var reg = /^\+?[1-9][0-9]*$/;
+				var singlePages = parseInt($("#pageNum").val());
+				singlePages--;
+				if (!reg.test(singlePages)) {
+					$("#pageNumMsg").text("请输入大于1的整数!");
+				} else {
+					$("#pageNumMsg").text("");
+				}
+			}else{
+				$("#pageNumMsg").text("");
+			}
+			var flag = true;
+			
+			if ($("#numberMsg").text() != '' || $("#namemsg").text() != ''
+					|| $("#positionMsg").text() != ''
+					|| $("#beginPageMsg").text() != ''
+					|| $("#endPageMsg").text() != ''
+					|| $("#sealPageMsg").text() != ''
+					|| $("#sealIdMsg").text() != ''
+					|| $("#intervalPageMsg").text() != ''
+					|| $("#intervalTypeMsg").text() != ''
+					|| $("#certIdMsg").text() != ''
+					|| $("#horizontalDistanceMsg").text() != ''
+					|| $("#verticalDistanceMsg").text() != ''
+					|| $("#qifengTypeMsg").text() != ''
+					|| $("#matchingTextMsg").text() != ''
+					|| $("#verticalOffsetMsg").text() != ''
+					|| $("#horizontalOffset").text() != ''
+					|| $("#documentTypeMsg").text() != ''
+					|| $("#pageNumMsg").text() != ''
+                    || $("#firstPercentMsg").text() != ''
+					|| $("#horizontalOffsetMsg").text() !='') {
+				flag = false;
+			}
+			return flag;
+		}
+
+		function selectSeal() {
+			var index = window.parent.layer
+					.open({
+						title : '选择印章',
+						type : 2,
+						content : '../../module/template/select-seal-modal.html?noCache='
+								+ new Date().getTime(),
+						area : [ '545px', '450px' ],
+						btn : [ '确定', '关闭' ],
+						maxmin : true,
+						yes : function(index) {
+							//获取单位数据 
+							var res = window.parent["layui-layer-iframe"
+									+ index].getData();
+							if (res != null) {
+								$("#sealId").val(res.id);//印章id
+								$("#sealName").val(res.name);//印章name --页面使用
+								$("#sealIdMsg").text('');
+							}
+							window.parent.layer.close(index);
+						}
+					});
+		}
+
+		function emptyInput() {
+			/*         vm.outputData = []; */
+			$("#sealName").val(null);//印章name --页面使用
+			$("#sealId").val(null);//印章id
+		}
+
+		function addDataInit() {
+			var id = getUrlParam('id');
+
+			if (id != null) {
+				$.ajax({
+					type : "get",
+					url : urlPath + '/sealRule/' + id + '?noCache='
+							+ new Date().getTime(),
+					contentType : "application/json",
+					dataType : "json",
+					success : function(redata) {
+						var data=null;
+						for(var i=0;i<redata.length;i++){
+							if(redata[i].id==id){
+								data=redata[i];
+								break;
+							}
+						}
+						$("#id").val(data.id); //id
+						$("#number").val(data.number);
+						$("#name").val(data.name);
+						$("#sealId").val(data.seal.id);
+						$("#certId").val(data.certId);
+						$("#type").val(data.type);
+						$("#sealName").val(data.seal.name);
+						$("#state").val(data.state);
+						$("#versionNumber").val(data.versionNumber);
+						
+						typeChange();
+						var parameterDes=JSON.parse(data.parameterDescription);
+						switch (parseFloat(data.type)) {
+						case 1:
+							$("#sealPage").val(parameterDes.sealPage);
+							$("#horizontalDistance").val(parameterDes.horizontalDistance);
+							$("#verticalDistance").val(parameterDes.verticalDistance);
+							break;
+						case 2:
+							$("#bookmark").val(parameterDes.bookmark);
+							break;
+						case 3:
+							$("#documentType").val(parameterDes.documentType);
+							$("#qifengType").val(parameterDes.qifengType);
+							$("#position").val(parameterDes.position);
+							$("#beginPage").val(parameterDes.beginPage);
+							$("#endPage").val(parameterDes.endPage);
+							$("#firstPercent").val(parameterDes.firstPercent);
+							break;
+						case 4:
+							$("#matchingText").val(parameterDes.matchingText);
+							$("#beginPage").val(parameterDes.beginPage);
+							$("#endPage").val(parameterDes.endPage);
+							$("#verticalOffset").val(parameterDes.verticalOffset);
+							$("#horizontalOffset").val(parameterDes.horizontalOffset);
+							break;
+						case 5:
+							$("#matchingText").val(parameterDes.matchingText);
+							$("#beginPage").val(parameterDes.beginPage);
+							$("#endPage").val(parameterDes.endPage);
+                            $("#horizontalOffset").val(parameterDes.horizontalOffset);
+							break;
+						case 6:
+							$("#intervalType").val(parameterDes.intervalType);
+							$("#intervalPage").val(parameterDes.intervalPage);
+							$("#horizontalDistance").val(parameterDes.horizontalDistance);
+							$("#verticalDistance").val(parameterDes.verticalDistance);
+							$("#beginPage").val(parameterDes.beginPage);
+							$("#endPage").val(parameterDes.endPage);
+							break;
+						case 7:
+							
+							$("#documentType").val(parameterDes.documentType);
+							$("#qifengType").val(parameterDes.qifengType);
+
+							$("#position").val(parameterDes.position);
+							$("#beginPage").val(parameterDes.beginPage);
+							$("#endPage").val(parameterDes.endPage);
+							$("#pageNum").val(parameterDes.pageNum);
+							$("#firstPercent").val(parameterDes.firstPercent);
+							break;
+						}
+					},
+
+					error : function(xmlhttp, textStatus, errorThrown) {
+						var o = JSON.parse(xmlhttp.responseText);
+						layer.msg(o.message, {
+							icon : 5
+						});
+					}
+				});
+			} else {
+				$("#id").val(null); //id
+
+				$("#number").val(null); //规则号
+				$("#name").val(null);//规则名称
+				$("#sealId").val(null);//印章id
+				$("#sealName").val(null);//印章name --页面使用
+				// useCert: 1, //是否使用证书 -- 0不使用 1使用
+				$("#certId").val(null); //证书id
+				//$("#sm2CertId").val(null );//sm2证书
+				$("#type").val(1);//规则类型
+
+				$("#sealPage").val(null); //盖章页码
+				$("#intervalType").val(1); //间隔类型
+				$("#intervalPage").val(null); //间隔页数
+				$("#horizontalDistance").val(null); //横向距离
+				$("#verticalDistance").val(null); //纵向距离
+				$("#bookmark").val(null);//书签名
+				$("#documentType").val(0); //文档类型
+				$("#qifengType").val(null);//骑缝章类型
+				$("#position").val(null);//盖章位置
+				$("#matchingText").val(null); //匹配文字
+				$("#beginPage").val(1); //起始页
+				$("#endPage").val(-1);//结束页
+                $("#firstPercent").val(20);//首页百分比
+				$("#pageNum").val(null); //单章页数（每隔?页盖一个章）
+				$("#horizontalOffset").val(null); //左右偏移
+				$("#verticalOffset").val(null);// 上下偏移
+			}
+		}
+
+		//盖章页码
+		function nameValidate() {
+			if ($("#name").val().length > 60) {
+				$("#nameMes").html("长度不能超过60");
+			} else if ($("#name").val().length == 0) {
+				$("#nameMes").html("输入不能为空");
+			} else {
+				$("#nameMes").html("");
+			}
+		}
+
+		function getSeal() {
+
+			if ($("#sealId").val().length == 32) {
+				$.ajax({
+					type : "GET",
+					url : urlPath + "/seal/" + $("#sealId").val() + '?noCache='
+							+ new Date().getTime(),
+					contentType : "application/json",
+					dataType : "json",
+					success : function(data) {
+						$("#sealName").val(data.name);//印章name --页面使用
+						$("#sealIdMsg").text('');
+
+					},
+					error : function(data) {
+						$("#sealName").val(null);//印章name --页面使用
+						$("#sealIdMsg").text('查询印章失败，请检查印章ID');
+					}
+				});
+			} else {
+				$("#sealIdMsg").text('请输入32位印章ID');
+				$("#sealName").val(null);//印章name --页面使用
+
+			}
+		}
+
+		function queryCerts() {
+			$.ajax({
+				type : "GET",
+				url : urlPath + "/all_certs?noCache=" + new Date().getTime(),
+				contentType : "application/json",
+				dataType : "json",
+				success : function(data) {
+					for (var i = 0; i < data.length; i++) {
+						$("#certId").append(
+								"<option value="+data[i].id+">" + data[i].name
+										+ "</option>");
+
+					}
+				},
+				error : function(data) {
+
+				}
+			});
+
+		}
+
+		function typeChange() {
+			$("#documentType").val("");
+			$("#qifengType").val("");
+			$("#intervalType").val("");
+
+			var type = $("#type").val();
+			if (type != 1) {
+				$("#beginEnd").show();
+				$("#beginEndTwo").show();
+			} else {
+				$("#beginEnd").hide();
+				$("#beginEndTwo").hide();
+			}
+			if (type == 1||type == 6) {
+				$("#distance").show();
+				$("#distanceTwo").show();
+			} else {
+				$("#distance").hide();
+				$("#distanceTwo").hide();
+			}
+			if (type == 3 || type == 7) {
+				$("#positionQifeng").show();
+				$("#documentTypeTr").show();
+				$("#positionQifengTwo").show();
+                $("#firstPercentQifeng").show();
+			} else {
+				$("#positionQifeng").hide();
+				$("#documentTypeTr").hide();
+				$("#positionQifengTwo").hide();
+                $("#firstPercentQifeng").hide();
+			}
+			if (type == 1) {
+				$("#sealPageTr").show();
+			} else {
+				$("#sealPageTr").hide();
+			}
+
+			if (type == 4){
+				$("#matchingTextTr").show();
+				$("#verticalOffsetTr").show();
+                $("#horizontalOffsetTr").show();
+			}else if(type == 5){
+                $("#matchingTextTr").show();
+                $("#verticalOffsetTr").hide();
+                $("#horizontalOffsetTr").show();
+			} else {
+				$("#matchingTextTr").hide();
+				$("#verticalOffsetTr").hide();
+                $("#horizontalOffsetTr").hide();
+			}
+
+
+			if (type == 6) {
+				//$("#intervalTypeTr").show();
+				//$("#intervalTypeTrTwo").show();
+				$("#intervalPageTrTwo").show();
+			} else {
+				//$("#intervalTypeTr").hide();
+				//$("#intervalTypeTrTwo").hide();
+				$("#intervalPageTrTwo").hide();
+			}
+			
+			if (type == 7) {
+				$("#pageNumTr").show();
+			} else {
+				$("#pageNumTr").hide();
+			}
+		}
+
+		function intervalTypeChange() {
+			var type = $("#intervalType").val();
+			var type_two = $("#type").val();
+			if (type == 3&&type_two==6) {
+				$("#intervalPageTr").show();
+				$("#intervalPageTrTwo").show();
+			} else {
+				$("#intervalPageTr").hide();
+				$("#intervalPageTrTwo").hide();
+
+
+			}
+
+		}
+		function getUrlParam(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+			var r = window.location.search.substr(1).match(reg); //匹配目标参数  
+			if (r != null) {
+				return unescape(r[2]); //返回参数值 
+			} else {
+				return null;
+			}
+		}
+
+		function sealPageClick() {
+			if ($("#sealPage").val() < 0&&$("#sealPage").val()!=-1) {
+				$("#sealPageMsg").text('必须大于0,或者为-1');
+				$("#sealPage").val(null);
+			} else {
+				$("#sealPageMsg").text('');
+			}
+		}
+
+		function beginPageClick() {
+			if ($("#beginPage").val() < 0) {
+				$("#beginPageMsg").text('必须大于0');
+				$("#beginPage").val(null);
+			} else {
+				$("#beginPageMsg").text('');
+			}
+		}
+
+		function endPageClick() {
+			var begin = $("#beginPage").val();
+			var end = $("#endPage").val();
+
+			if (begin != null && begin != '') {
+				if ((end != -1 && begin > end) || end == 0 || end < -1) {
+					$("#endPageMsg").text('输入不正确');
+					$("#endPage").val(null);
+
+				} else {
+					$("#endPageMsg").text('');
+				}
+			}
+		}
+
+		function pageNumChange() {
+			if ($("#pageNum").val() < 1) {
+				$("#pageNumMsg").text('必须大于1');
+				$("#pageNum").val(null);
+			} else {
+				$("#pageNumMsg").text('');
+			}
+		}
+	</script>
+</body>
+</html>

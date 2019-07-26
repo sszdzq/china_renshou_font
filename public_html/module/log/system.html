@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>系统操作日志</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	    <style type="text/css">
+    .page-to-right{
+    	padding:0 0.35%;
+    }
+	</style>
+
+
+		
+</head>
+<body >
+	<div class="pagecontent" id="divcontent2">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on" style="margin:0px 0px 0px 10px;">用户名</span>
+					<input type="text" name="userName" id="userName" style="width: 100px" placeholder="用户名"> 
+					<span class="add-on" style="margin:0px 0px 0px 10px;">IP地址</span>
+					<input type="text" name="ipAddress"  id="ipAddress" style="width: 100px" placeholder="IP地址"/>
+					<span class="add-on" style="margin:0px 0px 0px 10px;">操作菜单</span>
+					<input type="text" name="type"  id="type" style="width: 100px" placeholder="操作菜单"/>
+					<span class="add-on" style="margin:0px 0px 0px 10px;">时间</span>
+					<input type="text"  id="startTime" name="startTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+					至
+					<input type="text" name="endTime" id="endTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startTime\')}' }) " >
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success pull-right" style="float:right;"><i class="fa fa-th"></i> 查询</button>
+			</div>
+			
+		<div class="toolbars">
+			<div class="middleLayer" style="margin: 35px 0px 0px 0px;">	
+				<div id="tab-content" class='page-to-right'>
+					<ul id="tab_1" class="nav nav-tabs">		
+						<li id="myLogSystems"  onclick="tab_mylog()">
+							<a data-toggle="tab" href="#tab_mylog">我的日志</a>
+						</li>
+						<li id="deptLogSystems"  onclick = "tab_departmentlog()">
+							<a data-toggle="tab" href="#tab_departmentlog">管理部门日志</a>
+						</li>
+						<li id="logSystems" onclick="tab_alllog()">
+							<a data-toggle="tab" href="#tab_alllog" >所有日志</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+			
+		<!-- 被遮挡是因为.nav的margin-bottom有20px，所以这里加入div块占用margin，使table能获取正确高度 -->
+		<div style="display: block; height: 20px;"></div>
+		<!-- 页面主内容 -->	
+		<div class="gridcontent page-to-right">
+			<table id="systemlog"></table>
+			<div id="systemlog_page"></div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+var flag = 1;
+var urlPath = getUrlPath();
+var visible = [true, true, true];
+var port=['myLogSystems','deptLogSystems','logSystems'];
+var tabFlag=null;
+
+$(document).ready(function() {
+	  	setVisible(port);
+	  //加载jqGrid
+		$(document).ready(function() {
+			loadGrid_systemlog();
+			$(window).resize(function() {
+		        $("#systemlog").jqGrid("autoSize");
+			}).trigger('resize');	
+		}); 
+});
+
+function tab_mylog(){
+	setMyLogUrl({});
+	flag=1;
+}
+
+function tab_departmentlog(){
+	setDepartmentlog({});
+	flag=2;
+}
+
+function tab_alllog(){
+	setAlllog({});
+	flag=3;
+}
+//var number=$("#"+id+"1").val();
+function setMyLogUrl(queryData){
+	$('#systemlog').setGridParam({
+		url: urlPath+'/myLogSystems?noCache='+new Date().getTime(),
+		  datatype:"json",
+		  mtype:"get",
+		  page:1,// 初始化页码
+		  postData:queryData
+	}
+	).trigger('reloadGrid');
+}
+
+function setDepartmentlog(queryData){
+	$('#systemlog').setGridParam({
+		url: urlPath+'/deptLogSystems?noCache='+new Date().getTime(),
+		  datatype:"json",
+		  mtype:"get",
+		  page:1,// 初始化页码
+		  postData:queryData
+	}
+	).trigger('reloadGrid');
+}
+
+function setAlllog(queryData){
+	$('#systemlog').setGridParam({
+		url: urlPath+'/logSystems?noCache='+new Date().getTime(),
+		  datatype:"json",
+		  mtype:"get",
+		  page:1,// 初始化页码
+		  postData:queryData
+	}
+	).trigger('reloadGrid');
+}
+
+function search(){
+ var postData = $('#systemlog').jqGrid("getGridParam", "postData");
+    $.each(postData, function (k, v) {
+        delete postData[k];
+    });
+ //设入请求参数
+ var formData = getFormData("search_form");
+ var stime=new Date(Date.parse(formData.startTime.replace(/-/g,"/"))).getTime()/1000;
+ var etime=new Date(Date.parse(formData.endTime.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+ var queryData = {};
+ 
+   if(formData.userName!=""){
+	   queryData['userName']=formData.userName;
+   }
+   if(formData.ipAddress!=""){
+	   queryData['ipAddress']=formData.ipAddress;
+   }
+   if(formData.type!=""){
+	   queryData['type']=formData.type;
+   }
+   if(formData.startTime != ""){
+	   queryData['startTime']=stime;
+   }
+   if(formData.endTime!=""){
+	   queryData['endTime']=etime;
+   }
+   if(flag==1){
+	 setMyLogUrl(queryData);
+   }else if (flag==2){
+	 setDepartmentlog(queryData);
+   }else{
+	 setAlllog(queryData);
+   }
+}
+function loadGrid_systemlog() {
+	$("#systemlog").jqGrid(
+		{
+			url: urlPath+'/'+tabFlag+'?noCache='+new Date().getTime(),
+			datatype : "json",//页面加载的时候不显示数据
+			colNames : [ '用户id','操作用户','操作时间','操作IP','操作类型','日志描述'],
+			colModel : [ 
+						 {name : 'userLoginId',index : 'userLoginId',width : 100,hidden:true},
+						 {name : 'userName',index : 'userName',width : 200,align : "center"},
+			             {name : 'createdAt',index : 'createdAt',width :250,formatter : timeFormatter,align : "center"},
+			             {name : 'ipAddress',index : 'ipAddress',width : 250,align : "center"},
+			             {name : 'type',index : 'type',width : 250,align:"center"},
+			             {name : 'description',index : 'description',width : 250,align:"center"}
+			          ],
+			          multiselect: false,
+						rowNum : 20,
+						rowList : [20,30,40,50,100], 
+			pager : '#systemlog_page'
+		});
+}
+function timeFormatter(cellvalue, options, rowObject) {
+	var unixTimestamp = new Date(cellvalue*1000) ;
+	return unixTimestamp.toLocaleString();	
+}
+Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+    return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+};
+
+  
+  function setVisible(ports){
+	  $.ajax({
+			type : "get",
+			async: false,
+			url : urlPath+'/'+ports[0]+'?draw=1&page=1&size=10&noCache='+new Date().getTime(),
+			contentType:"application/json",
+			dataType : "json",
+			error: function(xmlhttp,textStatus,errorThrown){
+				var o = JSON.parse(xmlhttp.responseText);
+					if (o.code === 2200) {
+						$("#myLogSystems").hide();
+						visible[0] = false;
+					}
+				}
+		});
+	  
+	  $.ajax({
+			type : "get",
+			async: false,
+			url : urlPath+'/'+ports[1]+'?draw=1&page=1&size=10&noCache='+new Date().getTime(),
+			contentType:"application/json",
+			dataType : "json",
+			error: function(xmlhttp,textStatus,errorThrown){
+			var o = JSON.parse(xmlhttp.responseText);
+				if (o.code === 2200) {
+					$("#deptLogSystems").hide();
+					visible[1] = false;
+				}
+			}
+		});
+	  
+	  $.ajax({
+			type : "get",
+			async: false,
+			url : urlPath+'/'+ports[2]+'?draw=1&page=1&size=10&noCache='+new Date().getTime(),
+			contentType:"application/json",
+			dataType : "json",
+			error: function(xmlhttp,textStatus,errorThrown){
+			var o = JSON.parse(xmlhttp.responseText);
+			//console.log('o.code='+o.code);
+				if (o.code === 2200) {
+					$("#logSystems").hide();
+					visible[2] = false;
+				}
+			}
+		});
+	  
+	  for(var i=0;i<visible.length;i++){
+		    if(visible[i]){
+		    	tabFlag=port[i];
+		    	 $("#"+port[i]).addClass("active");
+		    	return;
+		    }
+	  }
+	  
+  }
+
+</script>
+
+</html>

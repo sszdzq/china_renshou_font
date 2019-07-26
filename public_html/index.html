@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<body>
+  <script type="text/javascript">
+	var pathName = document.location.pathname; 
+	var index = pathName.substr(1).indexOf("/"); 
+	var result = pathName.substr(0,index+1); 
+  	window.location.replace(result+"/module/login/login.html");
+  </script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>主类型修改</title>
+
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet" />
+<link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+
+<style type="text/css">
+tr {
+	height: 50px;
+}
+
+.error {
+	color: red;
+}
+span{
+	color:red;
+	font-size:13px;
+}
+ul{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    }
+ 	li{
+        margin: 2px;
+	    padding: 0 5px;
+	    display: inline-block;
+	    float: left;
+	    font: 14px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	    height: 26px;
+	    line-height: 25px;
+	    border: 1px solid #acacac;
+	    border-radius: 3px;
+	    background-color: #a1dbff;
+    }
+   a{
+   	background: transparent;
+   	color: #337ab7;
+    text-decoration: none;
+    cursor: pointer;
+   }
+</style>
+</head>
+<body>
+	<div class="pagecontent" id="divcontent">
+		<form id="addForm">
+		<input type="hidden" id="servId" name="servId"/>
+			<table id="table" class="table_insert">
+				<tbody>
+					<tr>
+						<td class="tdtitle" align="right" style="font-weight: bold">业务编号:</td>
+						<td>
+							<input type="text"  id="servNo" name="servNo"/>						
+						</td>
+					</tr>
+					<tr>
+						<td class="tdtitle" align="right"  style="font-weight: bold">业务名称:</td>
+						<td>
+							<input type="text" id="servName" name="servName"/>						
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</div>
+</body>
+	<script type="text/javascript">
+	//初始化，用于验证输入数据是否符合要求	
+	V.init("addForm","table");
+	var urlPath=getUrlPath();
+	var service = null;
+	var serviceId = null;
+
+	function GetQueryString(name){
+	    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if(r!=null)return  decodeURI(r[2]); return null;
+	}
+
+	//加载jqGrid
+	$(document).ready(function() {
+		service= serviceDataInit();
+		serviceId = GetQueryString("serviceId");
+		if(serviceId != null){
+			getserviceInfo(serviceId);
+			$("#servNo").attr('disabled','disabled');
+		}
+	});
+	
+	function getserviceInfo(serviceId){
+		$.ajax({
+			type : "post",
+			url : urlPath+'/getServiceById/'+serviceId+'?noCache='+new Date().getTime(),
+			contentType:"application/json",
+			dataType : "json",
+			async:false,
+			success : function(retdata) {
+				if(serviceId != null){
+					$("#servId").val(serviceId);
+					$("#servNo").val(retdata.servNo);
+					$("#servName").val(retdata.servName);
+				}
+			},
+			error: function(xmlhttp,textStatus,errorThrown){
+				//var o = JSON.parse(xmlhttp.responseText);
+				//layer.msg(o.message, {icon: 5});
+			}
+		});
+	}	
+	
+	function getData(){
+		var serviceFormObj = $("#addForm").getData();
+		service.servId = serviceFormObj.servId;
+		service.servNo = serviceFormObj.servNo;
+		service.servName = serviceFormObj.servName;
+		return JSON.stringify(service);
+	}
+	
+    function serviceDataInit() {
+        return {
+        	servId: null,
+	       	servNo: null, 
+	       	servName: null
+        };
+      }
+
+	
+
+
+	function getUrlParam(name) {  
+		   var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+		   var r = window.location.search.substr(1).match(reg);  //匹配目标参数  
+		   if (r != null) {
+		       return unescape(r[2]);  //返回参数值 
+		   } else {
+		       return null; 
+		   }
+	}
+</script>
+</body>
+</html>

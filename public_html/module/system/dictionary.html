@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>系统字典</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	    <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	   <style type="text/css">
+				
+		</style>
+	</head>
+	<body>
+	<div class="pagecontent" id="divcontent2">
+		<div class="leftLayer" >	
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="dictionary_table"></table>
+				<div id="dictionary_page"></div>
+			</div>
+		</div>
+	 </div>
+	</body>
+<script type="text/javascript">
+var urlPath=getUrlPath();
+
+function loadGrid_adhibition() {
+	$("#dictionary_table").jqGrid(
+		{
+			url : urlPath+'/dictionarys',
+			datatype : "json",//页面加载的时候不显示数据
+			colNames : ['id','原始配置值','配置名','配置值','操作','是否允许操作','key值'],
+			colModel : [ 
+						 {name : 'id',index : 'id',hidden:true},
+						 {name : 'parameterValue',index : 'parameterValue',width : 150,hidden:true},
+				         {name : 'parameterKey',index : 'parameterKey',width : 250,align:"center"},
+						 {name : 'parameterValuetemp',index : 'parameterValuetemp',width : 300,align : "center" ,formatter:valueFormatter},
+			             {name : '',index : '',width : 150,align : "center",formatter:opFormatter},
+			             {name : 'allowUpdate',index : 'allowUpdate',hidden:true},
+			             {name : 'parameterKey',index : 'parameterKey',hidden:true},
+			           ], 
+						multiselect: false,
+						rowNum : 10,
+						rowList : [ 10,15,30 ],
+			pager : '#dictionary_page'
+		});
+	}
+
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid_adhibition();
+		$(window).resize(function() {
+	        $("#dictionary_table").jqGrid("autoSize");
+		}).trigger('resize');	
+	});  
+	//var tempValue=null;
+	function valueFormatter(cellvalue, options, rowObject){
+		var type=getJsonInfo(rowObject.parameterValue).type;
+		//var parameterValue=rowObject.parameterValue;
+		//tempValue=parameterValue;
+		cellvalue=rowObject.parameterValue;
+		if(type=='json'){
+			if(rowObject.parameterValue.length > 30){
+				cellvalue=rowObject.parameterValue.substr(0, 30)+'...'+"<a style=\"color:blue\" href=\"javascript:showdetial('"+rowObject.id+"','"+rowObject.parameterKey+"');\">详情</a>";
+			}
+		} else {
+              if(rowObject.parameterValue.length > 30){
+            	  cellvalue = rowObject.parameterValue.substr(0, 30);
+            	  cellvalue += '...';
+              }
+        }
+		return cellvalue;
+	}
+	
+	function opFormatter(cellvalue, options, rowObject){
+		if(rowObject.allowUpdate=='1'){
+			var type=getJsonInfo(rowObject.parameterValue).type;
+			return "<a style=\"color:blue\" href=\"javascript:update('"+rowObject.id+"','"+rowObject.parameterKey+"','"+type+"');\">修改</a>";
+		}else{
+			return "--";
+		}
+	}
+	
+	function update(id,parameterKey,datatype){
+		var index = window.layer.open({
+			title:'修改系统字典',
+			type: 2,  
+			content: '../system/dictionary-update.html?id='+id+'&parameterKey='+parameterKey+'&datatype='+datatype,
+			area: ['530px', '500px'],
+			btn: ['保存','关闭'], //底部按钮区域
+			yes: function(index,layero){  //第一个按钮的事件
+				var res = window["layui-layer-iframe" + index].getData();
+				var array=new Array();
+            	if(res!=null){  //页面验证成功
+            		array.push(res);
+            		var data=JSON.stringify(array);
+            		$.ajax({
+           				type : "PUT",
+           				url :  urlPath+'/dictionary',
+           				contentType:"application/json",
+           				data : data,
+           				dataType : "json",
+           				success : function(retdata) {
+           					if(retdata){
+                   				//刷新jqGrid
+           						layer.msg('操作成功！');
+								//刷新  重新加载数据
+		   						doFresh();
+		   						layer.close(index);	
+               				}
+           				},
+           				error: function(xmlhttp,textStatus,errorThrown){
+    		 				var o = JSON.parse(xmlhttp.responseText);
+    		 				layer.msg(o.message, {icon: 5});
+    		 			}
+           			});
+           		}else{
+           			
+           		}
+            }
+		});
+	}
+	
+	function doFresh(){
+		 $("#dictionary_table").jqGrid('setGridParam',{									 
+				postData:{}
+			}).trigger("reloadGrid"); 
+	}
+	
+	function showdetial(id,parameterKey){
+		var index = window.layer.open({
+			title:'系统字典详情',
+			type: 2,  
+			content: '../system/constants.html?id='+id+'&parameterKey='+parameterKey,
+			area: ['530px', '500px'],
+			btn: ['关闭'], //底部按钮区域
+		});
+	}
+	
+	
+	//判断是string 还是json对象	
+	function getJsonInfo (data) {
+	      var returnData = {
+	        data: null,
+	        type: null
+	      };
+	      if (data === null || data === undefined) {
+	        returnData.data = '';
+	        returnData.type = 'string';
+	      } else {
+	        try {
+	          returnData.data = fromJson(data);
+	          returnData.type = 'json';
+
+	          if (data.indexOf('[') < 0 && data.indexOf('{') < 0) { //当做字符串
+	            returnData.data = data;
+	            returnData.type = 'string';
+	          }
+	        } catch (error) {
+	          returnData.data = data;
+	          returnData.type = 'string';
+	        }
+	      }
+	      return returnData;
+	    }
+	
+	function fromJson(json) {
+		  return isString(json)
+		      ? JSON.parse(json)
+		      : json;
+		}
+	
+	//判断是否为字符串
+	function isString(value) {return typeof value === 'string';}
+	
+	/* function showdetial(id){
+	var st=null;
+	if(typeof tempValue === 'object' && isNaN(tempValue.length)){//对象
+		//alert('对象');
+		st = JSON.stringify(tempValue); //转换为json类型的字符串　
+	}else if(typeof tempValue === 'object' && !isNaN(tempValue.length)){//数组
+		//alert('数组');
+		st =tempValue;
+	}else{
+		st =tempValue;
+	}
+	var tempurl='../system/constants.html?id='+id+'&type=detial&parameterValue='+encodeURI(encodeURI(st));
+	var index = window.layer.open({
+		title:'配置值详情',
+		type: 2,  
+		content:tempurl ,
+		area: ['530px', '500px'],
+		btn: ['保存','关闭'], //底部按钮区域
+	});
+} */
+</script>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>发送消息</title>
+
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet" />
+<link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+
+<style type="text/css">
+tr {
+	height: 50px;
+}
+
+.error {
+	color: red;
+}
+span{
+	color:red;
+	font-size:13px;
+}
+ul{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    }
+ 	li{
+        margin: 2px;
+	    padding: 0 5px;
+	    display: inline-block;
+	    float: left;
+	    font: 14px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	    height: 26px;
+	    line-height: 25px;
+	    border: 1px solid #acacac;
+	    border-radius: 3px;
+	    background-color: #a1dbff;
+    }
+   a{
+   	background: transparent;
+   	color: #337ab7;
+    text-decoration: none;
+    cursor: pointer;
+   }
+</style>
+</head>
+<body>
+	<div class="pagecontent" id="divcontent">
+		<form id="addForm">
+		<input type="hidden" value="" id="id" name="id"/>
+			<input type="hidden" value="0" id="type" name="type"/>
+
+			<table id="table" class="table_insert">
+				<tbody>
+					<tr>
+						<td class="tdtitle" align="right" style="font-weight: bold">接收用户:</td>
+						<td>
+							<div style="white-space: nowrap;overflow-y: hidden; border:1px solid #ccc;  display: inline-block;width:240px;height:auto;min-height: 34px;" >
+								<ul style="list-style-type:none;" id="userId" class="sp-list">
+
+								</ul>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" class="tdtitle" style="font-weight: bold">等级:</td>
+						<td>
+							<select id="grade" name="grade" class="span1" style="width: 244px">
+								<option >请选择</option>
+								<option value=1>一般</option>
+								<option value=2>平急(警告)</option>
+								<option value=3>加急(严重)</option>
+								<option value=4>特急(崩溃)</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" class="tdtitle" style="font-weight: bold">标题:</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="title" name="title" value=""
+									placeholder="请输入消息标题" style="width: 230px;"onPaste="checkTitleLength()" onKeyUp="checkTitleLength()">
+							</div>
+							<span id="titlemsg"></span>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" class="tdtitle" style="font-weight: bold">内容:</td>
+						<td>
+							<div class="input-append">
+								<textarea style="height:150px;width:300px;" type="text" class="span2" id="content" name="content" value=""
+									placeholder="请输入内容" style="width: 230px;"onPaste="checkContentLength()" onKeyUp="checkContentLength()"></textarea>
+							</div>
+							<span id="contentmsg"></span>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</form>
+	</div>
+</body>
+	<script type="text/javascript">
+	//初始化，用于验证输入数据是否符合要求	
+	V.init("addForm","table");
+	var urlPath=getUrlPath();	
+	var message = null;
+
+	function GetQueryString(name){
+	    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if(r!=null)return  decodeURI(r[2]); return null;
+	}
+	//加载jqGrid
+	$(document).ready(function() {
+        message = messageDataInit();
+        var doc_id = GetQueryString("doc_id");
+        var status = GetQueryString("status");
+		if(doc_id != null){
+            getMessageUser(doc_id,status);
+		}
+	});
+	
+	function getMessageUser(doc_id,status){
+		$.ajax({
+			type : "get",
+			url : urlPath+'/files/getMessageUser?noCache='+new Date().getTime(),
+			data:{
+			    doc_id : doc_id,
+                status : status
+			},
+			contentType:"application/json",
+			dataType : "json",
+			async:false,
+			success : function(retdata) {
+			    if(retdata!=null){
+
+                    for(var j = 0,len = retdata.length; j < len; j++){
+
+                        var data="<li id=\""+retdata[j].id+"\"><span style=\"color:black\">"+retdata[j].name+"<a class=\"fa fa-times \"  onclick=\"deltempId('"+retdata[j].id+"')\" ></a></span></li>";
+                        $("#userId").append(data);
+                        delete retdata[j].backData;
+                    }
+                    message.users=retdata;
+
+				}
+			},
+			error: function(xmlhttp,textStatus,errorThrown){
+				var o = JSON.parse(xmlhttp.responseText);
+				layer.msg(o.message, {icon: 5});
+			}
+		});
+	}
+
+
+	function deltempId(id){		
+		for(var i=0;i<message.users.length;i++){
+			if(id == message.users[i].id){
+				//从数据中移除项
+				message.users.splice(i,1);
+				//展示li标签删除
+				$("#userId li[id="+id+"]").remove();
+			}
+		}
+	}
+	
+	
+	function getData(){
+		var msgFormObj = $("#addForm").getData();
+		message.content = msgFormObj.content;
+		message.grade = parseInt(msgFormObj.grade);
+		message.title = msgFormObj.title;
+		message.type = parseInt(msgFormObj.type);
+		return JSON.stringify(message);
+	}
+	
+    function messageDataInit() {
+        return {
+          id: null,
+          type: null, //0消息，1异常
+          status: null,
+          grade: null, // 1-4
+          title: null,
+          content: null,
+          releasedBy: null,
+          createdAt: null,
+          updatedAt: null,
+          updatedBy: null,
+          users: [],
+          messageDepartments: []
+        };
+      }
+    
+    function getConcatedStr(type, objects) {
+        var ret = '', index;
+        for (index = 0; index < objects.length; index++) {
+          if (0 !== index) {
+            ret += ',\n';
+          }
+          ret += type === 'u' ? objects[index].loginId : (objects[index].department.name + '-' + objects[index].role.name + (objects[index].type === 1 ? '(包含下级)' : ''));
+        }
+        return ret;
+      }
+	
+ 	function checkTitleLength(){
+ 		if(($("#title").val()).length == 0){
+ 			$("#titlemsg").text('输入不可为空！');
+		}else{
+			$("#titlemsg").text('');
+		}
+ 	}
+ 	function checkContentLength(){
+ 		if(($("#content").val()).length == 0){
+ 			$("#contentmsg").text('输入不可为空！');
+		}else{
+			$("#contentmsg").text('');
+		}
+ 	}
+
+
+	function getUrlParam(name) {  
+		   var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+		   var r = window.location.search.substr(1).match(reg);  //匹配目标参数  
+		   if (r != null) {
+		       return unescape(r[2]);  //返回参数值 
+		   } else {
+		       return null; 
+		   }
+	}
+</script>
+</body>
+</html>

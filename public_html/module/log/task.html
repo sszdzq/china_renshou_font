@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>定时任务操作日志</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>	
+	    <style type="text/css">
+    .row {
+    margin-left: 10px;
+    }
+	</style>
+
+
+		
+</head>
+<body >
+	<div class="pagecontent" id="divcontent2">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on" style="margin:0px 0px 0px 10px;">用户名</span>
+					<input type="text" name="userName" id="userName" style="width: 100px" placeholder="用户名"> 
+					<span class="add-on" style="margin:0px 0px 0px 10px;">操作类型</span>
+					<input type="text" name="type"  id="type" style="width: 100px" placeholder="操作类型"/>
+					<span class="add-on" style="margin:0px 0px 0px 10px;">日志描述</span>
+					<input type="text" name="desp"  id="desp" style="width: 100px" placeholder="日志描述"/>
+					<span class="add-on" style="margin:0px 0px 0px 10px;">时间</span>
+					<input type="text"  id="startTime" name="startTime" style="width: 100px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+					至
+					<input type="text" name="endTime" id="endTime" style="width: 100px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startTime\')}' }) " >
+					
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style=" float:right;"> 查询</button>
+			</div>
+			
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="t_server"></table>
+				<div id="t_server_page"></div>
+			</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	var urlPath = getUrlPath();
+	function loadGrid_users() {
+	$("#t_server").jqGrid(
+		{
+			url : urlPath+'/logTasks',
+			datatype : "json",//页面加载的时候不显示数据
+			colNames : [ 'ID','操作用户','操作时间','操作IP','操作类型','日志描述'],
+			colModel : [ 
+						 {name : 'id',index : 'id',width : 100,hidden:true},
+			             {name : 'userName',index : 'userName',width : 200,align : "center"},
+			             {name : 'createdAt',index : 'createdAt',width : 200,formatter : timeFormatter,align : "center"},
+			             {name : 'ipAddress',index : 'ipAddress',width : 200,align : "center"},
+			             {name : 'type',index : 'type',width : 200,align:"center"},
+			             {name : 'description',index : 'description',width : 200,align:"center"},
+			          ],
+			multiselect: false,
+			rowNum : 10,
+			rowList : [ 10, 15,30 ],
+			pager : '#t_server_page'
+		});
+	}
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid_users();
+		$(window).resize(function() {
+	        $("#t_server").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+	
+	function timeFormatter(cellvalue, options, rowObject) {
+		var unixTimestamp = new Date(cellvalue*1000) ;
+		return unixTimestamp.toLocaleString();	
+	}
+	
+	Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+	   return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+	};
+	
+	
+	function search(){
+		//解决postData参数值累加问题，首先清空postData
+	    var postData = $('#t_server').jqGrid("getGridParam", "postData");
+        $.each(postData, function (k, v) {
+            delete postData[k];
+        });
+		var formData = getFormData("search_form");
+	    var startTime=new Date(Date.parse(formData.startTime.replace(/-/g,"/"))).getTime()/1000;
+	    var endTime=new Date(Date.parse(formData.endTime.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+		var data={};
+		if(formData.userName!=""){
+			data['userName']=formData.userName;
+			}
+		if(formData.type!=""){
+			data['type']=formData.type;
+		   	}
+		if(formData.desp!=""){
+			data['desp']=formData.desp;
+		   	}
+		if(formData.startTime!=""){
+			data['startTime']=startTime;
+		   	}
+		if(formData.endTime!=""){
+			data['endTime']=endTime;
+		   	}
+		$("#t_server").jqGrid('setGridParam', {
+			page : 1,
+			postData :data
+			}).trigger("reloadGrid");	
+		}
+</script>
+
+</html>

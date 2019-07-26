@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<title>我的消息</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>	    
+	    <!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	    <style type="text/css">
+    .row {
+    margin-left: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    cursor: pointer;
+}
+
+	</style>
+
+
+		
+</head>
+<body >
+	<div class="pagecontent" id="divcontent2">
+		<div class="row">
+		    <div class="col-sm-12">
+		        <div class="page-title page-title-border clearfix">
+		            <button class="btn btn-primary pull-right margin-left" onclick="releaseMsg()">发布消息</button>
+		        </div>
+		    </div>
+		</div>
+
+
+		<div class="middleLayer" style="margin:50px 0px 0px 0px;">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on">类型</span>
+					<select id="type" name="type" class="span1" style="width: 80px;">
+						<option value="">请选择</option>
+						<option value="0">消息</option>
+						<option value="1">异常</option>
+					</select>
+					<span class="add-on" style="margin-left:10px;">等级</span>
+					<select id="grade" name="grade" class="span1" style="width: 100px">
+						<option value="">请选择</option>
+						<option value="1">一般</option>
+						<option value="2">平急(警告)</option>
+						<option value="3">加急(严重)</option>
+						<option value="4">特急(崩溃)</option>
+					</select>
+					<span class="add-on" style="margin-left:10px;">分类</span>
+					<select id="from" name="from" class="span1" style="width: 100px">
+						<option value="">请选择</option>
+						<option value="0">我发布的</option>
+						<option value="1">我接收的</option>
+					</select>
+					<span class="add-on" style="margin-left:10px;">发布者</span>
+					<input type="text" name="releasedBy" id="releasedBy" style="width: 80px" placeholder="发布者"> 
+					<span class="add-on" style="margin-left:5px;">时间</span>
+					<input type="text"  id="startTime" name="startTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+					至
+					<input type="text" name="endTime" id="endTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startTime\') }'}) ">
+
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style=" float:right;"> 查询</button>
+				
+			</div>
+			
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="t_msg"></table>
+				<div id="t_mas_page"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	var aipUrl = getUrlPath();
+	var showType=0;
+	var lastReadMessageTime;
+	//当前登录用户id  
+	var currUserId = null;
+	var currUsername = null;
+	var gradeClasses = ['text-info', 'text-primary', 'text-warning', 'text-danger'];
+	var grades = [
+	              ['一般', '平急', '加急', '特急'],
+	              ['一般', '警告', '严重', '崩溃']
+	            ];
+	
+	function loadGrid_msg() {
+		$("#t_msg").jqGrid(
+			{
+				url : aipUrl+'/message',
+				datatype : "json",//页面加载的时候不显示数据
+				multiselect:false,
+				colNames : [ 'id','标识','消息类型','等级','标题','发布者','发布时间','操作'],
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+							 {name : 'newFlag',index : 'newFlag',formatter:newFlagFormatter,width : 60,align : "center"},
+							 {name : 'type',index : 'type',formatter:typeFormatter,width : 100,align : "center"},
+				             {name : 'grade',index : 'grade',formatter:gradeFormatter,width : 150,align : "center"},
+				             {name : 'title',index : 'title',width : 150,align : "center"},
+				             {name : 'releasedBy',index : 'releasedBy',width : 220,align : "center"},
+				             {name : 'createdAt',index : 'createdAt',formatter:timeFormatter,width : 200,align:"center"},
+				             {name : 'nofile',width : 150,sortable:false,align : "center",formatter:operateFormatter}
+
+				          ],
+				pager : '#t_mas_page',
+		        rowNum: 15, 
+		        rowList: [10, 20, 30] 
+			});
+	}
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		getUserinfo();
+		loadGrid_msg();
+		$(window).resize(function() {
+	        $("#t_msg").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+	
+   function getUserinfo(){
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : aipUrl+"/userInfo",
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				currUserId = data.id;
+				currUsername = data.username;
+				lastReadMessageTime=data.lastReadMessageTime;
+			}
+		});
+   }
+
+	function operateFormatter(data, options, rowObject) {
+        var link = '<a href="javascript:void(0)" style="color:blue" onclick="msgDetail(\'' + rowObject.id + '\',\'' + rowObject.createdAt + '\')">详情</a>';
+        if (currUsername === rowObject.releasedBy) {
+          link += '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="updateMsg(\'' + rowObject.id + '\')">修改</a>' +
+            '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="remove(\'' + rowObject.id + '\')">删除';
+        }
+        return link; 
+	}
+	function newFlagFormatter(cellvalue, options, rowObject) {
+		var createAt=rowObject.createdAt;
+        if (lastReadMessageTime<createAt) {
+        	return '<i class="fa fa-bell text-warning"></i><span class="font-s12">New</span>'
+         }else {
+       	   return '';
+         }
+	}
+	function typeFormatter(cellvalue, options, rowObject) {
+		var typeStr = '';
+        if (cellvalue === 0) {
+        	typeStr = '消息';
+          } else if (cellvalue === 1) {
+        	  typeStr = '异常';
+          }else {
+        	  typeStr = '未知类型';
+          }
+        return typeStr;
+	}
+	
+	function gradeFormatter(data, options, rowObject) {
+        var ret = '', gradeClass;
+        if (data > 4 || data < 1) {
+          ret = '未知等级';
+          gradeClass = 'text-muted';
+        } else {
+          gradeClass = gradeClasses[data - 1];
+          if (rowObject.type > 1 || rowObject.type < 0) {
+            ret = grades[0][data - 1];
+          } else {
+            ret = grades[rowObject.type][data - 1];
+          }
+        }
+        return '<span class="' + gradeClass + '">' + ret + '</span>';
+	}
+	
+	function timeFormatter(cellvalue, options, rowObject) {
+		var unixTimestamp = new Date(cellvalue*1000) ;
+		return unixTimestamp.toLocaleString();	
+	}
+	
+   Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+       return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+   };
+
+	//消息详情
+	function msgDetail(id,createdAt){
+		if(createdAt>lastReadMessageTime){
+			$.ajax({
+				type : "GET",
+				url : aipUrl+'/message/time?noCache='+new Date().getTime(),
+				data : {},
+				dataType : "json",
+				contentType:"application/json",
+				success : function(retdata) {
+					getUserinfo();
+					doFresh();
+					top.getMessageStatus(lastReadMessageTime);
+				}
+			});
+		}
+		var index = parent.layer.open({
+			title:'消息详情',
+			type: 2,
+			content: '../../module/messageAndException/msg-detail-content.html?messageId='+id+'&noCache='+new Date().getTime(),
+			area: ['55%', '85%'],
+			btn: ['关闭'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+				window.parent.layer.close(index);
+			}
+		});
+	}
+	
+	   //修改信息
+	   function showUpdate(id) {
+		
+       }
+	   //删除信息
+	   function remove(id) {
+			var ids = [];
+			ids.push(id);
+			layer.confirm('操作不可恢复，确定要删除此消息吗？', {
+				  btn: ['确定','取消']
+			}, function(){
+				$.ajax({
+					type : "DELETE",
+					url : aipUrl+'/message?noCache='+new Date().getTime(),
+					data : JSON.stringify(ids),
+					dataType : "json",
+					contentType:"application/json",
+					success : function(retdata) {
+						layer.msg('删除消息成功！', {icon: 1});
+						doFresh();
+					},
+					error : function(xmlhttp,textStatus,errorThrown){
+						var o = JSON.parse(xmlhttp.responseText);
+						layer.msg(o.message, {icon: 5});
+					}
+				});
+			});		
+       }
+
+	    //发布消息
+	   function releaseMsg(){		        
+			var index = window.layer.open({
+				title:showType == 0?'发布消息':'修改消息',
+				type: 2,  
+				content: '../../module/messageAndException/message-add-update.html?noCache='+new Date().getTime(),
+				area: ['550px', '600px'],
+				btn: ['保存','关闭'], //底部按钮区域
+			 	yes: function(index,layero){  //第一个按钮的事件
+					var res = window["layui-layer-iframe" + index].getData();
+			 		res = JSON.parse(res);
+			 		//console.log(res);
+			 		if(res.type ==null ||res.grade ==null || res.content =='' || res.title ==''){
+			 			layer.msg('前四项不能为空！',{icon:5});
+			 			return;
+			 		}
+ 			        if (!res.users.length && !res.messageDepartments.length) {
+				          layer.msg('请至少选择一种接收者(用户、部门角色)！',{icon:5});
+				          return;
+				     }
+ 			      	 res.updatedBy = currUserId;
+	 			    $.ajax({
+	 	       			type : "POST",
+	 	       			url : aipUrl + '/message?noCache='+new Date().getTime(),
+	 	       			dataType : "json",
+	 	       			data:'[' + JSON.stringify(res) + ']',
+	 	       			contentType: "application/json; charset=utf-8",
+	 	       			success : function(retdata) {
+	 	       				layer.close(index);
+	 	       				layer.msg('消息发布成功！', {icon: 1});
+	 	       				doFresh(); 
+	 	       			},
+	 	       			error : function(xmlhttp,textStatus,errorThrown){
+	 	       				var o = JSON.parse(xmlhttp.responseText);
+	 	       				window.parent.layer.close(index);
+	 	       				layer.msg(o.message, {icon: 5});
+	 	       			}
+	 	       		}); 
+	            }
+			});
+	   }
+	    
+	    //修改消息
+	    function updateMsg(msgId) {
+			var index = window.layer.open({
+				title:showType == 0?'发布消息':'修改消息',
+				type: 2,  
+				content: '../../module/messageAndException/message-add-update.html?msgId='+msgId+'&noCache='+new Date().getTime(),
+				area: ['550px', '600px'],
+				btn: ['保存','关闭'], //底部按钮区域
+			 	yes: function(index,layero){  //第一个按钮的事件
+					var res = window["layui-layer-iframe" + index].getData();
+			 		res = JSON.parse(res);
+			 		//console.log(res);
+			 		if(res.type ==null ||res.grade ==null || res.content =='' || res.title ==''){
+			 			layer.msg('前四项不能为空！',{icon:5});
+			 			return;
+			 		}
+ 			        if (!res.users.length && !res.messageDepartments.length) {
+				          layer.msg('请至少选择一种接收者(用户、部门角色)！',{icon:5});
+				          return;
+				     }
+ 			      	 res.updatedBy = currUserId;
+	 			    $.ajax({
+	 	       			type : "POST",
+	 	       			url : aipUrl + '/message?noCache='+new Date().getTime(),
+	 	       			dataType : "json",
+	 	       			data:'[' + JSON.stringify(res) + ']',
+	 	       			contentType: "application/json; charset=utf-8",
+	 	       			success : function(retdata) {
+	 	       				layer.close(index);
+	 	       				layer.msg('消息修改成功！', {icon: 1});
+	 	       				doFresh(); 
+	 	       			},
+	 	       			error : function(xmlhttp,textStatus,errorThrown){
+	 	       				var o = JSON.parse(xmlhttp.responseText);
+	 	       				window.parent.layer.close(index);
+	 	       				layer.msg(o.message, {icon: 5});
+	 	       			}
+	 	       		}); 
+	            }
+			});
+	      }
+	   
+	   
+		function doFresh() {
+			$("#t_msg").jqGrid('setGridParam', {
+				page : 1,
+				postData : {}
+			}).trigger("reloadGrid");
+		}
+	
+	   function search(){
+		   var postData = $('#t_msg').jqGrid("getGridParam", "postData");
+           $.each(postData, function (k, v) {
+               delete postData[k];
+           });
+		   var formData = getFormData("search_form");
+		   var stime=new Date(Date.parse(formData.startTime.replace(/-/g,"/"))).getTime()/1000;
+		   var etime=new Date(Date.parse(formData.endTime.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+		   var queryData={};
+		   if(formData.type!=""){
+			   queryData['type']=formData.type;
+		   }
+		   if(formData.grade!=""){
+			   queryData['grade']=formData.grade;
+		   }
+		   if(formData.from!=""){
+			   queryData['from']=formData.from;
+		   }
+		   if(formData.releasedBy!=""){
+			   queryData['releasedBy']=formData.releasedBy;
+		   }
+		   if(formData.startTime != ""){
+			   queryData['startTime']=stime;
+		   }
+		   if(formData.endTime!=""){
+			   queryData['endTime']=etime;
+		   }
+
+		   
+	 	 $("#t_msg").jqGrid('setGridParam', {
+				page : 1,
+				postData :queryData
+			}).trigger("reloadGrid"); 
+	   }
+</script>
+
+</html>

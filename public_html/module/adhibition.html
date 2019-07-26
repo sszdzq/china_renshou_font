@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>应用系统管理</title>
+
+  	<link rel="stylesheet" href="../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../shared/js/jquery.extend.js" type="text/javascript"></script>
+	    <script src="../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../shared/plugins/utils.js" type="text/javascript"></script>	
+	    
+	    <script src="../shared/plugins/utils.js" type="text/javascript"></script>
+	   <style type="text/css">
+		.row {
+		    margin: 10px;
+		    }
+		    ::-webkit-scrollbar-thumb {
+		    background: #d9d9d9;
+		    cursor: pointer;
+		}		
+		</style>
+	</head>
+	<body>
+	<div class="pagecontent" id="divcontent2">
+		<div class="row">
+		    <div class="col-sm-12">
+		        <div class="page-title page-title-border clearfix">
+		            <button class="btn btn-primary pull-right margin-left" onclick="openEdit_edit()">添加系统</button>
+		         </div>
+		    </div>
+		</div>
+		<div class="middleLayer" style="margin:50px 0px 0px 0px;">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars" align="left" style="margin-top:5px">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on">系统编号</span>
+					<input type="text" name="sysNo" id="sysNo" style="width: 80px" placeholder="请输入..."> 
+					<span class="add-on">系统名称</span>
+					<input type="text" name="name"  id="name" style="width: 80px" placeholder="请输入..."/>
+					<span class="add-on">时间</span>
+					
+					<input type="text"  id="createdAtBegin" name="createdAtBegin" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',maxDate: '#F{$dp.$D(\'createdAtEnd\')}' }) ">
+					至
+					<input type="text" name="createdAtEnd" id="createdAtEnd" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'createdAtBegin\') }'}) ">
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style="float:right;margin-right: 15px"> 查询</button>
+					</div>
+			
+			<!-- 页面主内容 -->	
+			<div class="gridcontent" style="margin-top:5px">
+				<table id="adhibition"></table>
+				<div id="adhibition_page"></div>
+			</div>
+		</div>
+	 </div>
+	</body>
+<script type="text/javascript">
+var urlPath=getUrlPath();
+
+function loadGrid_adhibition() {
+	$("#adhibition").jqGrid(
+		{
+			url : urlPath+'/adhs?noCache='+new Date().getTime(),
+			datatype : "json",//页面加载的时候不显示数据
+			colNames : ['系统id','系统编号','系统名','系统IP','创建人','创建时间','操作'],
+			colModel : [ 
+						 {name : 'id',index : 'id',hidden:true},
+						 {name : 'sysNo',index : 'sysNo',width : 100,align:"center"},
+						 {name : 'name',index : 'name',width : 200,align : "center"/* ,formatter:detialFormatter */},
+			             {name : 'ipAddress',index : 'ipAddress',width : 150,align : "center"},
+			             {name : 'uname',index : 'uname',width : 150,align : "center"},
+			             {name : 'createdAt',index : 'createdAt',formatter:timeFormatter,width : 200,align:"center"},
+			             {name : '',index : '',width : 100,align:"center",formatter:opFormatter},
+			            ], 
+						multiselect: false,
+						 rowNum : 10,
+						 rowList : [ 10, 15,30 ],
+			pager : '#adhibition_page'
+		});
+	}
+
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid_adhibition();
+		$(window).resize(function() {
+	        $("#adhibition").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+    		
+	   function search(){
+		   //解决postData参数值累加问题，首先清空postData
+		    var postData = $('#adhibition').jqGrid("getGridParam", "postData");
+            $.each(postData, function (k, v) {
+                delete postData[k];
+            });                    
+		   var formData = getFormData("search_form");
+		   var data={};
+		   if(formData.sysNo!=""){
+			   data['sysNo']=formData.sysNo;
+		   }
+		   if(formData.name!=""){
+			   data['name']=formData.name;
+		   }
+		   if(formData.createdAtBegin!=""){
+			   data['createdAtBegin']=new Date(Date.parse(formData.createdAtBegin.replace(/-/g,"/"))).getTime()/1000;
+			   //data['createdAtBegin']=new Date(formData.createdAtBegin).getTime()/1000;
+		   }
+		   if(formData.createdAtEnd!=""){
+			   data['createdAtEnd']=new Date(Date.parse(formData.createdAtEnd.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+			   //data['createdAtEnd']=new Date(formData.createdAtEnd).getTime()/1000;
+		   }
+	 	 $("#adhibition").jqGrid('setGridParam', {
+				page : 1,
+				postData :data
+			}).trigger("reloadGrid"); 
+	   }
+	
+	   /* function search(){
+		var data=new Object();
+		data.lowerLevel="false";
+		if($("#createdAtBegin").val()!=""){
+			data[createdAtBegin]=("#createdAtBegin").val();
+		}
+		if($("#createdAtEnd").val()!=""){
+			data[createdAtBegin]=("#createdAtEnd").val();
+		}
+		
+		if($("#name").val()!=""){
+			data[name]=("#name").val();
+		}
+		$("#adhibition").jqGrid('setGridParam',{	
+			postData: JSON.stringify(data),
+			datatype : "json"
+		}).trigger("reloadGrid");
+	} */
+	   
+	function timeFormatter(cellvalue, options, rowObject) {
+		var unixTimestamp = new Date(cellvalue*1000) ;
+		return unixTimestamp.toLocaleString();	
+	}
+	
+	function opFormatter(cellvalue, options, rowObject){
+		return "<a style=\"color:blue\" href=\"javascript:openEdit_update('"+rowObject.id+"');\">修改</a>"+"<span style='margin-left: 7px;'>|<span style='margin-left: 7px;'> "+"<a style=\"color:blue\" href=\"javascript:delAdhibition('"+rowObject.id+"');\">删除</a>";
+	}
+	
+	
+	function detialFormatter(cellvalue, options, rowObject){
+		return "<a style=\"color:blue\" href=\"javascript:openEdit_detial('"+rowObject.id+"');\">"+cellvalue+"</a>";
+	}
+	
+	function openEdit_detial(id){
+		var index = window.layer.open({
+			title:'应用系统详情',
+			type: 2,  
+			content: 'adhibition/adhibition-add.html?id='+id+'&type=detial',
+			area: ['450px', '500px'],
+			btn: ['保存','关闭'], //底部按钮区域
+		});
+	}
+	
+	function openEdit_edit(flag,id){
+		var index = window.layer.open({
+			title:'添加应用系统',
+			type: 2,  
+			content: 'adhibition/adhibition-add.html?noCache='+new Date().getTime(),
+			area: ['450px', '500px'],
+			btn: ['保存','关闭'], //底部按钮区域
+		 	yes: function(index,layero){  //第一个按钮的事件
+				var res = window["layui-layer-iframe" + index].getData();
+				var array=new Array();
+            	if(res!=null){  //页面验证成功
+            		array.push(res);
+            		var data=JSON.stringify(array);
+           			$.ajax({
+           				type : "POST",
+           				url :  urlPath+'/adh',
+           				contentType:"application/json",
+           				data : data,
+           				dataType : "json",
+           				success : function(retdata) {
+           					if(retdata){
+                   				//刷新jqGrid
+           						layer.msg('操作成功！');
+								//刷新  重新加载数据
+		   						doFresh();
+		   						layer.close(index);	
+               				}
+           				},
+           				error: function(xmlhttp,textStatus,errorThrown){
+    		 				var o = JSON.parse(xmlhttp.responseText);
+    		 				layer.msg(o.message, {icon: 5});
+    		 			}
+           			});
+           		}
+            }
+		});
+	}
+	
+	function openEdit_update(id){
+		var index = window.layer.open({
+			title:'修改应用系统',
+			type: 2,  
+			content: 'adhibition/adhibition-add.html?id='+id+'&noCache='+new Date().getTime(),
+			area: ['450px', '500px'],
+			btn: ['保存','关闭'], //底部按钮区域
+		 	yes: function(index,layero){  //第一个按钮的事件
+				var res = window["layui-layer-iframe" + index].getData();
+				var array=new Array();
+            	if(res!=null){  //页面验证成功
+            		if(res.password=='$**********$'){
+        		 		res.password='';
+        		 	}
+            		array.push(res);
+            		var data=JSON.stringify(array);
+           			$.ajax({
+           				type : "put",
+           				url :  urlPath+'/adh?noCache='+new Date().getTime(),
+           				contentType:"application/json",
+           				data : data,
+           				dataType : "json",
+           				success : function(retdata) {
+           					if(retdata){
+                   				//刷新jqGrid
+           						layer.msg('操作成功！');
+								//刷新  重新加载数据
+		   						doFresh();
+		   						layer.close(index);	
+               				}
+           				},
+           				error: function(xmlhttp,textStatus,errorThrown){
+    		 				var o = JSON.parse(xmlhttp.responseText);
+    		 				layer.msg(o.message, {icon: 5});
+    		 			}
+           			});
+           		}
+            }
+		});
+	}
+	
+	function doFresh(){
+		 $("#adhibition").jqGrid('setGridParam',{									 
+				postData:{}
+			}).trigger("reloadGrid"); 
+	}
+		
+	function delAdhibition(aId){
+		var id=new Array();
+		id.push(aId);
+		var res=JSON.stringify(id);
+		//删除提示
+		layer.alert('确定要删除此数据？', {
+			  time: 0, //不自动关闭,
+			  btn: ['确定', '关闭'],
+			  yes: function(index){
+				  $.ajax({
+						type : "delete",
+						url : urlPath+"/adh?noCache="+new Date().getTime(),
+						data : res,
+						contentType:"application/json",
+						dataType : "json",
+						success : function(retdata) {
+							if(retdata){
+								layer.msg('操作成功！');
+								//刷新  重新加载数据
+		   						search();
+							}
+						},
+						error: function(xmlhttp,textStatus,errorThrown){
+    		 				var o = JSON.parse(xmlhttp.responseText);
+    		 				layer.msg(o.message, {icon: 5});
+    		 			}
+					});
+			  }
+		});
+ 
+	}
+
+	
+   Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+
+       return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+   };
+   
+  
+</script>
+</html>

@@ -1,0 +1,265 @@
+<!doctype html>
+<html>
+<head>
+<title>角色选择</title>
+<meta charset="utf-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+       <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+       <script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	 
+
+<!-- xuyao -->
+  <link href="../../shared/css/base-select.css" rel="stylesheet" type="text/css" />
+   <link href="../../shared/css/big-window.css" rel="stylesheet" type="text/css" />
+
+   <!--  <script src="position.data.min.js" type="text/javascript"></script> -->
+    <script src="../../shared/js/jquery.position.select1.js" type="text/javascript"></script>
+
+</head>
+<body>
+ <br />
+  <textarea id="result" cols="80" rows="10"></textarea>
+    <div id="positionDiv">
+  
+    </div>
+    <!-- 职位-->
+    <div class="big-window bg-f0" id="position">
+        <div class="title">
+            <b>选择职位</b><span class="tip">(最多选择5项)</span> <a href="#" onclick="javascript:closeposition()">
+            </a>
+        </div>
+    <!--     <div class="sele-tag">
+            <dl>
+                <dt>已选择：</dt>
+                <dd>
+                    <a href="#">已选择的职位1</a><a href="#">已选择的职已选择的职位位2</a><a href="#">已选择已选择的职位的职位3</a><a
+                        href="#">已已选择的职位选择的职位4</a><a href="#">已已选择的职位选择的职位5</a><a href="#" class="btn">确 定</a>
+                </dd>
+            </dl>
+        </div> -->
+        <div class="position-menu">
+            <div class="menu">
+       
+            </div>
+            <div class="sub-menu">
+        
+            </div>
+        </div>
+      
+    </div>
+ 
+</body>
+<script type="text/javascript">
+var aipUrl = getUrlPath();
+var positiondata = "";
+var backArr=new Array();
+var secondMenu=null;
+var treeData;
+var nodeData;
+	//页面加载函数
+	$(function(){
+		//查询左侧数据
+		$.ajax({
+			type : "GET",
+			data :{},
+		url : aipUrl+"/dictionary?key=authority_modules",
+	
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				treeData=data;
+			} 
+		});
+	
+		
+		//查询右侧子数据
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : aipUrl+"/operation",
+		//	contentType:"application/json",
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				nodeData=data;
+				
+			} 
+		});
+
+		var jsonData="{'positionlist': [";
+		//遍历左侧树的数据
+		for(var i=0;i<treeData.length;i++){
+			jsonData+="{'p': '"+treeData[i].value+"','c': [{'n': '"+treeData[i].value+"','a': [" ; 
+			//遍历节点数据
+			for(var j=0;j<nodeData.length;j++){
+					//内循环最后一次判断
+				if(j==nodeData.length-1){
+					//关联
+					if(nodeData[j].module==treeData[i].key){
+						jsonData+="{'s': '"+nodeData[j].name+"','id': "+nodeData[j].id+"}	";
+					}
+					
+				}else{
+					if(nodeData[j].module==treeData[i].key){
+						jsonData+="{'s': '"+nodeData[j].name+"','id': "+nodeData[j].id+"},";
+					}
+					
+				}
+				
+			}
+			jsonData+="]}]";
+			//最后一次判断
+			if(i!=treeData.length-1){
+				jsonData+="},";
+			}else{
+				jsonData+="	}";
+			}
+			
+			
+		}
+		jsonData+="]}";
+		/* //console.log(111);
+	 //console.log(jsonData);  */
+		 positiondata=jsonData;
+	//	 positiondata={};
+		
+	
+	
+		 backArr=getUrlParms("back").split(",");
+
+		   $("#result").positionSelect({
+               containerId: "positionDiv",
+               className: "big-window",
+               nameId: "result",
+               
+           });
+		   if(backArr.length>0){
+			   
+			   for(var i=0;i<backArr.length;i++){
+				 /*   //console.log(33);
+				   //console.log(backArr[i]);
+				   //console.log(44); */
+				   ////console.log(backArr[i]);
+				   if(getText(backArr[i])!=""){
+					   $("#ddResult_positionDiv #btnSure_positionDiv").before("<a href='#' id='c_item_"+backArr[i]+"' value='"+backArr[i]+"'>"+getText(backArr[i])+"</a>");	  
+				   }
+					 $("#ddResult_positionDiv a").bind("click", function () {
+			         //	//console.log(22557758);
+			            var rid = $(this).attr("id");
+			            if (rid != "btnSure_" + positionDiv) {
+			                var sid = rid.substr(2, rid.length);
+			                $(this).remove();
+			                secondMenu.find("a[id='" + sid + "']").removeClass("sele");
+			             //   backArr.pop();
+			            }
+			        });  
+			   }
+				
+		   }
+	
+				
+	})
+	//获取角色数据
+
+	function getRoleData(){
+		
+		var role1=$(" .right-box .item");
+		var itemValues = new Array();
+		role1.each(function(){
+			var itemValue = {};
+			//改造
+		itemValue['id'] = $(this).attr('data-id');
+		itemValue['name'] = $(this).text();
+		////console.log(itemValue);
+			//改造结束
+			itemValues.push(itemValue);
+		});
+		return itemValues;
+	}
+	function getdata(){
+	//	//console.log(222);
+		var itemAttr=new Array();
+		var dataAttr=new Array();
+		  var selectedItems =$("#ddResult_positionDiv a[id!='btnSure_positionDiv']");
+		  var results = "";
+          $.each(selectedItems, function (i, item) {
+        	  var itemValue = {};
+        	  
+              results += $.trim($(item).html()) + ",";
+              itemValue['id']=$(item).attr("value");
+              itemValue['name']=$.trim($(item).html());
+              itemAttr.push(itemValue);
+            //遍历节点数据
+  			for(var j=0;j<nodeData.length;j++){
+  				
+  					//关联
+  					if(nodeData[j].id==$(item).attr("value")){
+  						dataAttr.push(nodeData[j])
+  					}
+  			}
+          });
+          if (results.length > 0) {
+              results = results.substr(0, results.length - 1);
+          }
+    
+     return JSON.stringify(dataAttr);
+	}
+	 //取地址栏参数
+	 function getUrlParms(name){
+		   var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		   var r = window.location.search.substr(1).match(reg);
+		   if(r!=null)
+		   return unescape(r[2]);
+		   return null;
+		   } 
+	function getText(id){
+		var text="";
+	 	var data = eval("(" + positiondata + ")");
+		 $.each(data.positionlist, function (i, obj) {   // 循环第一级
+              $.each(data.positionlist[i].c, function (j, item) {// 循环第二级
+                  $.each(data.positionlist[i].c[j].a, function (m, dist) {// 循环第三级
+                  //	//console.log(dist.s+dist.id);
+             //     //console.log(id);
+              if(typeof(dist)!="undefined"){
+            			if(dist.id==id){
+            				text=dist.s;
+            			}
+              }
+                  });
+              });
+          }); 
+		
+		return text;
+	}
+</script>
+
+</html>

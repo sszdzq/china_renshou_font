@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户管理</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+    <!-- jqgrid样式 -->
+    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+    
+    
+    <!--javascript引用部分 -->
+   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+   
+	<!-- jqgridjs -->
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+	
+	<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../../shared/layer/layer.js" type="text/javascript"></script>	    
+    <!-- my97 DatePicker  -->
+    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+    <script src="../../shared/ocx/makeseal.js"  type="text/javascript" ></script>
+	<style type="text/css">
+	.ui-jqgrid tr.jqgrow td {
+		white-space: normal !important;
+		word-break:break-all;
+	}
+	</style>		
+</head>
+<body>
+	<div class="pagecontent" >
+		<div class="middleLayer">
+			<div id="toolbars" class="toolbars">
+				<button type="button" onclick="deleteServRule()" class="btn btn-primary" style=" float:left;">删除设置</button>
+			</div>		
+			<div class="gridcontent" id="gridcontent">
+				<table id="t_main_service"></table>
+				<div id="t_main_page"></div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+
+<script type="text/javascript">
+	var apiUrl = getUrlPath();
+	var serviceNo = null;
+
+	function loadGrid_main() {
+	   var initData={};
+	   initData['servNo']=serviceNo;
+		$("#t_main_service").jqGrid(
+			{
+				url : apiUrl+'/getServRuleList',
+				datatype : "json",//页面加载的时候不显示数据
+				multiselect:true,
+				postData:initData,
+				colNames : [ 'id','业务编码','印章名称','批量盖章类型','印章盖章详细','操作'],
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+							 {name : 'service',index : 'service',width : 100,hidden:true},
+							 {name : 'sealname',index : 'sealname',sortable:false,width : 120,align : "center"},
+							 {name : 'type',index : 'type',width : 150,formatter:typeFormatter,align : "left"},
+							 {name : 'seal',index : 'seal',width : 850,formatter:sealFormatter,align : "center"},
+				             {name : 'nofile',width : 80,sortable:false,align : "center",formatter:operateFormatter,hidden:true}
+				          ],
+				pager : '#t_main_page',
+		        rowNum: 10, 
+		        rowList: [10,15, 20, 30],
+				pagerpos: 'right',
+				recordpos : 'left'
+			});
+	}
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		serviceNo = GetQueryString("servNo");
+		loadGrid_main();
+		$(window).resize(function() {
+	        $("#t_main_service").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+	
+	function GetQueryString(name){
+	    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if(r!=null)return  decodeURI(r[2]); return null;
+	}
+	   
+	function doFresh() {
+	   var initData={};
+	   initData['servNo']=serviceNo;
+		$("#t_main_service").jqGrid('setGridParam', {
+			page:1,
+			postData : initData
+		}).trigger("reloadGrid");
+	}
+	
+	function typeFormatter(cellvalue, options, rowObject) {
+		var typeStr = '';
+		if(cellvalue=="1"){
+			typeStr="类型一（绝对坐标）";
+			}else
+			if(cellvalue=="2"){
+				typeStr="类型二（书签）";
+			}else
+			if(cellvalue=="3"){
+				typeStr="类型三（骑缝章）";
+			}else
+			if(cellvalue=="4"){
+				typeStr="类型四（文字-覆盖）";
+			}else
+			if(cellvalue=="5"){
+				typeStr="类型五（文字-后面）";
+			}else
+			if(cellvalue=="6"){
+				typeStr="类型六（多页绝对位置）";
+			}else
+			if(cellvalue=="7"){
+				typeStr="类型七（多页骑缝章）";
+			}
+
+	    return typeStr;
+	}
+	
+	function sealFormatter(cellvalue, options, rowObject) {
+		var basicSeal = rowObject.seal; 
+		basicSeal = basicSeal.substr(0, basicSeal.length - 1); 
+		var sealArr = basicSeal.split(",");
+		var sealStr = '';
+		if(rowObject.type == "1"){
+			sealStr = '第'+sealArr[2]+'页,'+'横向'+sealArr[3]+'，纵向'+sealArr[4];
+		}else if(rowObject.type == "2"){
+			sealStr = '书签名：'+sealArr[2];
+		}else if(rowObject.type == "3"){
+			if(sealArr[3] == 3 || sealArr[3] == 13){
+				sealStr = '骑缝章模式：右骑缝，加盖页面位置：'+sealArr[2]+'。起始页：第'+sealArr[4]+'页，结束页：第'+sealArr[5]+'页';				
+			}
+		}else if(rowObject.type == "4"){
+			sealStr = '盖章文字：'+sealArr[2]+'。起始页：第'+sealArr[3]+'页，结束页：第'+sealArr[4]+'页';				
+		}else if(rowObject.type == "5"){
+			sealStr = '盖章文字：'+sealArr[2]+'。起始页：第'+sealArr[3]+'页，结束页：第'+sealArr[4]+'页';				
+		}else if(rowObject.type == "6"){
+			var modelt = '';
+			if(sealArr[2] == 1){
+				modelt = '偶数'
+			}else if(sealArr[2] == 2){
+				modelt = '奇数';
+			}else if(sealArr[2] == 3){
+				modelt = '每隔'+sealArr[3];
+			}
+			sealStr = '类型：'+modelt+'页，横向'+sealArr[4]+'，纵向'+sealArr[5];				
+		}else if(rowObject.type == "7"){
+			if(sealArr[2] == 3 || sealArr[2] == 13){
+				sealStr = '骑缝章模式：右骑缝，每'+sealArr[3]+'页加盖一个印章，加盖页面位置：'+sealArr[4]+'。起始页：第'+sealArr[5]+'页，结束页：第'+sealArr[6]+'页';;			
+			}				
+		}
+
+	    return sealStr;
+	}
+
+
+
+
+	function operateFormatter(data, options, rowObject) {
+	    var link = '<a href="javascript:void(0)" style="color:blue" onclick="remove(\'' + rowObject.id + '\')">删除';
+	    return link; 
+	}
+	
+
+    
+	   //删除盖章规则
+	   function deleteServRule() {
+			var selectrows = $("#t_main_service").jqGrid('getGridParam','selarrrow');
+ 			if(selectrows[0] == null){
+ 				top.layer.alert("请选择要删除的数据");
+ 				return;
+ 			}
+			var ids = [];
+ 			for(var i=0;i<selectrows.length;i++){
+ 				var row = $("#t_main_service").jqGrid('getRowData', selectrows[i]); //获取此行数据
+ 				ids[i] = row.id;
+ 			}
+			top.layer.confirm('操作不可恢复，确定要删除吗？', {
+				  btn: ['确定','取消']
+			}, function(){
+				$.ajax({
+					type : "POST",
+					url : apiUrl+'/deleteServSeal?noCache='+new Date().getTime(),
+					data : JSON.stringify(ids),
+					dataType : "json",
+					contentType:"application/json",
+					success : function(retdata) {
+						top.layer.msg('删除成功！', {icon: 1});
+						doFresh();
+					},
+					error : function(xmlhttp,textStatus,errorThrown){
+						top.layer.msg('出现未知异常,删除失败！', {icon: 5});
+					}
+				});
+			});		
+    }
+</script>
+
+</html>

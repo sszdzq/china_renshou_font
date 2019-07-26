@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<title>用户管理</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	   <!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+<style type="text/css">
+.module-viewer-header {
+    margin-top: 10px;
+    margin-bottom: -1px;
+    height: 40px;
+    background: #f5f6fa;
+    line-height: 38px;
+    border: 1px solid #e1e6eb;
+    position: relative;
+    border-left: 4px solid #6d7781;
+}
+
+.module-viewer-header .module-viewer-title {
+    font-size: 16px;
+    color: #333;
+    display: inline-block;
+    margin-left: 16px;
+}
+</style>
+
+
+		
+</head>
+<body>
+	<div class="module-viewer-header">
+        <span class="module-viewer-title">设备信息</span>
+	</div>
+	<div  style="height:200px;border-right:1px solid #E9E9E9">
+		<table id="msgTable" border = "1">
+           <tbody>     
+           </tbody>
+        </table>
+	</div>
+</body>
+
+<script type="text/javascript">
+	var aipUrl = getUrlPath();
+	var grades = [
+             ['一般', '平急', '加急', '特急'],
+             ['一般', '警告', '严重', '崩溃']
+           ];
+	$(document).ready(function() {
+		var msgId = GetQueryString("messageId");
+		getMsgInfo(msgId);
+	});
+
+
+	function GetQueryString(name){
+	    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if(r!=null)return  decodeURI(r[2]); return null;
+	}
+	
+   function getMsgInfo(id){
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : aipUrl+"/message/"+id+"?noCache="+new Date().getTime(),
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				$("#msgTable tbody").append('<tr"><td width="143px" style="text-align:right;"><b>类型：</b></td><td>' +(data.type?"异常":"消息")+'</td></tr>');
+				$("#msgTable tbody").append('<tr"><td width="143px" style="text-align:right;"><b>等级：</b></td><td>' +(grades[data.type][data.grade - 1])+'</td></tr>');
+				$("#msgTable tbody").append('<tr"><td width="143px" style="text-align:right;"><b>标题：</b></td><td>' +(data.title)+'</td></tr>');
+				$("#msgTable tbody").append('<tr"><td width="143px" style="text-align:right;"><b>内容：</b></td><td>' +(data.content)+'</td></tr>');
+				$("#msgTable tbody").append('<tr"><td width="143px" style="text-align:right;"><b>发布者：</b></td><td>' +(data.releasedBy)+'</td></tr>');
+				$("#msgTable tbody").append('<tr"><td width="143px" style="text-align:right;"><b>发布时间：</b></td><td>' +(new Date(data.createdAt*1000).toLocaleString())+'</td></tr>');
+				$("#msgTable tbody").append('<tr"><td width="143px" style="text-align:right;"><b>接收用户：</b></td><td>' +(getConcatedStr('u', data.users))+'</td></tr>');
+				$("#msgTable tbody").append('<tr"><td width="143px" style="text-align:right;"><b>接收部门角色：</b></td><td>' +(data.messageDepartments.length ? ('<pre>' + getConcatedStr('d', data.messageDepartments) + '</pre>') : '')+'</td></tr>');
+			}
+		});
+   }
+   
+  	 function getConcatedStr(type, objects) {
+	      var ret = '', index;
+	      for (index = 0; index < objects.length; index++) {
+	        if (0 !== index) {
+	          ret += ',\n';
+	        }
+	        ret += type === 'u' ? objects[index].loginId : (objects[index].department.name + '-' + objects[index].role.name + (objects[index].type === 1 ? '(包含下级)' : ''));
+	      }
+	      return ret;
+	  }
+  	 
+     Date.prototype.toLocaleString = function() {
+  	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+  	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+  	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+  	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+  	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+       return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+     };
+
+</script>
+
+</html>

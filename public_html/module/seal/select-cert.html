@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户管理</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	   <!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+<style type="text/css">
+
+</style>	
+</head>
+<body>
+	<div class="pagecontent" id="divcontent2">
+		<div id="middleLayer" class="middleLayer">
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="t_certs"></table>
+				<div id="t_certs_page"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	var apiUrl = getUrlPath();
+	var certId = null;
+	
+	$(document).ready(function() {
+		var sealId = GetQueryString("sealId");
+		loadGrid_certs(sealId);
+		
+		var gridHeight=$("#middleLayer").height();
+		$("#t_certs").setGridHeight(gridHeight-60);
+		$("#t_certs").setGridWidth($(window).width()*0.99);
+	});
+	
+	function GetQueryString(name){
+	    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if(r!=null)return  decodeURI(r[2]); return null;
+	}
+	
+	
+	function loadGrid_certs() {
+		//var sealCert = {sealCert:'sealCert'};
+		$("#t_certs").jqGrid(
+			{
+				url : apiUrl + '/certs',
+				datatype : "json",//页面加载的时候不显示数据
+				postData:{sealCert:'sealCert',certQuerySize:5},
+				multiselect: true,
+				gridComplete: hideSelectAll,
+				colNames : [ 'id','证书名称','证书类型'],
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+				             {name : 'name',index : 'name',width : 250,align : "center"},
+				             {name : 'type',index : 'type',width : 250,formatter:typeFormatter,align : "center"},
+				          ],
+				rowNum : 10,
+				rowList : [ 10, 15,30 ],
+				pager : '#t_certs_page',
+				prmNames:{page:"page",rows:"size",sealCert:"sealCert"},
+			});
+	}
+	
+ 	function hideSelectAll() {  
+		//单选处理
+		var gridId="#t_certs".substring(1);
+		$("#cb_"+gridId).hide();//隐藏全选按钮
+ 	}
+
+	
+	function typeFormatter(cellvalue, options, rowObject) {
+		var typeStr = '';
+        if (cellvalue == 0) {
+        	typeStr = '服务器证书';
+          } else if (cellvalue == 1) {
+        	  typeStr = '加密机证书';
+          }
+        return typeStr;
+	}
+	
+	function getData(){
+        var rows = $("#t_certs").jqGrid('getGridParam', 'selarrrow');
+		return rows;
+	}
+</script>
+
+</html>

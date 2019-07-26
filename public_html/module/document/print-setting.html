@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+
+<title>文档打印设置</title>
+
+<link rel="stylesheet"
+	href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"
+	type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"
+	rel="stylesheet" />
+<link
+	href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css"
+	type="text/css" rel="stylesheet" />
+
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js"
+	type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js"
+	type="text/javascript"></script>
+<script type="text/javascript"
+	src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+<style type="text/css">
+.row {
+	margin-left: 10px;
+}
+</style>
+</head>
+<body>
+	<div class="pagecontent" id="divcontent2">
+			<div class="row">
+			    <div class="col-sm-12">
+			        <div class="page-title page-title-border clearfix" style="margin-top:5px">
+			            <button class="btn btn-primary pull-right margin-left" onclick="openEdit_edit()">添加设置</button>
+			        </div>
+			    </div>
+			</div>
+			<div class="toolbars">
+			<div class="middleLayer" style="margin: 35px 0px 0px 0px;">
+				<div class="middleLayer" controle="true">
+					<div style="padding: 0px 5px 0px 5px;" id="tab-content">
+						<ul id="tab_1" class="nav nav-tabs">
+							<li node-data="tab_mylog" class="active"
+								onclick="keyOptUrl('user')"><a
+								data-toggle="tab" href="#tab_mylog">用户打印份数控制</a></li>
+							<li id="jbsq" node-data="tab_departmentlog"
+								onclick="keyOptUrl('department')"><a
+								data-toggle="tab" href="#tab_departmentlog">部门打印份数控制</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 解决页尾超出范围 -->
+		<div style="display: block; height: 20px;margin:0px 0px 0px 0px;"></div>
+
+		<div class="gridcontent" >
+			<table id="systemlog"></table>
+			<div id="systemlog_page"></div>
+		</div>
+
+
+	</div>
+</body>
+
+<script type="text/javascript">
+	var urlPath = getUrlPath();
+	var doc_sn= getUrlParam('doc_sn');
+	var id= getUrlParam('id');
+	var optUrlPath = urlPath+"/documents_print_setting?type=0&doc_sn="+doc_sn+'&noCache='+new Date().getTime();
+	var names=['ID','总打印份数','已打印份数','用户','操作'];
+	var number=null;
+	function loadGrid_systemlog() {
+		$("#systemlog").jqGrid(
+			{
+				url : optUrlPath,
+				datatype : "json",//页面加载的时候不显示数据
+				colNames : names,
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+							 {name : 'print_number',index : 'print_number',width : 200,align : "center"},
+				             {name : 'current_number',index : 'current_number',width :200,align : "center"},
+				             {name : 'name',index : 'name',width : 200,align : "center"},
+				             {name : 'op',index : 'op',width : 200,align:"center",formatter : opFormatter},
+				         ],
+				multiselect: false,
+				rowNum : 20,
+				rowList : [20,30,40,50,100],
+				pager : '#systemlog_page'
+			});
+	}
+
+	$(document).ready(function() {
+		loadGrid_systemlog();
+		$(window).resize(function() {
+			$("#systemlog").jqGrid("autoSize"); 
+		}).trigger('resize');
+
+	});
+	
+	function refresh(){
+		$("#systemlog").GridUnload();
+		$("#systemlog").jqGrid(
+				{
+					url : optUrlPath,
+					datatype : "json",//页面加载的时候不显示数据
+					colNames : names,
+					colModel : [ 
+								 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+								 {name : 'print_number',index : 'print_number',width : 200,align : "center"},
+					             {name : 'current_number',index : 'current_number',width :200,align : "center"},
+					             {name : 'name',index : 'name',width : 200,align : "center"},
+					             {name : 'op',index : 'op',width : 200,align:"center",formatter : opFormatter},
+					         ],
+					multiselect: false,
+					rowNum : 20,
+					rowList : [20,30,40,50,100],
+					pager : '#systemlog_page'
+				});
+	/* 	$("#systemlog").jqGrid('setGridParam',{		
+			url : optUrlPath,
+			postData:{
+				
+			},
+			datatype : "json"
+		}).trigger("reloadGrid"); */
+		}
+	
+	function opFormatter(cellvalue, options, rowObject) {
+		return "<input type=\"text\" id=\""+rowObject.id+"1\" style=\"display: inline-block;width: 70px;heigth:20px;vertical-align: middle;\"></input>"
+		+"&nbsp;<a style=\"color:blue\" href=\"javascript:update('"+rowObject.id+"');\">修改打印份数</a>"
+	}
+
+	function update(id,val){
+		var number=$("#"+id+"1").val();
+		var arr=new Array();
+		var data={id:null,printNumber:null};
+		data.id=id;
+		data.printNumber=number;
+		arr.push(data);
+		var res=JSON.stringify(arr);
+		//var aa = JSON.stringify(data);
+		////console.log(res);
+		$.ajax({
+			type : "PUT",
+			url : urlPath+"/document_print_setting",
+			data :res,
+			contentType:"application/json",
+			dataType : "json",
+			success : function(retdata) {
+				if(retdata){
+					layer.msg('操作成功！');
+					//刷新  重新加载数据
+						refresh();
+				}
+			},
+			error: function(xmlhttp,textStatus,errorThrown){
+ 			 	var o = JSON.parse(xmlhttp.responseText);
+ 				layer.msg(o.message, {icon: 5}); 
+ 			}
+		});
+	}
+
+	function keyOptUrl(type) {
+		if(type=='user'){
+			names=['ID','总打印份数','已打印份数','用户','操作'];
+			optUrlPath=urlPath+'/documents_print_setting?type=0&doc_sn='+doc_sn+'&noCache='+new Date().getTime();
+		}else{
+			names=['ID','总打印份数','已打印份数','部门','操作'];
+			optUrlPath=urlPath+'/documents_print_setting?type=1&doc_sn='+doc_sn+'&noCache='+new Date().getTime();
+		}
+		refresh();
+	}	
+
+	   function getUrlParam(name) {  
+		   var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+		   var r = window.location.search.substr(1).match(reg);  //匹配目标参数  
+		   if (r != null) {
+		       return unescape(r[2]);  //返回参数值 
+		   } else {
+		       return null; 
+		   }
+	}
+	   
+	  function openEdit_edit(docSn){
+		  var index = window.parent.layer.open({
+				title:'设置打印份数',
+				type: 2,
+				content: '../document/print-add.html?docSn='+doc_sn+'&noCache='+new Date().getTime(),
+				area: ['450px', '500px'],
+				btn: ['保存','关闭'], //底部按钮区域
+			 	yes: function(index,layero){  //第一个按钮的事件
+					var res = window.parent["layui-layer-iframe" + index].getData();
+					//var array=new Array();
+	            	if(res!=null){  //页面验证成功
+	            		//array.push(res);
+	            		////console.log(res);
+	            		var data=JSON.stringify(res);
+	           			$.ajax({
+	           				type : "put",
+	           				url :  urlPath+'/document_print_setting?noCache='+new Date().getTime(),
+	           				contentType:"application/json",
+	           				data : data,
+	           				dataType : "json",
+	           				success : function(retdata) {
+	           					if(retdata){
+	                   				//刷新jqGrid
+	           						layer.msg('操作成功！');
+									//刷新  重新加载数据
+			   						refresh();
+			   						window.parent.layer.close(index);	
+	               				}
+	           				},
+	           				error: function(xmlhttp,textStatus,errorThrown){
+	    		 				var o = JSON.parse(xmlhttp.responseText);
+	    		 				window.parent.layer.msg(o.message, {icon: 5});
+	    		 			}
+	           			});
+	           		}
+	            }
+			});
+	  }
+</script>
+
+</html>

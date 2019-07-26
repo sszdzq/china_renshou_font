@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>权限管理</title>
+    <link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+    <!-- 		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+     -->		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+    <!-- jqgrid样式 -->
+    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet"/>
+    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet"/>
+    <!--  <link href="../../shared/jqgrid/css/ui.jqgrid-bootstrap-ui.css" type="text/css" rel="stylesheet"/>
+     <link href="../../shared/jqgrid/css/ui.jqgrid-bootstrap.css" type="text/css" rel="stylesheet"/>
+          -->
+    <!--javascript引用部分 -->
+    <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+    <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+    <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+    <!-- jqgridjs -->
+    <script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+
+    <script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+    <!-- my97 DatePicker  -->
+    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+
+    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+</head>
+<body>
+<div class="pagecontent" id="divcontent2">
+
+    <div class="middleLayer">
+        <!-- 工具条 -->
+        <div id="toolbars" class="toolbars">
+            <form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+                <span class="add-on" style="margin-left:5px;">权限名称</span>
+                <input type="text" name="name" id="name" style="width: 80px" placeholder="权限名称">
+                <select id="action">
+                    <option value="">请选择</option>
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+            </form>
+            <button type="button" onclick="addAuthority()" class="btn btn-primary btn-lg" style=" float:right;">添加权限</button>
+             <button type="button" onclick="search()" class="btn btn-success" style=" float:right;margin-left:5px;margin-right:5px"> 查询</button>
+        </div>
+        <!-- 页面主内容 -->
+        <div class="gridcontent">
+            <table id="authority"></table>
+            <div id="authority_page"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var urlPath=getUrlPath();
+    $.jgrid.defaults.styleUI = 'Bootstrap';
+    function loadGrid_authority() {
+        $("#authority").jqGrid(
+            {
+                url : urlPath+'/operations',
+                styleUI: 'Bootstrap',
+                datatype : "json",//页面加载的时候不显示数据
+                postData:{},
+                colNames : [ 'id','权限名称','控制器','类型','所属模块','操作'],
+                colModel : [
+                    {name : 'id',index : 'id',width : 100,key:true, hidden:true},
+                    {name : 'name',index : 'name',width : 300,align : "center"},
+                    {name : 'controller',index : 'controller',width : 200,align : "center"},
+                    {name : 'action',index : 'action',width : 100,align : "center"},
+                    {name : 'module',index : 'module',width : 100,align : "center", hidden:true},
+                    {name : 'operate',index : 'operate',width : 150,align : "center",formatter:opFormatter}
+                ],
+                pager : '#authority_page',
+                //	rowList : [ 1, 15,30 ],
+            });
+    }
+
+    //加载jqGrid
+    $(document).ready(function() {
+        $.jgrid.defaults.styleUI = 'Bootstrap';
+        loadGrid_authority();
+        $(window).resize(function() {
+            $("#authority").jqGrid("autoSize");
+        }).trigger('resize');
+
+    });
+
+    //查询按钮
+    function search(){
+        var postData = $('#authority').jqGrid("getGridParam", "postData");
+        $.each(postData, function (k, v) {
+            delete postData[k];
+        });
+        var formData = getFormData("search_form");
+        var data={};
+        if(formData.name!=""){
+            data['name']=formData.name;
+        }
+        if(formData.action!=""){
+            data['action']=formData.action;
+        }
+        $("#authority").jqGrid('setGridParam', {
+            page : 1,
+            postData :data
+        }).trigger("reloadGrid");
+    }
+
+    //刷新页面
+    function doFresh(){
+        var formDataColumn = getFormData("search_form");
+        $("#authority").jqGrid('setGridParam',{
+            postData:{}
+        }).trigger("reloadGrid");
+    }
+
+    function opFormatter(cellvalue, options, rowobj){
+        var updateOpt="<a href=\"javascript:updateOpt('"+rowobj.id+"','"+rowobj.name+"','"+rowobj.controller+"','"+rowobj.action+"','"+rowobj.module+"');\" style='color:blue'>修改</a>";
+        var deleteOpt="<a href=\"javascript:deleteOpt('"+rowobj.id+"');\" style='color:blue'>删除</a>";
+        return updateOpt+'|'+deleteOpt;
+    }
+	function addAuthority(){
+		var index = window.layer.open({
+            title:'添加权限',
+            type: 2,
+            content: '../system/authority-update.html?noCache='+new Date().getTime(),
+            area: ['530px', '500px'],
+            btn: ['保存','关闭'], //底部按钮区域
+            yes: function(index,layero){  //第一个按钮的事件
+                var res = window["layui-layer-iframe" + index].getData();
+                if(res!=null){  //页面验证成功
+                    $.ajax({
+                        type : "PUT",
+                        url :  urlPath+'/operation',
+                        contentType:"application/json",
+                        data : res,
+                        dataType : "json",
+                        success : function(retdata) {
+                            if(retdata){
+                                //刷新jqGrid
+                                layer.msg('权限添加成功！');
+                                //刷新  重新加载数据
+                                doFresh();
+                                layer.close(index);
+                            }
+                        },
+                        error: function(xmlhttp,textStatus,errorThrown){
+                            var o = JSON.parse(xmlhttp.responseText);
+                            layer.msg(o.message, {icon: 5});
+                        }
+                    });
+                }
+            }
+        });
+	}
+    function updateOpt(id,name,controller,action,module){
+        var index = window.layer.open({
+            title:'修改权限',
+            type: 2,
+            content: encodeURI('../system/authority-update.html?id='+id+'&name='+name+'&controller='+controller+'&action='+action+'&module='+module),
+            area: ['530px', '500px'],
+            btn: ['保存','关闭'], //底部按钮区域
+            yes: function(index,layero){  //第一个按钮的事件
+                var res = window["layui-layer-iframe" + index].getData();
+                if(res!=null){  //页面验证成功
+                    $.ajax({
+                        type : "PUT",
+                        url :  urlPath+'/operation',
+                        contentType:"application/json",
+                        data : res,
+                        dataType : "json",
+                        success : function(retdata) {
+                            if(retdata){
+                                //刷新jqGrid
+                                layer.msg('修改权限成功！');
+                                //刷新  重新加载数据
+                                doFresh();
+                                layer.close(index);
+                            }
+                        },
+                        error: function(xmlhttp,textStatus,errorThrown){
+                            var o = JSON.parse(xmlhttp.responseText);
+                            layer.msg(o.message, {icon: 5});
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    function deleteOpt(id){
+        var idArr=new Array();
+        idArr.push(id);
+        var res=JSON.stringify(idArr);
+        layer.alert('确定要删除此数据？', {
+            time: 0, //不自动关闭,
+            btn: ['确定', '关闭'],
+            yes: function(index){
+                $.ajax({
+                    type : "delete",
+                    url : urlPath+'/operation?requestMap=DELETE/api/operation',
+                    data : res,
+                    contentType:"application/json",
+                    dataType : "json",
+                    success : function(retdata) {
+                        if(retdata){
+                            layer.msg('操作成功！');
+                            doFresh();
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

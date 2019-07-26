@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+<head>
+<title>角色选择</title>
+<meta charset="utf-8">
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+       <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+       <script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	    <link rel="stylesheet" href="../../shared/css/list-style.css">
+<script src="../../shared/js/jquery-ui.min.js"></script>
+<script src="../../shared/js/list-script.js"></script>
+
+</head>
+<body>
+<div id="selectTitle" class="list-select">
+	<div class="list-title">
+		<h4>指定角色</h4>
+	</div>
+	<div class="list-body">
+		<div id="selectDiv" class="item-box left-box">
+			<!-- 左边框初始化待选项 -->
+		<span id="cs" class="item" data-id=" " ></span>
+		
+		</div>
+		<div class="center-box">
+			<button class="add-one" title="添加选中项">></button>
+			<button class="add-all" title="添加全部">>></button>
+			<button class="remove-one" title="移除选中项"><</button>
+			<button class="remove-all" title="移除全部"><<</button>
+		</div>
+		<div id="rightDiv" class="item-box right-box">
+			<!-- 右边框存放已选项 -->
+		</div>
+	</div>
+</div>
+
+</body>
+<script type="text/javascript">
+var aipUrl = getUrlPath();
+
+	//页面加载函数
+	$(function(){
+		   //添加数组IndexOf方法
+	    if (!Array.prototype.indexOf){
+	      Array.prototype.indexOf = function(elt /*, from*/){
+	        var len = this.length >>> 0;
+
+	        var from = Number(arguments[1]) || 0;
+	        from = (from < 0)
+	             ? Math.ceil(from)
+	             : Math.floor(from);
+	        if (from < 0)
+	          from += len;
+
+	        for (; from < len; from++){
+	          if (from in this && this[from] === elt)
+	            return from;
+	        }
+	        return -1;
+	      };
+	    }
+		var ids=getUrlParms("back");
+		var idsArr=ids.split(",");
+		//console.log(idsArr);
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : aipUrl+"/role",		//	contentType:"application/json",
+			dataType : "json",
+			async:false,
+		
+			success : function(data) {
+			
+				for(var i=0;i<data.length;i++){
+					////console.log(data[i]);
+					var content="<span id='' class='item' data-id='"+data[i].id+"'>"+data[i].name+"</span>";
+					if(idsArr.length>0){
+						if(idsArr.indexOf(data[i].id)!=-1){
+							$("#rightDiv").append(content);
+							//console.log(2);
+						}else{
+							$("#selectDiv").append(content);
+							//console.log(3);
+						}
+					}else{
+						//沒有回显数据时直接追加到左侧
+						//console.log(1);
+						$("#selectDiv").append(content);	
+					}
+					
+				}
+				$('#selectTitle').initList();
+				////console.log($("#selectDiv span").text());
+			} 
+		});
+		
+	
+				
+	})
+	//获取角色数据
+
+	function getRoleData(){
+		var role1=$(" .right-box .item");
+		var itemValues = new Array();
+		var itemValue;
+		role1.each(function(){
+			itemValue = {};
+			//改造
+			if($(this).attr('data-id')!=" "){
+				itemValue['id'] = $(this).attr('data-id');
+				itemValue['name'] = $(this).text();
+				itemValue['selected'] = false;
+					//改造结束
+					itemValues.push(itemValue);
+			}
+	
+		});
+	
+		return itemValues;
+	}
+	 //取地址栏参数
+	 function getUrlParms(name){
+		   var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		   var r = window.location.search.substr(1).match(reg);
+		   if(r!=null)
+		   return unescape(r[2]);
+		   return null;
+		   } 
+</script>
+
+</html>

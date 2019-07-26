@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>工作流选择人员</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>	    
+	    <!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	     <script src="../../shared/ocx/makeseal.js"  type="text/javascript" ></script>
+	<style type="text/css">
+		.table {
+			margin-bottom: 0px;
+		}
+	</style>
+</head>
+<body>
+<div id="div_data" style="width: 100%; height: 430px; overflow: auto;">
+</div>
+<label id="tt" style="color: red">注意：左页面展示为此单据需要审核的节点及人员，节点未勾选代表不需要节点的人员审核，如需要节点的人员审核，请自行勾选</label>
+</body>
+<script type="text/javascript">
+    var urlPath=getUrlPath();
+    function $ID(objid){
+        return document.getElementById(objid);
+    }
+
+    var currowobj=null;
+    var curslid = GetQueryString("slid");
+    var gzlid = GetQueryString("gzlid");
+
+    $(document).ready(function(){
+        //获取所有节点信息
+        $.post(urlPath+"/workflow/getAllNodeUserJSON?_rm="+Math.random(),{gzlid:gzlid,slid:curslid},function(retval){
+            if(retval.flag){
+                selNodeRy(retval.data.alldata);
+            }else{
+                alert(retval.message);
+            }
+        },"json");
+    });
+
+    function selNodeRy(tdata){
+        var data=tdata;
+//        data=[{jdgxid:'8RRV1Ps8v0010',slid:'null' ,sfycl:'N',jdid:'20120424091405047097', jdsm:'立项录入', sgxz:'N', jstype:'和',users:[{slryid:'SLRY8RRW2DKkX000I',yhid:'bgpt1.itl',yhxm:'办公平台测试1',dwbm:'ITLAMP',dwmc:'北京艾特蓝博',sjcqqx:'',sfxz:'Y'}]}];
+        if((typeof data)!="undefined"&&data!=null){
+            var tmphtml="<table width='100%' cellpadding='0' class='table table-bordered' border='1' cellspacing='0'><thead><tr><th style='width:30px' align='center'>序号<\/th><th style='width:30px' align='center'>&nbsp;<\/th><th style='width:130px'>节点名称<\/th><th >用户信息<\/th><\/tr><\/thead>";
+            //设置下节点
+            for(var i=0;i<data.length;i++){
+                tmphtml+="<tr onclick='selectrow(this);'>";
+                tmphtml+="<td align='center'>"+(i+1)+"<\/td>";
+                //是否允许手工选择
+                if(data[i].sgxz=='N'){
+                    tmphtml+="<td align='center' border='1' ><input type='checkbox' id='jd"+data[i].jdid+"' name='jdxx' value='"+data[i].jdgxid+"' jdid='"+data[i].jdid+"' jdsm='"+data[i].jdsm+"' slid='"+data[i].slid+"' jstype='"+data[i].jstype+"' CHECKED='true' disabled='true'><\/td>";
+                }else{
+                    //展示是否可选标识
+                    var tmpycl="";
+                    if(data[i].sfycl=='Y'||data[i].sfzlc=='Y'){
+                        tmpycl="disabled='true'";
+                    }else{
+                        if(data[i].users.length<1)
+                            tmpycl="disabled='true'";
+                    }
+                    if(data[i].sfyxz=='Y')
+                        tmphtml+="<td align='center' ><input id='jd"+data[i].jdid+"' type='checkbox' name='jdxx'  CHECKED='true' "+tmpycl+"  value='"+data[i].jdgxid+"' jdid='"+data[i].jdid+"' jdsm='"+data[i].jdsm+"' slid='"+data[i].slid+"' jstype='"+data[i].jstype+"'><\/td>";
+                    else
+                        tmphtml+="<td align='center' ><input id='jd"+data[i].jdid+"' type='checkbox' name='jdxx'  "+tmpycl+"  value='"+data[i].jdgxid+"' jdid='"+data[i].jdid+"' jdsm='"+data[i].jdsm+"' slid='"+data[i].slid+"' jstype='"+data[i].jstype+"'><\/td>";
+                }
+                if(data[i].sftzry=='Y')
+                    tmphtml+="<td align='center'><a onclick=\"addUser('"+data[i].jdid+"','"+data[i].jstype+"','"+data[i].jdsm+"');\" title='单击添加节点人员' href='#' >"+data[i].jdsm+"<\/a><\/td>";
+                else
+                    tmphtml+="<td align='center'>"+data[i].jdsm+"<\/td>";
+                tmphtml+="<td id='user"+data[i].jdid+"' >";
+
+                if(data[i].users!="[]"){
+                    for(var j=0;j<data[i].users.length;j++){
+                        if(data[i].sfycl=='Y'){
+                            if(data[i].users[j].sfxz!="Y")
+                                tmphtml+=(j==0?"":data[i].jstype+"&nbsp;")+"<input type='checkbox' disabled='true' onclick=\"checkjdxx('"+data[i].jdid+"');\"  name='yhxx' value='"+data[i].users[j].slryid+"' title='用户单位:"+data[i].users[j].dwmc+"'/>"+data[i].users[j].yhxm+"&nbsp;";
+                            else
+                                tmphtml+=(j==0?"":data[i].jstype+"&nbsp;")+"<input type='checkbox' disabled='true' CHECKED='true' onclick=\"checkjdxx('"+data[i].jdid+"');\"  name='yhxx' value='"+data[i].users[j].slryid+"' title='用户单位:"+data[i].users[j].dwmc+"'/>"+data[i].users[j].yhxm+"&nbsp;";
+                        }else{
+                            if(data[i].users[j].sfxz!="Y")
+                                tmphtml+=(j==0?"":data[i].jstype+"&nbsp;")+"<input type='checkbox' onclick=\"checkjdxx('"+data[i].jdid+"');\"  name='yhxx' value='"+data[i].users[j].slryid+"' title='用户单位:"+data[i].users[j].dwmc+"'/>"+data[i].users[j].yhxm+"&nbsp;";
+                            else
+                                tmphtml+=(j==0?"":data[i].jstype+"&nbsp;")+"<input type='checkbox' checked='true' onclick=\"checkjdxx('"+data[i].jdid+"');\"  name='yhxx' value='"+data[i].users[j].slryid+"' title='用户单位:"+data[i].users[j].dwmc+"'/>"+data[i].users[j].yhxm+"&nbsp;";
+                        }
+                    }
+                }else{
+                    tmphtml+="请添加人员";
+                }
+
+
+                tmphtml+="<\/td>";
+                tmphtml+="<\/tr>";
+            }
+            document.getElementById("div_data").innerHTML=tmphtml+"<\/table>";
+        }
+    }
+
+    function selectrow(tobj){
+        if(currowobj!=null)
+            currowobj.style.backgroundColor="";
+        tobj.style.backgroundColor="#ccdcf1";
+        currowobj=tobj;
+    }
+
+    //添加节点人员
+    var curaddparam=null;
+    var curseluser=null;
+    function addUser(tjdid,tjstype,tjdsm){
+        curaddparam={jdid:tjdid,jstype:tjstype};
+        parent.layer.open({
+            title:'选择添加用户',
+            type: 2,
+            content: '../seal/select-accredit-people-modal.html',
+            area: ['800px', '500px'],
+            btn: ['确定','关闭'],
+            maxmin: true,
+            yes: function(index){
+                //获取单位数据
+                var res = window.parent["layui-layer-iframe" + index].getData();
+                if(res==null||res.length<1){
+                    window.parent.layer.alert("请选择要添加的用户");
+                }else{
+                    var tusers=res;
+                    //组织要更新的数据
+                    var struser="[";
+                    for(var i=0;i<tusers.length;i++){
+                        struser+=(i==0?"":",")+"{yhid:'"+tusers[i].id+"',yhxm:'"+tusers[i].name+"',dwbm:'"+tusers[i].dept_code+"',dwmc:'"+tusers[i].dept_name+"',sjcqqx:'"+tusers[i].dept_code+"-"+tusers[i].id+"'}";
+                    }
+                    struser+="]";
+                    $.post(urlPath+"/workflow/addNodeUser?_rdm="+Math.random(),
+                        //var seldata="slid="+curslid+"&jdid="+curaddparam.jdid+"&userdata="+struser;
+                        {slid:curslid,jdid:curaddparam.jdid,userdata:struser},
+                        function(retval){
+                            if(retval.flag){
+                                var addedus=retval.data;
+                                var rethtml=$("#user"+curaddparam.jdid).html();
+                                if(rethtml=="请添加人员"){rethtml="";}
+                                for(var i=0;i<tusers.length;i++){
+                                    for(var j=0;j<addedus.length;j++){
+                                        if(tusers[i].id==addedus[j].yhid){
+                                            rethtml+=(rethtml==""?"":curaddparam.jstype+"&nbsp;")+"<input type='checkbox' checked=true onclick='checkjdxx(\""+curaddparam.jdid+"\");'  name='yhxx' value='no' title='用户单位:"+tusers[i].dept_name+"'/>"+tusers[i].name+"&nbsp;";
+                                            break;
+                                        }
+                                    }
+                                }
+                                $("#user"+curaddparam.jdid).html(rethtml);
+								top.msg("添加成功！");
+                            }else{
+                                alert("添加失败");
+                            }
+                        },"json");
+                    window.parent.layer.close(index);
+                }
+            }
+        });
+    }
+
+    //复选框
+    function checkjdxx(tjdid){
+        var tjdobj=$ID("jd"+tjdid);
+        var checkct=0;
+        $("#user"+tjdid+" :checkbox").each(function(){
+            if($(this).is(":checked")){
+                checkct++;
+            }
+        });
+        if(checkct>0){
+            if(!tjdobj.disabled){
+                tjdobj.checked = true;
+            }
+        }else{
+            if(!tjdobj.disabled){
+                tjdobj.checked = false;
+            }
+        }
+    }
+
+    //保存流程配置信息
+    function saveData(){
+        var arr_jdxx=document.getElementsByName("jdxx");
+        var tselct=0;
+        var selval="[";
+        var flag=true;
+        $("#div_data input[name='jdxx']").each(function(i){
+            var tmpobj=$(this);
+            var tjdid=tmpobj.attr("jdid");
+            selval+=(i==0?"":",")+"{slid:'"+curslid+"',jdgxid:'"+tmpobj.val()+"',jdid:'"+tmpobj.attr("jdid")+"'";
+            if(tmpobj[0].checked){
+                selval+=",sfyxz:'Y'";
+                tselct++;
+            }else{
+                selval+=",sfyxz:'N'";
+            }
+            var thtmluser="";
+            var checkct=0;
+
+            $.each($("#user"+tjdid+" input[type='checkbox']"),function(index,titem){
+                if(titem.checked){
+                    checkct++;
+                    if(titem.value!="no"){
+                        thtmluser+=(index==0?"":",")+"{slryid:'"+titem.value+"',sfxz:'Y'}";
+                    }
+                }else{
+                    if(titem.value!="no"){
+                        thtmluser+=(index==0?"":",")+"{slryid:'"+titem.value+"',sfxz:'N'}";
+                    }
+                }
+            });
+
+            if(tmpobj[0].checked&&checkct<1){
+                alert("请为节点'"+tmpobj.attr("jdsm")+"'选择处理人！");
+               	flag=false;
+            }
+            selval+=",users:["+thtmluser+"]}";
+        });
+
+        selval+="]";
+        if(tselct<1){
+            alert("业务流程至少选择一个处理节点！！");
+            return  false;
+        }
+        if(!flag){
+            return false;
+		}
+
+        //保存节点信息
+        $.ajax({
+            type : "POST",
+            url:urlPath+"/workflow/updateGzlUser?_rdm="+Math.random(),
+            data:{data:selval},
+            async: false,//配置成同步
+            dataType : "json",
+            success : function(retval) {
+                if(retval.flag){
+                    return true;
+                }else{
+                    alert(retval.msg);
+                    return false;
+                }
+            }
+        });
+    }
+
+    function GetQueryString(name){
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  decodeURI(r[2]); return null;
+    }
+</script>
+</html>

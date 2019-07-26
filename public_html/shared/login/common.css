@@ -1,0 +1,180 @@
+﻿@charset "utf-8";
+/*
+demo css
+author 王松乐
+Date 2017-3-27
+*/
+
+* {
+	text-decoration: none; font-style: normal; outline: none; font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei", "微软雅黑";
+}
+html {
+	width: 100%; height: 100%; border: none; cursor: default; overflow: auto;
+}
+body {
+	width: 100%; font-size: 12px; text-align: center; margin: 0px; padding: 0px; border: none;
+}
+table {
+	font-size: 14px; color: rgb(80,80,80); border-collapse: collapse;
+}
+table td {
+	text-align: left;
+}
+
+img {
+	border: 0px; cursor: pointer; vertical-align: middle; display: inline-block; max-width: 100%; height: auto;
+}
+button {
+	border: none; cursor: pointer; vertical-align: middle !important;
+}
+p {
+	margin: 0px; padding: 0px;
+}
+b {
+	font-weight: normal;
+}
+ul {
+	list-style: none;
+}
+a:hover {
+	text-decoration: none !important;
+}
+
+.flexLayer {
+	width: 100%; height: auto; margin: 0px auto;
+	display:-webkit-box; display:-webkit-flex; display:-ms-flexbox; display:flex;
+    -webkit-box-pack:justify; -webkit-justify-content:space-between; -ms-flex-pack:justify; justify-content:space-between;
+}
+.comLayer {
+	width: 100%; height: auto; margin: 10px auto; display: block;
+}
+.iframeContent{
+	overflow: auto; overflow: hidden;
+	position: relative;
+	padding: 0px;
+	margin: 0px;
+	max-width: 100%;
+	height: 100%;
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+}
+.ellipsis {
+	white-space:nowrap; text-overflow:ellipsis; overflow:hidden; -webkit-text-overflow:ellipsis;
+}
+.noselect {
+	moz-user-select: -moz-none; -moz-user-select: none; -o-user-select:none; -khtml-user-select:none; -webkit-user-select:none; -ms-user-select:none; user-select:none;
+}
+.noime {
+	ime-mode: disabled;
+}
+.shadow {
+	-moz-box-shadow:2px 2px 5px rgba(0,0,0,0.2); -webkit-box-shadow:2px 2px 15px rgba(0,0,0,0.2); box-shadow:2px 2px 15px rgba(0,0,0,0.2);
+}
+.radius3 {
+	-moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px;
+}
+
+/*----------动画------------*/
+img {
+	transition-delay: 0s;
+    transition-duration: 1s;
+    transition-property: all;
+    transition-timing-function: ease;
+	-moz-transition-delay: 0s;
+    -moz-transition-duration: 1s;
+    -moz-transition-property: all;
+    -moz-transition-timing-function: ease;
+	-webkit-transition-delay: 0s;
+    -webkit-transition-duration: 1s;
+    -webkit-transition-property: all;
+    -webkit-transition-timing-function: ease;
+	-o-transition-delay: 0s;
+    -o-transition-duration: 1s;
+    -o-transition-property: all;
+    -o-transition-timing-function: ease;
+}
+.zoom:hover img {
+	transform: scale(1.2, 1.2);
+	-ms-transform:scale(1.2, 1.2);
+	-moz-transform:scale(1.2, 1.2);
+	-webkit-transform:scale(1.2, 1.2);
+	-o-transform:scale(1.2, 1.2);
+}
+.rotate:hover img {
+	transform: rotate(-180deg);
+	-ms-transform: rotate(-180deg);		/* IE 9 */
+	-webkit-transform: rotate(-180deg);	/* Safari and Chrome */
+	-o-transform: rotate(-180deg);		/* Opera */
+	-moz-transform: rotate(-180deg);
+}
+.move:hover img {
+	transform: translate(30px,0px);
+	-ms-transform: translate(30px,0px);
+	-webkit-transform: translate(30px,0px);
+	-o-transform: translate(30px,0px);
+	-moz-transform: translate(30px,0px);
+}
+/*--大风车旋转动画--*/
+.windmill {
+	animation:         DivFlash7 8s linear 0s infinite both;
+	-moz-animation:    DivFlash7 8s linear 0s infinite both;
+	-webkit-animation: DivFlash7 8s linear 0s infinite both;
+	-o-animation:      DivFlash7 8s linear 0s infinite both;
+}
+/*--向上箭头渐变动画--*/
+.guideArrow {
+	animation:         DivFlash8 1.5s infinite ease-in-out;
+	-moz-animation:    DivFlash8 1.5s infinite ease-in-out;
+	-webkit-animation: DivFlash8 1.5s infinite ease-in-out;
+	-o-animation:      DivFlash8 1.5s infinite ease-in-out;
+}
+/*--向上渐变动画--*/
+.fadeInUp {
+	animation:         DivFlash9 1s ease 0.6s both;
+	-moz-animation:    DivFlash9 1s ease 0.6s both;
+	-webkit-animation: DivFlash9 1s ease 0.6s both;
+	-o-animation:      DivFlash9 1s ease 0.6s both;
+}
+
+
+/*----瀑布流布局----*/
+.FlowLayout {
+	position: relative; width: 100%; height: auto; margin: 10px auto;
+}
+.FlowLayout ul li {
+	position: absolute; background: #fff; border: solid 1px #ccc; text-align: center; padding: 10px; left: 0px; top: 0;
+}
+.FlowLayout ul li:hover {
+	-moz-box-shadow:1px 1px 10px rgb(200,200,210); -webkit-box-shadow:1px 1px 10px rgb(200,200,210); box-shadow:1px 1px 10px rgb(200,200,210);
+}
+.FlowLayout ul li a {
+	display: block; width: 200px; height: auto; overflow: hidden;
+}
+.FlowLayout ul li img {
+	width: 200px; height: auto; display: block; border: 0px;
+}
+.FlowLayout ul li {
+	-webkit-transition: all .7s ease-out .1s;
+	-moz-transition: all .7s ease-out;
+	-o-transition: all .7s ease-out .1s;
+	transition: all .7s ease-out .1s
+}
+
+.layui-layer-title {
+	text-align: left;
+}
+.paging {
+	text-align: center;
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
+	color: #bbb; 
+} 
+input:-moz-placeholder, textarea:-moz-placeholder { 
+	color: #bbb; 
+} 
+input::-moz-placeholder, textarea::-moz-placeholder { 
+	color: #bbb; 
+} 
+input:-ms-input-placeholder, textarea:-ms-input-placeholder { 
+	color: #bbb; 
+} 

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+
+<title>文档管理</title>
+
+<link rel="stylesheet"
+	href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"
+	type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"
+	rel="stylesheet" />
+<link
+	href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css"
+	type="text/css" rel="stylesheet" />
+
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js"
+	type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js"
+	type="text/javascript"></script>
+<script type="text/javascript"
+	src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+</head>
+<body>
+	<div class="pagecontent" id="divcontent2">
+		<div class="middleLayer" style="margin:0px 0px 0px 0px;">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars" align="left" style="margin-top:5px">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on">文档名称</span>
+					<input type="text" name="name" id="name" style="width: 80px" placeholder="文档名称"> 
+					
+					<!-- <span class="add-on">办理状态</span>
+					<select class="span2" id="status" name="status" style="width: 100px">
+							<option value="">请选择...</option>
+							<option value="0"selected="selected">待办理</option>
+							<option value="1">已办理</option>
+							<option value="2">办理中</option>
+							<option value="-1">不适用</option>
+					</select> -->
+					
+					<div class="input-prepend">
+						<span class="add-on">部门</span>
+						<input class="span2" id="departmentId" name="departmentId" readonly="readonly"  type="hidden">
+						<input class="span2" id="departname" name="departname"   type="text" placeholder="请选择..." onfocus="userSelect()" style="width: 70px" disabled="disabled">
+						<button class="btn" type="button" onclick="selectdepart()">选择</button>
+					</div>
+					
+					<span class="add-on">时间段</span>
+					<input type="text"  id="startTime" name="startTime" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+					-
+					<input type="text" name="endTime" id="endTime" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\') }'}) ">
+					
+					</form>
+				<button type="button" onclick="search()" class="btn btn-success" style="float:right;margin-right: 15px"> 查询</button>
+					</div>
+			
+			<!-- 页面主内容 -->	
+			<div class="gridcontent" style="margin-top:5px">
+				<table id="doc_table"></table>
+				<div id="doc_page"></div>
+			</div>
+		</div>
+	 </div>
+</body>
+
+<script type="text/javascript">
+var urlPath=getUrlPath();
+var lowerLevel=	false;
+function loadGrid_doc() {
+	$("#doc_table").jqGrid(
+		{
+			url : urlPath+'/documents?noCache='+new Date().getTime(),
+			datatype : "json",//页面加载的时候不显示数据
+			colNames : ['ID','文档编号','文档名称','文档来源','所属部门','创建人','创建时间','办理状态','操作'],
+			colModel : [ 
+						 {name : 'id',index : 'id',hidden:true},
+						 {name : 'sn',index : 'sn',width : 200,align:"center"},
+						 {name : 'name',index : 'name',width : 200,align : "center"},
+			             {name : 'sourceType',index : 'sourceType',width : 130,align : "center",formatter:typeFormatter},
+			             {name : 'departmentName',index : 'departmentName',width : 150,align : "center"},
+			             {name : 'creator',index : 'creator',width : 150,align:"center"},
+			             {name : 'create_time',index : 'create_time',width : 150,align:"center",formatter:timeFormatter},
+			           	 {name : 'doStatus',index : 'doStatus',width : 100,align:"center",formatter:statusFormatter},
+			             {name : '',index : '',width : 100,align:"center" ,formatter:opFormatter},
+			            ], 
+						multiselect: false,
+						rowNum : 10,
+						rowList : [ 10, 15,30 ],
+			pager : '#doc_page'
+		});
+	}
+
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid_doc();
+		$(window).resize(function() {
+	        $("#doc_table").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+	
+	 function opFormatter(cellvalue, options, rowObject){
+		  if(rowObject.sourceType == 1){
+			  return "<a style=\"color:blue\" href=\"javascript:show('"+rowObject.id+"');\">查看</a>";
+	      }else{
+	    	  return "<a style=\"color:blue\" href=\"javascript:showServer('"+rowObject.id+"');\">查看</a>";
+		  }
+	 }
+	 
+	   function show(id){
+			s = window.parent.layer.open({
+				title:'查看文档',
+				type: 2,
+				content: '../document/document-aip-check-modal.html?id='+id+'&type=/document/1/&noCache='+new Date().getTime(),
+				area: ['80%', '80%'],
+				btn: ['取消'],
+				maxmin: false,
+	           
+			});
+		}
+	 
+	   function showServer(id){
+			s = window.parent.layer.open({
+				title:'查看文档',
+				type: 2,														
+				content: '../document/document-aip-check-modal.html?id='+id+'&type=/document/server/1/&noCache='+new Date().getTime(),
+				area: ['80%', '80%'],
+				btn: ['取消'],
+				maxmin: false,
+	           
+			});
+		}
+	/*  function show (data) {
+	      var url = 'app/modules/document/views/document-aip-check-modal.html';
+	      id = data;
+	      vm.showPort = '/document/1/';
+	      vm.isShowAip = true;
+	      modal = vm.openModal(url, 'lg');
+	    }
+ */
+	   /*  function showServer (data) {
+	      var url = 'app/modules/document/views/document-aip-check-modal.html';
+	      id = data;
+	      vm.showPort = '/document/server/1/';
+	      vm.isShowAip = true;
+	      modal = vm.openModal(url, 'lg');
+	    } */
+		
+	  function statusFormatter(cellvalue, options, rowObject){
+		if(cellvalue=='0'){
+	  		return '待办理';
+		}else if(cellvalue=='1'){
+		    return '办理中';
+		}else if(cellvalue=='2'){
+		    return '已办理';
+		}else if(cellvalue=='-1'){
+		    return '不适用';
+		}
+	  }
+	     
+	  function typeFormatter(cellvalue, options, rowObject){
+		  if(cellvalue=='1'){
+			  return '客户端签章';
+		  }else if(cellvalue=='2'){
+			  return '服务端签章';
+		  }else if(cellvalue=='3'){
+			  return '服务端合成';
+		  }
+	  }
+    		
+	   function search(){
+		   //解决postData参数值累加问题，首先清空postData
+		    var postData = $('#doc_table').jqGrid("getGridParam", "postData");
+            $.each(postData, function (k, v) {
+                delete postData[k];
+            });                    
+		   var formData = getFormData("search_form");
+		   var data={};
+		   if(formData.name!=""){
+			   data['name']=formData.name;
+		   }
+		   if(formData.status!=""){
+			   data['dostatus']=formData.status;
+		   }
+		   if(formData.startTime!=""){
+			   data['startTime']=new Date(Date.parse(formData.startTime.replace(/-/g,"/"))).getTime()/1000;
+			  // data['startTime']=new Date(formData.startTime).getTime()/1000;
+		   }
+		   if(formData.endTime!=""){
+			   data['endTime']=new Date(Date.parse(formData.endTime.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+			  // data['endTime']=new Date(formData.endTime).getTime()/1000;
+		   }
+		   if(formData.departmentId!=""){
+			   data['departmentId']=formData.departmentId;
+		   }
+		   data['attributes']='{}';
+		   data['lowerLevel']=lowerLevel;
+		   //auditLevel: 1   draw: 3    historyNum: 0   isDepartment: true   isManage: true
+		   
+	 	 $("#doc_table").jqGrid('setGridParam', {
+				page : 1,
+				postData :data
+			}).trigger("reloadGrid"); 
+	   }
+	   
+	function timeFormatter(cellvalue, options, rowObject) {
+		var unixTimestamp = new Date(cellvalue*1000) ;
+		return unixTimestamp.toLocaleString();	
+	}
+
+	function doFresh(){
+		 $("#doc_table").jqGrid('setGridParam',{									 
+				postData:{}
+			}).trigger("reloadGrid"); 
+	}
+
+   Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+
+       return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+   };
+   
+   function selectdepart(){
+		s = window.parent.layer.open({
+			title:'选择部门',
+			type: 2,
+			content: '../../partials/select-section-modal.html?noCache='+new Date().getTime(),
+			area: ['500px', '480px'],
+			btn: ['确定','取消'],
+			maxmin: false,
+           yes: function(index){
+           	//获取页面数据
+           	var res = window.parent["layui-layer-iframe" + index].getData();
+           	if(res!=null){
+           		lowerLevel=	res.lowerLevel;
+           		$("#departname").val(res.name);
+           		$("#departmentId").val(res.id);
+           		window.parent.layer.close(index);
+           	 }else{
+           		 window.parent.layer.msg("请选择部门");
+           	 }
+           	 
+           }
+		});
+	}
+ 
+</script>
+</html>
+

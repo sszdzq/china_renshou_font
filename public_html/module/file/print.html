@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+
+<title>待盖章文档</title>
+
+<link rel="stylesheet"
+	href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"
+	type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"
+	rel="stylesheet" />
+<link
+	href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css"
+	type="text/css" rel="stylesheet" />
+
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js"
+	type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js"
+	type="text/javascript"></script>
+<script type="text/javascript"
+	src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+<!-- 控件  -->
+<script src="../../shared/ocx/hwpostil.js"  type="text/javascript" ></script>
+	<script src="../../shared/js/file_common.js" type="text/javascript"></script>
+
+</head>
+<body>
+	<div class="pagecontent" id="divcontent2">
+		<div class="middleLayer" style="margin:0px 0px 0px 0px;">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars" align="left" style="height: 70px">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<table id="fileTable" style="" class="table_insert">
+						<tbody>
+						<tr>
+							<td class="tdtitle" align="right">业务类型：</td>
+							<td><select id="service" name="service"
+										class="form_input" >
+								<option></option>
+
+							</select></td>
+							<td class="tdtitle" align="right">文档标题：</td>
+							<td><input type="text" id="doc_title" name="doc_title"class="form_input" placeholder="请输入文档名称"></td>
+
+
+							<td class="tdtitle" align="right">打印部门：</td>
+							<td><select id="print_dept" name="print_dept"
+										class="form_input" >
+								<option></option>
+
+							</select></td>
+							<td class="tdtitle" align="right">归属部门：</td>
+							<td><select id="save_set" name="save_set"
+										class="form_input" >
+								<option></option>
+
+							</select></td>
+
+						</tr>
+						<tr >
+							<td class="tdtitle" align="right">提交人：</td>
+							<td><input type="text" id="create_users" name="create_users"class="form_input"></td>
+							<td class="tdtitle" align="right">文档内容：</td>
+							<td><input type="text" id="doc_content" name="doc_content" class="form_input"></td>
+
+							<td class="tdtitle" align="right">提交时间：</td>
+							<td colspan="3"><input type="text"  id="startTime" name="startTime" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+								-
+								<input type="text" name="endTime" id="endTime" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\') }'}) ">
+							</td>
+
+						</tr>
+
+						</tbody>
+					</table>
+
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style="float:right;margin-right: 15px"> 查询</button>
+					</div>
+			
+			<!-- 页面主内容 -->	
+			<div class="gridcontent" >
+				<table id="doc_table"></table>
+				<div id="doc_page"></div>
+			</div>
+			<div  id="aip" name="aip" >
+			</div>
+		</div>
+	 </div>
+</body>
+
+<SCRIPT LANGUAGE=javascript FOR=HWPostil1 EVENT=JSNotifyBeforeAction(lActionType,lType,strName,strValue);>
+	HWPostil1_NotifyBeforeAction(lActionType,lType,strName,strValue);
+</SCRIPT>
+<script type="text/javascript">
+var urlPath=getUrlPath();
+var lowerLevel=	false;
+var leftPrintNum = null;
+var ongoingPrintNum = 0;
+var templateCurNum = 0;
+var printingDocList = null;
+var index_="";
+
+//创建控件对象
+var hwpobj =new HWPostil("aip");
+//初始化控件
+hwpobj.Init({id:"HWPostil1",designMode:1,showMenu:0,showScrollBar:0,width:"0",height:"0"});
+hwpobj.setSilentMode(1);
+hwpobj.setShowDefMenu(0);
+hwpobj.setShowToolBar(0);
+hwpobj.setJSEnv(1);
+
+var statusType=["","审核","盖章","打印","补打申请","已归档","退回"];
+function loadGrid_doc() {
+	$("#doc_table").jqGrid(
+		{
+			url : urlPath+'/files/getFiles?fromPage=print&noCache='+new Date().getTime(),
+			datatype : "json",//页面加载的时候不显示数据
+
+            colNames : ['ID','xxxh','业务编号','业务类型','文档标题','归属机构','打印机构','提交人','提交人id','提交时间','请求份数','已打印份数','操作'],
+            colModel : [
+                {name : 'doc_id',index : 'doc_id',hidden:true},
+                {name : 'xxxh',index : 'xxxh',hidden:true},
+                {name : 'id',index : 'id' ,width:100,align:"center"},
+                {name : 'serv_name',index : 'serv_name',width : 200,align:"center"},
+                {name : 'doc_title',index : 'doc_title',width : 200,align : "center"},
+                {name : 'dept_name',index : 'dept_name',width : 130,align : "center"},
+                {name : 'print_deptName',index : 'print_deptName',width : 150,align : "center"},
+                {name : 'user_name',index : 'user_name',width : 80,align : "center"},
+                {name : 'user_id',index : 'user_id',hidden:true},
+                {name : 'created_at',index : 'created_at',width : 150,align:"center",formatter:timeFormatter},
+                {name : 'max_num',index : 'max_num',width : 100,align:"center"},
+                {name : 'cur_num',index : 'cur_num',width : 100,align:"center"},
+                {name : 'operate',index : 'operate',width : 100,align:"center" ,formatter:opFormatter},
+            ],
+			multiselect: true,
+            rowNum : 50,
+            rowList : [ 30,50,100,200 ],
+			pager : '#doc_page'
+		});
+	}
+
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid_doc();
+        conditionInit();
+		$(window).resize(function() {
+	        $("#doc_table").jqGrid("autoSize");
+		}).trigger('resize');
+        jQuery("#doc_table")
+            .navGrid('#doc_page',{edit:false,add:false,del:false,search:false,refresh:false})
+            .navButtonAdd('#doc_page',{
+                caption:"批量打印",
+                buttonicon:"ui-icon-print",
+                onClickButton: patchPrint,
+                position:"last"
+            })
+            .navSeparatorAdd("#pager",{sepclass : "ui-separator",sepcontent:" "})
+            .navButtonAdd('#doc_page',{
+                caption:"批量归档",
+                buttonicon:"ui-icon-folder-collapsed",
+                onClickButton: patchAchived,
+                position:"last"
+            });
+	});
+	
+	//批量打印
+	function patchPrint(){
+        var selectrows = $("#doc_table").jqGrid('getGridParam','selarrrow');
+        var idArr=new Array();
+        if(selectrows.length>0){
+            for(var i=0;i<selectrows.length;i++){
+                var row = $("#doc_table").jqGrid('getRowData', selectrows[i]); //获取此行数据
+                idArr.push(row.doc_id);
+            }
+            //查询文档列表
+            $.ajax({
+                type: "POST",
+                url: urlPath + "/files/getFileList",
+                data: JSON.stringify(idArr),
+                contentType: "application/json",
+                dataType: "json",
+                success: function (data) {
+                	//console.log(data);
+                 	var indexConfirm = top.layer.confirm('会打印所有的剩余份数,需要打印二维条码吗？', {
+           			  btn: ['需要','不需要'] //按钮
+           			}, function(indexConfirm){
+           				parent.layer.close(indexConfirm);
+           				prePatchPrint(data,"ADD_FORCETYPE_VALUE",0x40000000);
+           			}, function(indexConfirm){//不打印二维码
+           				parent.layer.close(indexConfirm);
+           				prePatchPrint(data,"ADD_FORCETYPE_VALUE",0);
+           			});  					
+                }
+            });
+        }else{
+            parent.alert("请选择要打印的文档");
+        }
+	}
+	
+	function prePatchPrint(res,pcKey,pcValue){
+		leftPrintNum = null;
+		printingDocList = res;
+		var dtrer=hwpobj.LoginRet("", 3, 65535, "", urlPath+"/serviceForAip/");
+		//console.log("dtrer:"+dtrer);
+		if(dtrer==-200){
+			top.layer.alert("未发现智能卡");
+			return;
+		}else if(dtrer!=0){
+			top.layer.alert("登录失败。请确认服务器状态或智能卡是否正确！"+dtrer);
+			return;
+		}else{
+			//console.log("批量64："+printingDocList[0]);
+			hwpobj.LoadFileBase64(printingDocList[0].base64);
+			hwpobj.setValue(pcKey,pcValue);
+			var is=hwpobj.PrintDoc(1);
+			//console.log("is:"+is);
+		}   
+	}
+	function patchAchived(){
+        var selectrows = $("#doc_table").jqGrid('getGridParam','selarrrow');
+        var idArr=new Array();
+        if(selectrows.length>0){
+            for(var i=0;i<selectrows.length;i++){
+                var row = $("#doc_table").jqGrid('getRowData', selectrows[i]); //获取此行数据
+                var  resData={};
+                resData["operate"]="archive";
+                resData['xxxh'] = row.xxxh;
+                resData['doc_id']=row.doc_id;
+                resData['last_status']=row.status;
+                resData['approve_opinion']="批量归档！";
+                idArr.push(resData);
+            }
+            doArchive(idArr);
+        }else{
+            parent.alert("请选择要归档的文档");
+        }
+	}
+	 function opFormatter(cellvalue, options, rowObject){
+
+		 	if("1"==cellvalue){
+                return "<a style=\"color:blue\" href=\"javascript:docPrint('"+rowObject.doc_id+"','"+rowObject.xxxh+"','"+rowObject.max_num+"','"+rowObject.cur_num+"');\">打印</a>"+
+                    "|"+"<a style=\"color:blue\" href=\"javascript:patchDownload('"+rowObject.doc_id+"');\">下载</a>";
+			}else{
+                return "<a style=\"color:blue\" href=\"javascript:docPrint('"+rowObject.doc_id+"','"+rowObject.xxxh+"','"+rowObject.max_num+"','"+rowObject.cur_num+"');\">打印</a>";
+			}
+
+
+	 }
+
+function docPrint(id,xxxh,maxNum,curNum){
+	   templateCurNum=curNum;
+	var res = null;
+    var index =parent.layer.open({
+        title:"文档打印",
+        type: 2,
+        content:'../file/approve_edit.html?id='+id+'&noCache='+new Date().getTime(),
+        area: ['90%', '95%'],
+        zIndex:200,
+        btn: ['打印','归档','退出'], //底部按钮区域
+        maxmin: true,
+        yes: function(index,layero){  //第一个按钮的事件
+            res = window.parent["layui-layer-iframe" + index].getData();
+        	leftPrintNum=res.maxnum-res.curnum;
+        	index_=index;
+        	if(res.curnum>res.maxnum){
+        		top.layer.alert("已无打印份数，不能打印！",{offset:'100px'});
+        	}else{
+        		window.parent["layui-layer-iframe" + index].hideAip();
+        		if(res.addma == 1){
+                	var indexConfirm = top.layer.confirm('需要打印二维条码吗？', {
+           			  btn: ['需要','不需要'] //按钮
+           			}, function(indexConfirm){
+           				parent.layer.close(indexConfirm);
+           				prePrint(res,"ADD_FORCETYPE_VALUE",0x40000000);
+           				window.parent["layui-layer-iframe" + index].showAip();
+                        //window.parent["layui-layer-iframe" + index].doSearch();
+           			}, function(indexConfirm){//不打印二维码
+           				parent.layer.close(indexConfirm);
+           				prePrint(res,"ADD_FORCETYPE_VALUE",0);
+           				window.parent["layui-layer-iframe" + index].showAip();
+                        //window.parent["layui-layer-iframe" + index].doSearch();
+           			});         			
+        		}else{//不打印二维码
+       				prePrint(res,"ADD_FORCETYPE_VALUE",0);
+       				window.parent["layui-layer-iframe" + index].showAip();
+                    //window.parent["layui-layer-iframe" + index].doSearch();
+        		}
+
+
+        	}
+
+        },
+        btn2:function(index,layero){
+            var resData = window.parent["layui-layer-iframe" + index].getData();
+            if(resData.approve_opinion == null || resData.approve_opinion == ""){
+            	msg("审核意见不能为空!");
+            	return;
+            }else{
+                var idArr=new Array();
+                resData["operate"]="archive";
+                idArr.push(resData);
+                doArchive(idArr,index);            	
+            }
+        },
+        btn3:function(index,layero){
+            //关闭页面
+            layer.close(index);
+        }
+    });
+}
+
+function doArchive(idArr,index){
+    if(idArr!=null) {
+        $.ajax({
+            type: "POST",
+            url: urlPath + "/files/approve",
+            data: JSON.stringify(idArr),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                if (data) {
+                    layer.msg('操作成功！');
+                    //关闭页面
+                    if(index!=undefined){
+                        parent.layer.close(index);
+                    }
+                    doFresh();
+                }
+            }
+        });
+    }
+}
+
+
+function prePrint(res,pcKey,pcValue){
+	//console.log(res.fileBase64);
+	//var dtrer=hwpobj.Login("", 1, 65535, "123456", "");
+	var dtrer=hwpobj.LoginRet("", 3, 65535, "", urlPath+"/serviceForAip/");
+	//console.log("key:"+pcKey+"@@value:"+pcValue);
+	//console.log("dtrer:"+dtrer);
+	if(dtrer==-200){
+		top.layer.alert("未发现智能卡");
+		return;
+	}else if(dtrer!=0){
+		top.layer.alert("登录失败。请确认服务器状态或智能卡是否正确！"+dtrer);
+		return;
+	}else{
+		hwpobj.LoadFileBase64(res.base64);
+		hwpobj.setValue(pcKey,pcValue);
+		ongoingPrintNum = 0;
+		var is=hwpobj.PrintDoc(1);
+		//console.log("is:"+is);
+     	if(is != 0){
+            var idArr=new Array();
+            idArr.push(res);
+            //console.log("正在打印份数@@"+ongoingPrintNum);
+            if(ongoingPrintNum != 0){
+            	doPrint(idArr,ongoingPrintNum);      					
+            }
+		} 
+	}   
+}
+
+function doPrint(idArr,printedNum){
+	//console.log("go back!");
+    if(idArr!=null) {
+        $.ajax({
+            type: "POST",
+            url: urlPath + "/files/print?printedNum="+printedNum,
+            data: JSON.stringify(idArr),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                if (data) {
+                    top.layer.msg('打印成功！',{offset:'100px'});
+                   templateCurNum++;
+                    //console.log("templateCurNum--"+templateCurNum);
+                    doFresh();
+                    window.parent["layui-layer-iframe" + index_].doSearch();
+                }
+            }
+        });
+    }
+}
+
+
+   
+   //lType:打印份数;strName:打印机名称;lActionType:HWPostil1_NotifyBeforeAction;
+   function HWPostil1_NotifyBeforeAction(lActionType,lType,strName,strValue){
+//	   alert("HWPostil1_NotifyBeforeAction:"+lActionType+":::::"+aipObj.JSValue);
+		if(lActionType==1){
+			//console.log("剩余打印份数@@"+leftPrintNum);
+			if(leftPrintNum != null){
+				if(lType>leftPrintNum){
+					hwpobj.setJSValue(0);
+					top.layer.alert("超出打印允许份数，停止打印", { offset: '100px' });
+				}else{
+					//console.log("记录当前文件被打印了"+lType+"份");
+					ongoingPrintNum = lType;
+				}				
+			}else{
+				//console.log("打印的份数:"+lType+";打印机的名称:"+strName+";操作者的标识:"+strValue);
+				hwpobj.setJSValue(0);
+				for(var i = 0; i < printingDocList.length; i++){
+					leftPrintNum = printingDocList[i].max_num - printingDocList[i].cur_num;
+					if(leftPrintNum != 0){
+						hwpobj.LoadFileBase64(printingDocList[i].base64);
+						//var isex=hwpobj.PrintDocEx(strName,1,1,1,1,-1,1,waitPrintNum,1,1,0);
+						var maxNum = parseInt(lType > leftPrintNum ? leftPrintNum : lType);
+						//console.log("当前文件最大打印份数："+maxNum);
+						var endPageNum = parseInt(hwpobj.PageCount());
+						var isex=hwpobj.PrintDocEx(strName,1,0,0,1,endPageNum,1,maxNum,1,1,0);
+				     	if(isex != 0){
+				            var idArr=new Array();
+				            idArr.push(printingDocList[i]);
+				            //console.log("正在打印份数@@"+maxNum);
+				            doPrint(idArr,maxNum);  
+						} 					
+					}
+				}
+			}
+		}
+	}
+
+function patchDownload(id){
+    var idArr=new Array();
+    idArr.push(id);
+        //查询文档列表
+        var downloadStr = encodeURI(urlPath + '/files/downLoadPdfFile?ids=' + JSON.stringify(idArr));
+        window.location.href = downloadStr;
+}
+ 
+</script>
+</html>
+

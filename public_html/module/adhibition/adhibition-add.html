@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>应用系统管理——添加</title>
+
+<link rel="stylesheet"
+	href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"
+	type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"
+	rel="stylesheet" />
+<link
+	href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css"
+	type="text/css" rel="stylesheet" />
+
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js"
+	type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js"
+	type="text/javascript"></script>
+<script type="text/javascript"
+	src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+
+<style type="text/css">
+tr {
+	height: 50px;
+}
+
+.error {
+	color: red;
+}
+span{
+	color:red;
+	font-size:13px;
+}
+ul{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    }
+ 	li{
+        margin: 2px;
+	    padding: 0 5px;
+	    display: inline-block;
+	    float: left;
+	    font: 14px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	    height: 26px;
+	    line-height: 25px;
+	    border: 1px solid #acacac;
+	    border-radius: 3px;
+	    background-color: #a1dbff;
+    }
+   a{
+   	background: transparent;
+   	color: #337ab7;
+    text-decoration: none;
+    cursor: pointer;
+   }
+</style>
+</head>
+<body>
+	<div class="pagecontent" id="divcontent">
+		<form id="addForm">
+		<input type="hidden" value="" id="id" name="id">
+			<table id="table" class="table_insert">
+				<tbody>
+					<tr>
+						<td class="tdtitle must" align="right" requird="true" style="font-weight: bold">系统编号：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="sysNo" name="sysNo"
+									value="" placeholder="请输入系统编号" style="width: 230px;"
+									onPaste="checkNoLength()" onKeyUp="checkNoLength()"onblur="checkNoLength()"
+								>
+							</div>
+							<span id="sysNomsg"></span>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" class="tdtitle must" style="font-weight: bold">系统名称：</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="name" name="name" value=""
+									placeholder="请输入系统名称" style="width: 230px;"
+									onPaste="checkNameLength()" onKeyUp="checkNameLength()"onblur="checkNameLength()"
+								>
+							</div>
+							<span id="namemsg"></span>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdtitle must" align="right" style="font-weight: bold">系统ip</td>
+						<td>
+							<div class="input-append">
+								<input type="text" class="span2" id="ipAddress" name="ipAddress"
+									value="" placeholder="请输入ip地址(用英文逗号分隔)" style="width: 230px;"
+									onPaste="checkIpAddress()" onKeyUp="checkIpAddress()" onblur="checkIpAddress()"
+								>
+							</div>
+							<span id="ipmsg"></span>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="tdtitle must" align="right" style="font-weight: bold">系统密码</td>
+						<td>
+							<div class="input-append">
+								<input type="password" class="span2" id="password" name="password"
+									value="" placeholder="请输入密码" style="width: 230px;"
+									onPaste="checkPassword()" onKeyUp="checkPassword()"onblur="checkPassword()"
+								>
+							</div>
+							<span id="passwordmsg"></span>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="tdtitle must" align="right" style="font-weight: bold">确认密码</td>
+						<td>
+							<div class="input-append">
+								<input type="password" class="span2" id="confirmPassword" name="confirmPassword"
+									value="" placeholder="请再次输入密码" style="width: 230px;"
+									onPaste="checkconfirmP()" onKeyUp="checkconfirmP()"onblur="checkconfirmP()"
+								>
+							</div>
+							 <span id="confirmmsg" style="color: red"></span>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="tdtitle" align="right" style="font-weight: bold">模板权限</td>
+						<td>
+						<div style="white-space: nowrap;overflow: scroll hidden;overflow-y: hidden; border:1px solid #ccc;  display: inline-block;width:240px;height:auto;min-height: 34px;" >  
+							<ul style="list-style-type:none" id="templateId" class="sp-list">
+							
+							</ul>
+						</div>
+						<div style="display: inline-block;">
+							<button id="select1" class="btn btn-info" type="button"  onclick="open_template()">选择</button>
+						</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td class="tdtitle" align="right" style="font-weight: bold">规则权限</td>
+						<td>
+						<div style="white-space: nowrap;overflow: scroll hidden;overflow-y: hidden; border:1px solid #ccc;  display: inline-block;width:240px;height:auto;min-height: 34px;" >  
+							<ul style="list-style-type:none" id="ruleId" class="sp-list">
+							
+							</ul>
+						</div>
+						<div style="display: inline-block;">
+							<button id="select2" class="btn btn-info" type="button"  onclick="open_rule()">选择</button>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</div>
+	<script type="text/javascript">
+	//初始化，用于验证输入数据是否符合要求	
+	V.init("addForm","table");
+	var urlPath=getUrlPath();
+	var id = getUrlParam('id');
+	
+	var ruleArray=new Array();
+	var tempArray=new Array();
+	var type= getUrlParam('type');
+
+	$(document).ready(function() {
+		if(id!=null){
+		$("#sysNo").attr("disabled",true);	
+		$.ajax({
+				type : "get",
+				url : urlPath+'/adh/'+id+'?noCache='+new Date().getTime(),
+				contentType:"application/json",
+				dataType : "json",
+				success : function(retdata) {
+					$("#id").val(retdata.id);
+					$("#sysNo").val(retdata.sysNo);
+					$("#name").val(retdata.name);
+					$("#ipAddress").val(retdata.ipAddress);
+					$("#password").val('$**********$');
+					$("#confirmPassword").val('$**********$');
+					for(var j=0;j<retdata.adhSealRule.length;j++){
+            			var data="<li id=\""+retdata.adhSealRule[j].id+"\"><span style=\"color:black\">"+retdata.adhSealRule[j].name+"<a class=\"fa fa-times \" onclick=\"delruleId('"+retdata.adhSealRule[j].id+"')\" ></a></span></li>";
+                		$("#ruleId").append(data);
+                		ruleArray[j]=retdata.adhSealRule[j].id;
+            		}
+					for(var j=0;j<retdata.adhTemplate.length;j++){
+            			var data="<li id=\""+retdata.adhTemplate[j].id+"\"><span style=\"color:black\">"+retdata.adhTemplate[j].name+"<a class=\"fa fa-times \" onclick=\"deltempId('"+retdata.adhTemplate[j].id+"')\" ></a></span></li>";
+                		$("#templateId").append(data);
+                		tempArray[j]=retdata.adhTemplate[j].id;
+            		}
+				},
+				error: function(xmlhttp,textStatus,errorThrown){
+ 				var o = JSON.parse(xmlhttp.responseText);
+ 				layer.msg(o.message, {icon: 5});
+ 			}
+			});
+		}
+		disabled();
+	});
+	
+	function disabled(){
+		if(type!=null){
+			$('input').attr("disabled",true); 
+			$("#select1").attr("style","display:none;");
+			$("#select2").attr("style","display:none;");
+			$("a").removeAttr("style");
+			$("span").removeAttr("style");
+			$("li").unbind();//删除li的事件处理器
+		}
+	}
+	
+	function getData(){
+		if(check()){
+			var datatemp= $("#addForm").getData();
+			var data={}//将input值复制进data对象中
+			for( var key in datatemp ){
+			    data[key]=datatemp[key]
+			}
+			if(id==null){
+				data['id']=null;
+			}
+			//获取所选模版,格式：[{},{}]
+			if($("#templateId").length>0) {
+				var value;
+				var templateId=new Array();
+	            $("#templateId").find("li").each(function () {
+	            	value={};
+	            	value['id']=$(this).attr('id');
+	            	value['name']=$(this).text();
+	            	templateId.push(value);
+	            });
+	            data['templateId']=templateId;
+			}
+			//获取所选规则，数据格式：[{},{}]
+			if($("#ruleId").length>0) {
+				var value;
+				var ruleId=new Array();
+	            $("#ruleId").find("li").each(function () {
+	            	value={};
+	            	value['id']=$(this).attr('id');
+	            	value['name']=$(this).text();
+	            	ruleId.push(value);
+	            });
+	            data['ruleId']=ruleId;
+			}
+			return data;
+		}else{
+			return null;
+		}
+	}	
+	
+	/* 	data['sysNo']=("#sysNo").val();
+	data['name']=("#name").val();
+	data['ipAddress']=("#ipAddress").val();
+	data['password']=("#password").val();
+	data['sysNo']=("#sysNo").val(); */
+	
+	//选择模板权限
+	function open_template(){
+		var index = window.parent.layer.open({
+			title:'选择模板权限',
+			type: 2,
+			content: 'adhibition/select-template.html?temp=templateAips&array='+tempArray+'&noCache='+new Date().getTime(),
+			area: ['545px', '450px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	$("#templateId").empty();	
+            	//获取单位数据 
+            	var res = window.parent["layui-layer-iframe" + index].getData();
+            	 if(res!=null){
+            		for(var j=0;j<res.length;j++){
+            			if(res[j].id!=" "){
+            				var data="<li id=\""+res[j].id+"\"><span style=\"color:black\">"+res[j].name+"<a class=\"fa fa-times \"  onclick=\"deltempId('"+res[j].id+"')\" ></a></span></li>";
+                			$("#templateId").append(data);	
+                			tempArray[j]=res[j].id;
+            			}
+            		}
+            		 window.parent.layer.close(index);	 
+            	 }else{
+            		
+            	 }
+            	 
+            }
+		});
+	}
+	
+	/* function deltempId(id){
+		$("#templateId li[id="+id+"]").remove();
+	}
+	
+	function delruleId(id){
+		$("#ruleId li[id="+id+"]").remove();
+	}
+	 */
+	function delruleId(id){
+		if(ruleArray!=null){
+			for(var i=0;i<ruleArray.length;i++){
+				if(id==ruleArray[i]){
+					//从数据中移除项
+					ruleArray.splice(i,1);
+					//展示li标签删除
+					$("#ruleId li[id="+id+"]").remove();
+				}
+			}
+		}
+	}	
+	
+	//删除单个审批权限，x号触发
+	function deltempId(id){
+		if(tempArray!=null){
+			for(var i=0;i<tempArray.length;i++){
+				if(id==tempArray[i]){
+					//从数据中移除项
+					tempArray.splice(i,1);
+					//展示li标签删除
+					$("#templateId li[id="+id+"]").remove();
+				}
+			}
+		}
+	}
+	
+	
+	function open_rule(){
+		var index = window.parent.layer.open({
+			title:'选择规则权限',
+			type: 2,
+			content: 'adhibition/select-template.html?temp=allSealRules&array='+ruleArray+'&noCache='+new Date().getTime(),
+			area: ['545px', '450px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	$("#ruleId").empty();	
+            	//获取单位数据 
+            	var res = window.parent["layui-layer-iframe" + index].getData();
+            	 if(res!=null){
+            		for(var j=0;j<res.length;j++){
+            			if(res[j].id!=" "){
+            				var data="<li id=\""+res[j].id+"\"><span style=\"color:black\">"+res[j].name+"<a class=\"fa fa-times \" onclick=\"delruleId('"+res[j].id+"')\"></a></span></li>";
+                			$("#ruleId").append(data);
+                			ruleArray[j]=res[j].id;
+            			}
+            		}
+            		 window.parent.layer.close(index);	 
+            	 }else{
+            		
+            	 }
+            	 
+            }
+		});
+	}
+	
+ 	function checkNoLength(){
+ 		var length= ($("#sysNo").val()).length;
+ 		if($("#sysNo").val().trim()==''||length==0){
+ 			$("#sysNomsg").text('输入不可为空！');
+		}else if(length>30){
+			$("#sysNomsg").text('长度不能超过30！');
+		}else{
+			$("#sysNomsg").text('');
+		}
+ 	}
+ 	
+ 	function checkNameLength(){
+ 		var length= ($("#name").val()).length;
+ 		if($("#name").val().trim()==''||length==0){
+ 			$("#namemsg").text('输入不可为空！');
+		}else if(length>10){
+			$("#namemsg").text('长度不能超过10！');
+		}else{
+			$("#namemsg").text('');
+		}
+ 	}
+ 	
+	function checkconfirmP(){
+		var length= ($("#confirmPassword").val()).length;
+		if(length==0){
+			$("#confirmmsg").text('输入不可为空！');
+		}else if(length>20){
+			$("#confirmmsg").text('长度不可超多20！');
+		}else if($("#password").val()!=$("#confirmPassword").val()){
+			$("#confirmmsg").text('密码不一致！');			
+		}else{
+			$("#confirmmsg").text('');
+		}
+	}
+	function checkIpAddress(){
+		var regu='(((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))\\.){3}((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))';
+	    var re = new RegExp(regu);
+		var length= ($("#ipAddress").val()).length;
+		if($("#ipAddress").val()!='*'){
+			if($("#ipAddress").val().trim()==''||length==0){
+				$("#ipmsg").text('输入不可为空！');			
+			}else if (!re.test($("#ipAddress").val())){
+			   	$("#ipmsg").text('格式错误！');	
+			}else{
+				$("#ipmsg").text('');	
+			}
+		}
+	}
+	
+	
+	function checkPassword(){
+		var length= ($("#password").val()).length;
+		$("#confirmPassword").val('');
+		$("#confirmmsg").text('');
+		if(length==0){
+			$("#passwordmsg").text('输入不可为空！');			
+		}else if(length>20){
+			$("#passwordmsg").text('长度不可超多20！');
+		}else{
+			$("#passwordmsg").text('');
+		}
+	}
+	
+	
+	function check(){
+		if($("#sysNo").val().trim()==''){
+ 			$("#sysNomsg").text('输入不可为空！');
+		}
+		if($("#name").val().trim()==''){
+ 			$("#namemsg").text('输入不可为空！');
+		}
+		if($("#confirmPassword").val().trim()==''){
+			$("#confirmmsg").text('输入不可为空！');
+		}
+		if($("#ipAddress").val().trim()==''){
+			$("#ipmsg").text('输入不可为空！');			
+		}
+		if($("#password").val().trim()==''){
+			$("#passwordmsg").text('输入不可为空！');			
+		}
+		var flag=true;
+		/* $('span').each(function(){
+			if($(this).text().trim().length!=0){
+		    	flag = false;
+			}  
+		});
+		return flag; */
+		
+		if($("#sysNomsg").text()!=''||$("#namemsg").text()!=''||$("#confirmmsg").text()!=''
+				||$("#ipmsg").text()!=''||$("#passwordmsg").text()!=''){
+			flag = false;
+		}
+		return flag;
+	}
+	
+/* 	function validateForm() {
+		
+	 $("#addForm").validate({
+			rules: {
+				sysNo:{
+					required: true,
+			        maxlength: 30,
+				},
+				name:{
+					required: true,
+			        maxlength: 40
+				},
+				ipAddress:{
+					required: true,
+					ipAddress:true,
+				},
+				password:{
+					required: true,
+			        maxlength: 20
+				},
+				confirmPassword:{
+					required: true,
+			        maxlength: 20
+				}
+			},
+			messages:{
+				sysNo: {
+				    required: "输入不可为空！",
+				    maxlength: "长度不能超过30"
+				},
+				name: {
+				    required: "输入不可为空！",
+				    maxlength: "长度不能超过40"
+				},
+				ipAddress:{
+					required:"输入不可为空！",
+					ipAddress:"格式不正确！",
+				},
+				password: {
+				    required: "输入不可为空！",
+				    maxlength: "长度不能超过20"
+				},
+				confirmPassword: {
+				    required: "输入不可为空！",
+				    maxlength: "长度不能超过20"
+				},
+			}
+			}).form();
+	 
+		}  */
+
+
+		function getUrlParam(name) {  
+			   var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+			   var r = window.location.search.substr(1).match(reg);  //匹配目标参数  
+			   if (r != null) {
+			       return unescape(r[2]);  //返回参数值 
+			   } else {
+			       return null; 
+			   }
+		}
+		String.prototype.trim = function(){  
+            return this.replace(/(^\s*)|(\s*$)/g, "");  
+        }
+</script>
+</body>
+</html>

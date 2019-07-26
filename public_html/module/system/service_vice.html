@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户管理</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+    <!-- jqgrid样式 -->
+    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+    
+    
+    <!--javascript引用部分 -->
+   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+   
+	<!-- jqgridjs -->
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+	
+	<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../../shared/layer/layer.js" type="text/javascript"></script>	    
+    <!-- my97 DatePicker  -->
+    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+    <script src="../../shared/ocx/makeseal.js"  type="text/javascript" ></script>
+	<style type="text/css">
+
+	</style>		
+</head>
+<body >
+
+	<div class="pagecontent" >
+		<div id="toolbars" class="toolbars">
+			<span   style="float:left;font-size:18px;color:#124164;font-weight:700;" id="mianTitle"></span>
+			<button type="button" onclick="updateMainService(1)" class="btn btn-primary" style=" float:right;">新增下级业务类型</button>
+		</div>
+		<div class="gridcontent">
+			<table id="t_vice_service"></table>
+			<div id="t_vice_page"></div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	var apiUrl = getUrlPath();
+	var vicePno = null;
+	var vicePname = null;
+	
+	function loadGrid_vice() {
+		$("#t_vice_service").jqGrid(
+			{
+				url : apiUrl+'/getServiceList',
+				datatype : "json",//
+				multiselect:false,
+				colNames : [ 'id','业务名称','业务编码','预设打印份数','流程控制id','流程控制','预定完成时间','批量盖章设置','操作','业务类型备注'],
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+							 {name : 'serv_name',index : 'serv_name',sortable:false,width : 120,align : "center"},
+							 {name : 'serv_no',index : 'serv_no',sortable:false,width : 100,align : "center"},
+							 {name : 'print_num',index : 'print_num',sortable:false,width : 100,align : "center"},
+//							 {name : 'nextlog',index : 'nextlog',sortable:false,formatter:nextlogFormatter,width : 100,align : "center"},
+							{name : 'workflow_id',index : 'workflow_id',sortable:false,width : 100,hidden : true},
+							{name : 'gzlmc',index : 'gzlmc',sortable:false,width : 100,align : "center"},
+				             {name : 'end_time',index : 'end_time',sortable:false,formatter:endtimeFormatter,width : 150,align : "center"},
+				             {name : 'nofile',sortable:false,formatter:checkFormatter,width : 200,align:"center"},
+				             {name : 'nofile',width : 150,sortable:false,align : "center",formatter:operateFormatter},
+							{name : 'serv_data',index : 'serv_data',sortable:false,width : 100,align : "center"}
+
+				          ],
+				pager : '#t_vice_page',
+		        rowNum: 15, 
+		        rowList: [15, 20, 30],
+				pagerpos: 'right',
+				recordpos : 'left'
+			});
+	}
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid_vice();
+		$(window).resize(function() {
+	        $("#t_vice_service").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+	   
+
+	function doFresh(viceParentNo,viceParentName) {
+		vicePno = viceParentNo;
+		vicePname = viceParentName;
+		document.getElementById("mianTitle").innerHTML = '<i class="fa fa-skype" aria-hidden="true"></i>'+vicePname;
+		var initData={};
+		initData['parentNo']=vicePno;
+		$("#t_vice_service").jqGrid('setGridParam', {
+			page:1,
+			postData : initData
+		}).trigger("reloadGrid");
+	}
+
+	
+	function nextlogFormatter(cellvalue, options, rowObject) {
+		var nextlogStr = '';
+		switch(cellvalue){
+			case 0:nextlogStr="直接归档";break;
+			case 1:nextlogStr="只审核";break;
+			case 2:nextlogStr="只盖章";break;
+			case 3:nextlogStr="审核->盖章";break;
+			case 4:nextlogStr="只打印";break;
+			case 5:nextlogStr="审核->打印";break;
+			case 6:nextlogStr="盖章->打印";break;
+			case 7:nextlogStr="全部流程";break;
+			default:nextlogStr="错误设置";
+		}
+	    return nextlogStr;
+	}
+
+	function endtimeFormatter(cellvalue, options, rowObject) {
+		var endtimeStr = cellvalue+'天';
+	    return endtimeStr;
+	}
+
+	function checkFormatter(cellvalue, options, rowObject) {
+		var link = '<a href="javascript:void(0)" style="color:blue" onclick="addSealRule(\'' + rowObject.serv_no + '\',\'' + rowObject.serv_name + '\')">添加设置</a>' + 
+				'&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="showSealDetail(\'' + rowObject.serv_no + '\',\'' + rowObject.serv_name + '\')">查看设置</a>';
+	    return link;
+	}
+
+	function operateFormatter(data, options, rowObject) {
+	    var link = '<a href="javascript:void(0)" style="color:blue" onclick="updateMainService(\'' + rowObject.serv_id + '\')">修改</a>' +
+	        '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="remove(\'' + rowObject.serv_id + '\')">删除';
+	    return link; 
+	}
+	
+    //修改子业务类型
+	function updateMainService(type){
+    	if(vicePname == null){
+ 			parent.layer.msg('请先选择主业务！',{icon:5});
+ 			return;
+    	}
+    	var viceUrl = '../system/service_vice_edit.html?noCache='+new Date().getTime()+(type==1?('&vicePno='+vicePno+'&vicePname='+vicePname):('&serviceId='+type+'&vicePname='+vicePname));
+		var index = window.parent.layer.open({
+			title:type==1?'新建业务':'编辑业务',
+			type: 2,  
+			content: encodeURI(encodeURI(viceUrl)),
+			area: ['80%', '98%'],
+			btn: ['保存','关闭'], //底部按钮区域
+		 	yes: function(index,layero){  //第一个按钮的事件
+				var res = window.parent["layui-layer-iframe" + index].getData();
+		 		res = JSON.parse(res);
+		 		console.log(JSON.stringify(res));
+		 		console.log(res.printNum+"@@printNum");
+		 		if(res.servName =='' || res.servName == null){
+		 			parent.layer.msg('业务名称不能为空！',{icon:5});
+		 			return;
+		 		}
+		 		if(!isInteger(res.printNum)){
+		 			parent.layer.msg('预定打印份数请填整数！',{icon:5});
+		 			return;
+		 		}
+		 		if(!isInteger(res.endTime)){
+		 			parent.layer.msg('预定完成时间请填整数！',{icon:5});
+		 			return;
+		 		}
+ 			    $.ajax({
+ 	       			type : "POST",
+ 	       			url : apiUrl + '/saveService?noCache='+new Date().getTime()+'&servId='+res.servId+(res.servId==''?'&flag=add':'&flag=update'),
+ 	       			dataType : "json",
+ 	       			data:'[' + JSON.stringify(res) + ']',
+ 	       			contentType: "application/json; charset=utf-8",
+ 	       			success : function(retdata) {
+	 	       			parent.layer.close(index);
+	 	       			parent.layer.msg(type==1?'新增成功！':'更新成功！', {icon: 1});
+	 	       			doFresh(vicePno,vicePname); 
+ 	       			},
+ 	       			error : function(xmlhttp,textStatus,errorThrown){
+ 	       				var o = JSON.parse(xmlhttp.responseText);
+ 	       				window.parent.layer.close(index);
+ 	       				layer.msg(o.message, {icon: 5});
+ 	       			}
+ 	       		});
+            }
+		});
+	 }
+    
+    
+	//添加规则
+	function addSealRule(servNo,servName){
+		var index = parent.layer.open({
+			title:'批量盖章设置(业务类型：<span style="color:green;">'+servName+'</span>)',
+			type: 2,
+			content: '../system/service_rule_add.html?noCache='+new Date().getTime(),
+			area: ['75%', '95%'],
+			btn: ['保存','关闭'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+            	//调用子页面的方法
+            	var res = window.parent["layui-layer-iframe" + index].getData();
+            	if(res!=null){  //页面验证成功
+            		var resArr=new Array();
+            		resArr.push(res);
+            		var resArrJson=JSON.stringify(resArr);
+           			$.ajax({
+           				type : "POST",
+           				url : apiUrl+'/addServiceSealRule?noCache='+new Date().getTime()+"&servNo="+servNo,
+           				data : resArrJson,
+						contentType:"application/json",
+						dataType : "json",
+           				success : function(retdata) {
+           					if(retdata){
+           						parent.layer.msg('操作成功！');
+           						//关闭页面
+               					parent.layer.close(index);
+           						//刷新
+               					doFresh(vicePno,vicePname);
+           					}
+           				},
+						error:function (data) {
+							layer.msg(data.message);
+						}
+           			});
+            	} 
+            }
+		});
+	}
+	
+	//查看盖章设置
+	function showSealDetail(servNo,servName){
+		var index = window.parent.layer.open({
+			title:'查看盖章设置(业务类型：<span style="color:green;">'+servName+'</span>)',
+			type: 2,
+			content: '../system/service_workflow_rule_main.html?noCache='+new Date().getTime()+'&servNo='+servNo,
+			area: ['95%', '95%'],
+			btn: ['关闭'], //底部按钮区域
+		 	no: function(index,layero){  //第一个按钮的事件
+				
+            }
+		});
+		
+	}
+    
+    //判断是否为整数
+	function isInteger(obj) {
+		//var r = /^\+?[1-9][0-9]*$/;　　//正整数
+		var r = /^\d+$/;　　//正整数+0
+		return r.test(obj);
+	}
+    
+	   //删除子业务类型
+	   function remove(id) {
+			var ids = [];
+			ids.push(id);
+			top.layer.confirm('操作不可恢复，确定要删除此数据吗？', {
+				  btn: ['确定','取消']
+			}, function(){
+				$.ajax({
+					type : "DELETE",
+					url : apiUrl+'/deleteService?noCache='+new Date().getTime(),
+					data : JSON.stringify(ids),
+					dataType : "json",
+					contentType:"application/json",
+					success : function(retdata) {
+						top.layer.msg('删除成功！', {icon: 1});
+						doFresh(vicePno,vicePname);
+					},
+					error : function(xmlhttp,textStatus,errorThrown){
+						var o = JSON.parse(xmlhttp.responseText);
+						top.layer.msg(o.message, {icon: 5});
+					}
+				});
+			});		
+ }
+	
+
+</script>
+
+</html>

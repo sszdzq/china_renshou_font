@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>用户管理</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+       <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+       <script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	    
+	    <style type="text/css">
+    .row {
+    margin-left: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    cursor: pointer;
+}
+
+	</style>
+
+
+		
+</head>
+<body >
+	<div class="pagecontent" id="divcontent2">
+		<div class="row">
+		    <div class="col-sm-12">
+		        <div class="page-title page-title-border clearfix">
+		            <button class="btn btn-primary pull-right margin-left" onclick="showAddView()">添加用户</button>
+		            <button class="btn btn-success pull-right" onclick="openQueryCertificateUserModal()">证书查询用户</button>
+		        </div>
+		    </div>
+		</div>
+
+
+		<div class="middleLayer" style="margin:50px 0px 0px 0px;">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on">用户名</span>
+					<input type="text" name="loginId" id="loginId" style="width: 80px" placeholder="用户名" > 
+					<span class="add-on" style="margin-left:5px;">姓名</span>
+					<input type="text" name="name"  id="name" style="width: 80px" placeholder="姓名"/>
+					
+					<span class="add-on" style="margin-left:5px;" >部门</span>
+					<div class="input-append">
+						<input class="span2" id=departmentId name="departmentId" readonly="readonly"  type="hidden" >
+						<input class="span2" id=lowerLevel name="lowerLevel" readonly="readonly"  type="hidden">
+					
+						<input class="span2" id=departmentName name="departmentName" type="text" style="width: 70px" disabled="disabled">
+						<button class="btn" type="button" id="section">选择</button>
+					</div>
+					
+					<span class="add-on" style="margin-left:5px;">创建时间</span>
+					<input type="text"  id="createdAtBegin" name="createdAtBegin" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'createdAtEnd\')}' }) ">
+					至
+					<input type="text" name="createdAtEnd" id="createdAtEnd" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'createdAtBegin\')}' }) " >
+
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style=" float:right;"> 查询</button>
+				
+			</div>
+			
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="t_users"></table>
+				<div id="t_users_page"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+
+
+
+<script type="text/javascript">
+    var urlPath=getUrlPath();
+	var userId;
+	function loadGrid_users() {
+		$("#t_users").jqGrid(
+			{
+				url : urlPath+'/users?noCache='+new Date().getTime(),
+				datatype : "json",//页面加载的时候不显示数据
+				colNames : [ 'id','用户名','所属部门','姓名','创建人','创建时间','操作'],
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+							 {name : 'loginId',index : 'loginId',width : 150,align : "center"},
+				             {name : 'departmentId',index : 'departmentId',width : 150,align : "center"},
+				             {name : 'name',index : 'name',width : 150,align : "center"},
+				             {name : 'createdBy',index : 'createdBy',width : 150,align : "center"},
+				             {name : 'createdAt',index : 'createdAt',width : 150,align:"center",formatter :createdAtFormatter},
+				             {name : 'operation',index : 'operation',width : 220,align:"center",formatter :operationFormatter},
+				          ],
+				rowNum : 10,
+				rowList : [ 10, 15,30 ],
+				pager : '#t_users_page'
+			});
+	}
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		getUserinfo();
+		loadGrid_users();
+		$(window).resize(function() {
+	        $("#t_users").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+
+	$("#section").click(function(){
+		var index = window.parent.layer.open({
+			title:'选择部门',
+			type: 2,
+			content: '../../partials/select-section-modal.html?noCache='+new Date().getTime(),
+			area: ['500px', '400px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	//获取单位数据 
+            	var res = window.parent["layui-layer-iframe" + index].getData();
+            	 if(res==null){
+            		 window.parent.layer.alert("请选择部门",{icon:6});
+            	 }else{
+            		 $("#departmentName").val(res.name);
+            		 $("#departmentId").val(res.id);
+            		 if(res.lowerLevel != null && res.lowerLevel != undefined){
+            			 $("#lowerLevel").val(res.lowerLevel);
+            		 } 
+
+            		 window.parent.layer.close(index);	 
+            	 }
+            }
+		});
+	});
+	function getUserinfo(){
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : urlPath+"/userInfo",
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				if(data!=null){
+					 _userId=data.id;
+				}
+			},
+			error : function(xmlhttp,textStatus,errorThrown){
+				//console.log(xmlhttp);
+			}
+		});
+	}
+
+	function showAddView(){
+		var index = layer.open({
+			title:'用户信息',
+			type: 2,
+			content: '../../module/organization/user_add.html?noCache='+new Date().getTime(),
+			area: ['1000px', '500px'],
+			btn: ['保存','关闭'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+            	//调用子页面的方法
+            	var res = window["layui-layer-iframe" + index].getData();
+            	if(res!=null){  //页面验证成功
+            		var resArr=new Array();
+            		resArr.push(res);
+            		 var resArrJson=JSON.stringify(resArr); 
+           			$.ajax({
+           				type : "POST",
+           				url : urlPath+'/user',
+           				data : resArrJson,
+						contentType:"application/json",
+						dataType : "json",
+           				success : function() {
+           						msg('添加成功！');
+           						//关闭页面
+               					layer.close(index);
+           						//刷新
+               					doFresh();	
+           				},
+						error:function (data) {
+							var jsonData=eval('(' +data.responseText + ')'); 
+							layer.msg(jsonData.message);
+						}
+           			});
+            	} 
+            }
+		});
+	}
+	function openQueryCertificateUserModal(){
+		var index = layer.open({
+			title:'获取证书信息',
+			type: 2,
+			content: '../../module/organization/query-certificate-user-modal.html?noCache='+new Date().getTime(),
+			area: ['500px', '200px'],
+			btn: ['查询','关闭'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+            	var res = window["layui-layer-iframe" + index].getData();
+            	layer.close(index);
+				$("#t_users").jqGrid('setGridParam', {
+				    page : 1,
+				    postData :res
+				}).trigger("reloadGrid");	
+            }
+		});
+	}
+	
+	function search(){
+		var postData = $('#t_users').jqGrid("getGridParam", "postData");
+        $.each(postData, function (k, v) {
+            delete postData[k];
+        });
+		var formData = getFormData("search_form");
+		
+		   var createdAtBegin=new Date(formData.createdAtBegin).getTime()/1000;
+		   var createdAtEnd=new Date(formData.createdAtEnd).getTime()/1000 + nextDayTime;
+		   var data={};
+		   if(formData.departmentId!=""){
+			   data['departmentId']=formData.departmentId;
+		   }
+		   if(formData.name!=""){
+			   data['name']=formData.name;
+		   }
+		   if(formData.createdAtBegin!=""){
+			   data['createdAtBegin']=createdAtBegin;
+		   }
+		   if(formData.createdAtEnd!=""){
+			   data['createdAtEnd']=createdAtEnd;
+		   }
+		   if(formData.loginId!=""){
+			   data['loginId']=formData.loginId;
+		   }
+		   
+		   if(formData.lowerLevel!=""){
+			   data['lowerLevel']=formData.lowerLevel;
+		   }
+			$("#t_users").jqGrid('setGridParam', {
+				    page : 1,
+				    postData :data
+				}).trigger("reloadGrid");	
+
+		}
+	//重写toLocaleString 
+	   Date.prototype.toLocaleString = function() {
+		   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+		   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+		   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+		   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+		   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+	       return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+	   };
+	   
+	function createdAtFormatter(cellvalue, options, rowobj) {
+		return (new Date(rowobj.createdAt*1000).toLocaleString());
+	}
+	function operationFormatter(cellvalue, options, rowobj) {
+		var operation ="<a href=\"javascript:check('"+rowobj.id+"');\" style='color:blue'>查看</a> ";
+/* 		rowobj.loginId != Auth.username*/
+		if(rowobj.loginId == 'admin' || rowobj.id !=_userId){
+			 operation+="<span style='margin-left: 7px;'>|<span style='margin-left: 7px;'> <a style='color:blue' href=\"javascript:showUpdateView('"
+					+ rowobj.id + "');\">修改</a> <span style='margin-left: 7px;'>|<span style='margin-left: 7px;'> <a style='color:blue' href=\"javascript:remove('"
+					+ rowobj.id + "');\">删除</a>"
+		}
+		return operation;
+	}
+	
+	//删除用户
+	function remove(id){
+		var idArr=new Array();
+		idArr.push(id);
+		var res=JSON.stringify(idArr);
+		//删除提示
+		layer.alert('确实要删除此用户吗? 操作不可恢复', {
+			  btn: ['确定', '关闭'],
+			  yes: function(index){
+				  $.ajax({
+						type : "delete",
+						url : urlPath+"/user?noCache="+new Date().getTime(),
+						data : res,
+						contentType:"application/json",
+						dataType : "json",
+						success : function() {
+							
+								layer.msg('删除用户成功！');
+					
+								//刷新  重新加载数据
+		   					    doFresh();
+					
+						},
+						error:function (data) {
+							layer.msg(data.message);
+						}
+					});
+			  }
+		});
+	}
+	
+	//查看用户详细信息
+	function check(id){
+		var index = layer.open({
+			title:'用户信息',
+			type: 2,
+			content: '../../module/organization/user_details.html?id='+id+'&noCache='+new Date().getTime(),
+			area: ['1200px', '500px'],
+			btn: ['关闭'], //底部按钮区域
+		});
+	}
+	
+	
+	function doFresh(){
+		 $("#t_users").jqGrid('setGridParam',{									 
+			}).trigger("reloadGrid"); 
+	}
+	
+	function showUpdateView(id){
+		var index = layer.open({
+			title:'用户信息',
+			type: 2,
+			content: '../../module/organization/user_add.html?id='+id+'&noCache='+new Date().getTime(),
+			area: ['1000px', '500px'],
+			btn: ['保存','关闭'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+            	//调用子页面的方法
+            	var res = window["layui-layer-iframe" + index].getData();
+            	if(res!=null){  //页面验证成功
+            		var resArr=new Array();
+            		resArr.push(res);
+            		 var resArrJson=JSON.stringify(resArr); 
+           			$.ajax({
+           				type : "PUT",
+           				url : urlPath+'/user',
+           				data : resArrJson,
+						contentType:"application/json",
+						dataType : "json",
+           				success : function() {
+           						msg('修改成功！');
+           						//关闭页面
+               					layer.close(index);
+           						//刷新
+               					doFresh();	
+           				},
+           				error : function(xmlhttp,textStatus,errorThrown){
+           					var o = JSON.parse(xmlhttp.responseText);
+           					layer.msg(o.message, {icon: 5});
+           				}
+           			});
+            	} 
+            }
+		});
+	}
+</script>
+
+</html>

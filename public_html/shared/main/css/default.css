@@ -1,0 +1,450 @@
+@charset "utf-8";
+/*
+demo JavaKit
+author 王松乐
+Date 2016-10-3
+*/
+
+@font-face {
+  font-family: 'JavaKitFont';
+  src: url('../../css/Fonts/fontawesome-webfont.eot?v=4.7.0');
+  src: url('../../css/Fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'), url('../../css/Fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('../../css/Fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('../../css/Fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('../../css/Fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+* {
+	text-decoration: none; font-style: normal; outline: none; font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei", "微软雅黑";
+}
+html {
+	width: 100%; height: 100%; border: none; cursor: default; overflow: auto;
+}
+body {
+	width: 100%; font-size: 12px; text-align: center; margin: 0px; padding: 0px; border: none;
+}
+table {
+	font-size: 14px; color: rgb(80,80,80); border-collapse: collapse;
+}
+table td {
+	text-align: left;
+}
+
+img {
+	border: 0px; cursor: pointer; vertical-align: middle; display: inline-block; max-width: 100%; height: auto;
+}
+button {
+	border: none; cursor: pointer; vertical-align: middle !important;
+}
+p {
+	margin: 0px; padding: 0px;
+}
+b {
+	font-weight: normal;
+}
+ul {
+	list-style: none;
+}
+a:hover {
+	text-decoration: none !important;
+}
+
+
+
+
+/*-----------webhmoe 系统主界面--------------*/
+.webhmoe {
+	width: 100%; height: 100%; background-color: rgb(243,243,243);
+}
+.webhmoe .homeNav {
+	animation: DivFlash01 0.5s ease-out 0s alternate forwards; width: 220px; height: 100%; background-color: rgb(47,64,80); position: absolute; top: 0px; left: 0px; z-index: 20;
+}
+.webhmoe .homeNav .userInfo {
+	width: 100%; height: 102px; background-color: rgb(32,50,64); position: absolute; top: 0px; left: 0px;
+}
+.webhmoe .homeNav .userInfo>cite {
+	 width: 100%; height: 100%; font-size: 28px; text-decoration: none; color: white; line-height: 102px; vertical-align: middle; margin: 0px auto; top: 0px; overflow: hidden;
+}
+.webhmoe .homeNav .userInfo>cite>img {
+	width: 60%;
+}
+
+.webhmoe .homeNav .customScroll {
+	width: 100%; height: auto; position: absolute; top: 100px; left: 0px; bottom: 0px; overflow-y: auto; overflow-x: hidden;
+}
+.webhmoe .homeNav .tree>ul {
+	list-style: none; margin: 10px 0px; padding: 0px; width: 100%; height: auto;
+}
+.webhmoe .homeNav .tree>ul>li ul {
+	list-style-position: outside;
+}
+.webhmoe .homeNav .tree>ul>li {
+	border-left: 3px solid rgb(47,64,80);
+}
+.webhmoe .homeNav .tree>ul>li:hover {
+	background-color: transparent\0 !important; background-color: #2e3446; color: white;
+}
+.webhmoe .homeNav .tree>ul>li>span:hover {
+	color: white !important;
+}
+.webhmoe .homeNav .tree>ul>.cur {
+	background-color: #2e3446; color: white; border-left: 3px solid #868b97 !important;
+}
+.webhmoe .homeNav .tree>ul .cur:after {
+	font-family: "JavaKitFont"; content: "\f107"; position: absolute; top: 0px; right: 20px;
+	animation: DivFlash2 0.5s ease-out 0s alternate forwards;
+}
+.webhmoe .homeNav .tree>ul .cur>ul>li:hover {
+	color: white;
+}
+.webhmoe .homeNav .tree ul li {
+	height: auto; line-height: 45px; text-align: left; color: #a7b1c2; font-size: 14px; font-weight: bold; position: relative;
+}
+.webhmoe .homeNav .tree .expandable:after,.webhmoe .homeNav .tree .closed:after {
+	font-family: "JavaKitFont"; content: "\f104"; position: absolute; top: 0px; right: 20px;
+}
+.webhmoe .homeNav .tree>ul>li>span {
+	text-indent: 30px; display: block; width: 100%; font-weight: normal; height: auto; height: 45px\0; cursor: pointer; color: #a7b1c2; font-size: 13px;
+}
+.webhmoe .homeNav .tree>ul>li>span>b {
+	text-indent: 0px;
+}
+/*  .webhmoe .homeNav .tree>ul>li>ul>.closed>span:before,.webhmoe .homeNav .tree>ul>li>ul>.expandable>span:before {
+	font-family: "JavaKitFont"; content: "\f07b"; margin-right: 5px;
+}
+.webhmoe .homeNav .tree>ul>li>ul>.cur>span:before {
+	font-family: "JavaKitFont"; content: "\f07c"; margin-right: 5px;
+}  */
+ .webhmoe .homeNav .tree>ul>li>ul li {
+	border-left: 3px solid transparent; text-indent: 8px; cursor: pointer;
+}
+.webhmoe .homeNav .tree>ul>li>ul li span {
+	display: block; width: auto; height: auto; cursor: pointer;
+}
+ /*.webhmoe .homeNav .tree>ul>li>.treeSpan1:before {
+	font-family: "JavaKitFont"; content: "\f247"; position: relative; right: 8px;
+}
+.webhmoe .homeNav .tree>ul>li>.treeSpan2:before {
+	font-family: "JavaKitFont"; content: "\f2b9"; position: relative; right: 8px;
+}
+.webhmoe .homeNav .tree>ul>li>.treeSpan3:before {
+	font-family: "JavaKitFont"; content: "\f1b2"; position: relative; right: 8px;
+}
+.webhmoe .homeNav .tree>ul>li>.treeSpan4:before {
+	font-family: "JavaKitFont"; content: "\f157"; position: relative; right: 8px;
+}
+.webhmoe .homeNav .tree>ul>li>.treeSpan5:before {
+	font-family: "JavaKitFont"; content: "\f0c0";  position: relative; right: 8px;
+}
+.webhmoe .homeNav .tree>ul>li>.treeSpan6:before {
+	font-family: "JavaKitFont"; content: "\f0e8"; position: relative; right: 8px;
+}
+.webhmoe .homeNav .tree>ul>li>.treeSpan7:before {
+	font-family: "JavaKitFont"; content: "\f013"; position: relative; right: 8px;
+}
+.webhmoe .homeNav .tree>ul>li>.treeSpan8:before {
+	font-family: "JavaKitFont"; content: "\f002"; position: relative; right: 8px;
+}
+.webhmoe .homeNav .tree>ul>li>.treeSpan9:before {
+	font-family: "JavaKitFont"; content: "\f0b1"; position: relative; right: 8px;
+}  */
+.webhmoe .homeNav .tree>cite {
+	display: none; font-style: normal; background-color: rgb(32,50,64); font-size: 18px; color: white !important; width: 100%; height: 61px; line-height: 60px; text-align: center; cursor: pointer; color: #afb3bf; overflow: hidden;
+}
+.webhmoe .homeNav .tree>cite>img {
+	width: 60%;
+}
+
+.webhmoe .main {
+	width: auto; height: 100%; position: absolute; top: 0px; left: 220px; right: 0px; z-index: 19;
+	animation: DivFlash03 0.5s ease-out 0s alternate forwards
+}
+.webhmoe .main .header {
+	width: 100%; height: 100px; border-bottom: 2px solid #8a8c93; position: absolute; top: 0px; left: 0px;
+}
+.webhmoe .main .header .message {
+	text-align: left; height: 50px; line-height: 60px;
+}
+.webhmoe .main .header .message:after {
+	content: " "; clear: both;
+}
+.webhmoe .main .header .message .form-search {
+	margin-left: 40px; display: inline-block;
+}
+.webhmoe .main .header .message>b {
+	display: inline-block; width: 40px; vertical-align: middle; height: 35px; line-height: 35px; background-color: rgba(100,100,100,0.5); text-align: center; position: relative; left: 20px; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; cursor: pointer;margin-bottom:10px
+	}
+.webhmoe .main .header .message>b:hover {
+	background-color: rgba(100,100,100,0.6);
+}
+.webhmoe .main .header .message>b:before {
+	font-family: "JavaKitFont"; content: "\f0c9"; font-size: 18px; color: white;
+}
+.webhmoe .main .header .message>u {
+	display: inline-block; width: 35px; height: 35px; line-height: 35px; vertical-align: middle; float: right; position: relative; top: 10px; right: 40px; -moz-border-radius: 35px; -webkit-border-radius: 35px; border-radius: 35px; background-color: white; overflow: hidden;
+}
+.webhmoe .main .header .message>u>img {
+	width: 100%; vertical-align: top;
+}
+.webhmoe .main .header .message>i {
+	display: inline-block; width: 38px; text-align: center; height: 38px; line-height: 38px; float: right; top: 10px; margin-right: 5px; right: 20px; position: relative; cursor: pointer; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px;
+}
+.webhmoe .main .header .message>i:hover {
+	background-color: #e3e4e9;
+	animation: BGcolor3 0.5s ease-out 0s alternate forwards
+}
+.webhmoe .main .header .message>i>sup {
+	display: inline-block; width: 14px; height: 14px; color: white; text-align: center; line-height: 14px; background-color: orange; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; position: relative\0; top: -10px\0; right: -8px\0;
+}
+.webhmoe .main .header .message>#signOut:before {
+	font-family: "JavaKitFont"; content: "\f08b"; font-size: 18px;
+}
+.webhmoe .main .header .message>#messageLayer:before {
+	font-family: "JavaKitFont"; content: "\f0f3"; font-size: 18px;
+}
+
+.webhmoe .main .header .message>span {
+	text-align: center; display: block; float: right; height: 40px; position: relative; top: 20px; right: 60px; line-height: 18px;
+}
+.webhmoe .main .header .message>span>b {
+	color: #DFE4ED; font-size: 16px;
+}
+.webhmoe .main .header .message>span>i {
+	color: #000000; cursor: pointer;
+}
+
+.webhmoe .main .header .message>span>i:hover {
+	color: #6185a5;
+}
+.webhmoe .main .header .message>span>ul {
+	display: none; position: absolute; border: 1px solid #e5e5e5; top: 30px; left: 0px; z-index: 10; width: 160px; height: auto; background-color: white; padding: 0px 0px;
+}
+.webhmoe .main .header .message>span>ul>li {
+	height: 32px; line-height: 32px; text-align: center; font-size: 14px; color: gray; cursor: pointer; border-top: 1px solid white; border-bottom: 1px solid white;
+}
+.webhmoe .main .header .message>span>ul>li:last-child {
+	background-color: rgb(245,245,245);
+}
+.webhmoe .main .header .message>span>ul>li:hover {
+	background-color: rgb(240,250,250); border-bottom: 1px solid rgb(240,240,240); border-top: 1px solid rgb(240,240,240);
+}
+.webhmoe .main .header .message>span>ul>li:last-child:hover {
+	color: red; background-color: rgb(245,245,240);
+}
+.webhmoe .main .header .message .showInfoUL {
+	display: block;	margin: 0px; padding: 0px; list-style: none; overflow: hidden;
+	animation:         DivFlash4 0.6s 1 forwards;
+	-moz-animation:    DivFlash4 0.6s 1 forwards;
+	-webkit-animation: DivFlash4 0.6s 1 forwards;
+	-o-animation:      DivFlash4 0.6s 1 forwards;
+}
+.webhmoe .main .header .message .hiddenInfoUL {
+	display: block;	margin: 0px; padding: 0px; list-style: none; overflow: hidden;
+	animation:         DivFlash04 0.6s 1 forwards;
+	-moz-animation:    DivFlash04 0.6s 1 forwards;
+	-webkit-animation: DivFlash04 0.6s 1 forwards;
+	-o-animation:      DivFlash04 0.6s 1 forwards;
+}
+
+.webhmoe .main .header .tabs {
+	width: 100%; height: 49px; background-color: #fafafa; border-top: 1px solid #e5e5e5; position: relative;
+}
+.webhmoe .main .header .tabs:after {
+	content: " "; clear: both;
+}
+.webhmoe .main .header .tabs>div {
+	width: 100%; height: 100%;
+}
+.webhmoe .main .header .tabs>div>u {
+	width: 35px; height: 49px; background-color: white; line-height: 49px; color: #908d8d; display: inline-block; text-decoration: none; text-align: center; position: absolute; left: 0px; top: 0px; cursor: pointer;
+}
+.webhmoe .main .header .tabs>div>u:hover {
+	background-color: #f5f2f2; color: #7b7676;
+	animation: BGcolor1 0.5s ease-out 0s alternate forwards
+}
+.webhmoe .main .header .tabs>div>u:before {
+	font-family: "JavaKitFont"; content: "\f04a"; font-size: 14px;
+}
+.webhmoe .main .header .tabs>div>i {
+	width: auto; height: 49px; line-height: 49px; cursor: pointer; border-left: 1px solid #f0eded; padding: 0px 18px; font-size: 14px; color: #a3a0a0; display: inline-block; float: left;
+}
+.webhmoe .main .header .tabs>div>i:hover {
+	background-color: #f5f2f2; color: #7b7676;
+	animation: BGcolor1 0.5s ease-out 0s alternate forwards
+}
+.webhmoe .main .header .tabs>div>i:nth-child(2) {
+	margin-left: 35px;
+}
+.webhmoe .main .header .tabs>div>i:last-child {
+	float: right; position: relative;
+}
+.webhmoe .main .header .tabs>div>i:last-child:hover ul {
+	display: block;	overflow: hidden;
+	animation: DivFlash5 0.5s ease-out 0s alternate forwards
+}
+.webhmoe .main .header .tabs>div>i:last-child ul {
+	display: none; position: absolute; top: 49px; left: -1px; z-index: 20; width: 150px; height: auto; background-color: #f5f2f2; border: 1px solid #f0eded; border-top: none; list-style: none; margin: 0px; padding: 0px;
+}
+.webhmoe .main .header .tabs>div>i:last-child ul li:hover {
+	background-color: #fafafa;
+}
+.webhmoe .main .header .tabs>div>i:last-child:after {
+	font-family: "JavaKitFont"; content: "\f0d7"; font-size: 14px; margin-left: 5px;
+}
+
+
+.webhmoe .main .header .tabs>div>s {
+	width: auto; height: 49px; line-height: 49px; text-decoration: none; cursor: pointer; border-left: 1px solid #f0eded; padding: 0px 18px; font-size: 14px; color: #a3a0a0; display: inline-block; float: left;
+}
+.webhmoe .main .header .tabs>div>s:hover {
+	background-color: #f5f2f2; color: #7b7676;
+	animation: BGcolor1 0.5s ease-out 0s alternate forwards
+}
+.webhmoe .main .header .tabs>div>s:last-child {
+	float: right; position: relative;
+}
+.webhmoe .main .header .tabs>div>s:last-child:hover ul {
+	display: block;	overflow: hidden;
+	animation: DivFlash5 0.5s ease-out 0s alternate forwards
+}
+.webhmoe .main .header .tabs>div>s:last-child ul {
+	display: none; position: absolute; top: 49px; left: -1px; z-index: 20; width: 150px; height: auto; background-color: #f5f2f2; border: 1px solid #f0eded; border-top: none; list-style: none; margin: 0px; padding: 0px;
+}
+.webhmoe .main .header .tabs>div>s:last-child ul li:hover {
+	background-color: #fafafa;
+}
+.webhmoe .main .header .tabs>div>s:last-child:after {
+	font-family: "JavaKitFont"; content: "\f0d7"; font-size: 14px; margin-left: 5px;
+}
+.webhmoe .main .header .tabs>div>s:nth-last-child(2) {
+	float: right; margin-right: 35px;
+}
+.webhmoe .main .header .tabs>div>s:nth-last-child(2):before {
+	font-family: "JavaKitFont"; content: "\f064"; font-size: 14px; margin-right: 5px;
+}
+
+.webhmoe .main .header .tabs .cur {
+	background-color: rgb(38,57,73); color: #dae1e6;
+}
+.webhmoe .main .header .tabs .cur:hover {
+	background-color: rgb(38,57,73); color: #dcdbdb;
+	animation: BGcolor2 0.4s ease-out 0s alternate forwards
+}
+.webhmoe .main .header .tabs .cur>a {
+	margin-left: 5px;
+}
+.webhmoe .main .header .tabs .def>a,.webhmoe .main .header .tabs .def>s {
+	display: none;
+}
+.webhmoe .main .header .tabs .cur>a,.webhmoe .main .header .tabs .cur>s {
+	display: inline-block; width: 10px; height: 10px; color: #939ba2;
+}
+.webhmoe .main .header .tabs .cur>i{
+	display:none;
+}
+.webhmoe .main .header .tabs .cur>a:after {
+	font-family: "JavaKitFont"; content: "\f057"; font-size: 12px; margin-left: 8px;
+}
+.webhmoe .main .header .tabs .cur>a:hover {
+	color: #e6eef5;
+}
+.webhmoe .main .header .tabs .cur>s:after {
+	font-family: "JavaKitFont"; content: "\f021"; font-size: 12px; margin-left: 8px;
+}
+.webhmoe .main .header .tabs .cur>s:hover {
+	color: #e6eef5;
+}
+.webhmoe .main .header .tabs>div>b {
+	width: 35px; height: 49px; line-height: 49px; border-left: 1px solid #f0eded; background-color: white; color: #908d8d; display: inline-block; text-align: center; position: absolute; right: 0px; top: 0px; cursor: pointer;
+}
+.webhmoe .main .header .tabs>div>b:before {
+	font-family: "JavaKitFont"; content: "\f04e"; font-size: 14px;
+}
+.webhmoe .main .header .tabs>div>b:hover {
+	background-color: #f5f2f2; color: #7b7676;
+	animation: BGcolor1 0.5s ease-out 0s alternate forwards
+}
+
+.webhmoe .main .date {
+	width: 100%; height: auto; overflow: hidden; position: absolute; top: 102px; left: 0px; bottom: 35px; background-color: white;
+}
+.webhmoe .main .date .set {
+	position: absolute; top: 20px; right: 0px; width: 35px; height: 40px; line-height: 40px; cursor: pointer; text-align: center; background-color: rgba(126,126,126,0.7); -moz-border-radius: 40px 0px 0px 40px; -webkit-border-radius: 40px 0px 0px 40px; border-radius: 40px 0px 0px 40px;
+}
+.webhmoe .main .date .set:hover {
+	background-color: rgba(126,126,126,0.8);
+}
+.webhmoe .main .date .set>i {
+	width: 40px; height: 40px; display: inline-block; line-height: 40px;
+	animation: DivFlash7 4s linear 0s infinite both;
+}
+.webhmoe .main .date .set>u {
+	display: block; width: 150px; height: 200px; border-bottom: 1px solid rgba(126,126,126,0.7); border-left: 4px solid rgba(126,126,126,0.7); background-color: #f6f6f2; position: absolute; top: -20px; left: 31px;
+}
+.webhmoe .main .date .set>i:after {
+	font-family: "JavaKitFont"; content: "\f013"; color: white; font-size: 18px;
+}
+
+.webhmoe .main .footer {
+	width: 100%; height: 35px; overflow: hidden; line-height: 35px; color:  gray; border-top: 1px solid rgb(230,235,235); position: absolute; bottom: 0px; left: 0px; font-size: 14px;
+}
+
+
+
+/*------------------------追加响应式布局样式-------------------------------*/
+ @media screen and (max-width:1095px) {
+	.login .window {width: 50%;}
+	.login .window .form .goto>input[name=code] {width: 52%;}
+	.login .window .form .goto button {display: block; width: 100%; margin: 10px auto;}
+}
+@media screen and (max-width:800px) {
+	.webhmoe .homeNav {animation: DivFlash1 0.5s ease-out 0s alternate forwards; width: 70px;}
+	.webhmoe .homeNav .userInfo {display: none;}
+	.webhmoe .homeNav .tree>ul>li>span>b {display: none;}
+	.webhmoe .homeNav .tree>cite {display: block;}
+	.webhmoe .homeNav .tree>ul>li {color: rgb(47,64,80); line-height: 60px; border-left: none;}
+	.webhmoe .homeNav .tree>ul>li>span {font-size: 21px;}
+	.webhmoe .homeNav .tree>ul>li>span {color: #afb3bf;}
+	.webhmoe .main {animation: DivFlash3 0.5s ease-out 0s alternate forwards;}
+	.webhmoe .main .header .message>i {right: 5px;}
+	.webhmoe .main .header .message>input {left: 30px; width: 60%; font-size: 14px;}
+	.webhmoe .main .header .tabs {overflow: hidden;}
+	.webhmoe .homeNav .customScroll {top: 0px;}
+}
+@media all and (max-device-width:960px) {
+	.login>h1 {font-size: 24px;}
+	.login .window {width: 80%;}
+	.login .window .form .goto>input[name=code] {width: 52%;}
+	.login .window .form .goto button {display: block; width: 100%; margin: 10px auto;}
+	.login .window .form .goto a {display: block;}
+}
+@media all and (max-device-width:960px) {
+	.webhmoe .homeNav {animation: DivFlash1 0.5s ease-out 0s alternate forwards; width: 70px;}
+	.webhmoe .homeNav .userInfo {display: none;}
+	.webhmoe .homeNav .tree>ul>li>span>b {display: none;}
+	.webhmoe .homeNav .tree>cite {display: block;}
+	.webhmoe .homeNav .tree>ul>li {color: rgb(47,64,80); line-height: 60px; border-left: none;}
+	.webhmoe .homeNav .tree>ul>li>span {font-size: 21px;}
+	.webhmoe .homeNav .tree>ul>li>span {color: #afb3bf;}
+	.webhmoe .main {animation: DivFlash3 0.5s ease-out 0s alternate forwards;}
+	.webhmoe .main .header .message>b {display: none;}
+	.webhmoe .main .header .message>i {right: 5px;}
+	.webhmoe .main .header .tabs>div>s {display: none;}
+	.webhmoe .main .header .message>input {left: 10px; width: 60%; font-size: 14px;}
+	.webhmoe .main .header .tabs {overflow: hidden;}
+	.webhmoe .main .header .tabs>div {width: 3000px;}
+	.webhmoe .homeNav .customScroll {top: 0px;}
+	.webhmoe .main .header .message>u {display: none;}
+	.webhmoe .main .header .message>span {display: none;}
+} 
+
+
+#tab_dbsy {
+	margin-left: 35px;
+	display:inline-block;
+}
+#navBut {
+	background: url("../../images/icon02.png") no-repeat center center;
+}
+
+
+
+

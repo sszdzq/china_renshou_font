@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"/>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+    <!--导入jquery文件-->
+    <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+    <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+    <!--导入bootstrap.css文件-->
+    <link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/ztree/css/zTreeStyle.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/document.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/ztreeManageDiy.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css"/>
+    <!--导入bootstrap.js文件-->
+    <script type="text/javascript" src="../../shared/bootstrap/js/bootstrap.min.js"></script>
+    <!--创建视口-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- jqgridjs -->
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+    <!-- ztreejs -->
+    <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../shared/html5/html5shiv.min.js"></script>
+    <script type="text/javascript" src="../../shared/respond/respond.src.js"></script>
+    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+</head>
+<body>
+<div class="container-fluid" style="margin:0 10px 0 10px;">
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="page-title page-title-border clearfix">
+                <h3 class="pull-left">部门管理</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span5"
+             style="height:450px;min-height: 450px; max-height: 450px;overflow-x: hidden;overflow-y: auto;background: #fff">
+            <div class="ztree">
+                <ul id="treeDemo" class="ztree"></ul>
+            </div>
+        </div>
+
+        <div class="span7" style="text-align: left">
+            <div class="row" style="height:80px; margin-top:10px;">
+                <div>
+                    <h3 id="label_section">添加部门</h3>
+                </div>
+            </div>
+            <div>
+                <form class="form-horizontal" role="form" novalidate>
+                    <div class="form-group" style="margin: 0 0 15px 0">
+                        <label for="upname" class="col-sm-2 control-label" style="margin-right:30px">上级部门</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="upname" id="upname" class="form-control"
+                                   placeholder="上级部门" disabled>
+                            <input type="hidden">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 0 0 15px 0">
+                        <label for="allName" class="col-sm-2 control-label" style="margin-right:30px">机构编码</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="otherCode" id="otherCode" class="form-control"
+                                   placeholder="机构编码" onchange="otherCodeValidateOptions()">
+                            <span id="numberMsg" style="color:red;font-size: 16px"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin: 0 0 15px 0">
+                        <label for="name" class="col-sm-2 control-label" style="margin-right:30px">部门名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="name" id="name" class="form-control" onPaste="checkName()"
+                                   onKeyUp="checkName()" onblur="checkName()"
+                                   placeholder="部门名称">
+                            <font color="red" size="4" id="tips" style="display:none;">输入不能为空！</font>
+                        </div>
+                        <div>
+
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 0 0 15px 0">
+                        <label for="allName" class="col-sm-2 control-label" style="margin-right:30px">部门全称</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="allName" id="allName" class="form-control"
+                                   placeholder="部门全称">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 0 0 15px 0">
+                        <label for="serverLabel" class="col-sm-2 control-label" style="margin-right:30px">服务器标识</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="serverLabel" id="serverLabel" class="form-control"
+                                   placeholder="服务器标识">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 0 0 15px 0">
+                        <label class="col-sm-2 control-label " style="margin-right:30px">是否机构</label>
+                        <div class="col-sm-10">
+                            <input type="radio" id="inlineCheckbox11" value="1" name="isOrganization" checked="checked">
+                            是
+                            <input type="radio" id="inlineCheckbox12" value="0" name="isOrganization"> 否
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 0 0 15px 0">
+                        <label class="col-sm-2 control-label "  style="margin-right:30px">是否启用</label>
+                        <input type="radio" id="inlineCheckbox21" value="1" name="status" checked="checked"> 是
+                        <input type="radio" id="inlineCheckbox22" value="0" name="status"> 否
+                    </div>
+                    <div class="form-group" style="margin: 0 0 15px 0">
+                        <label for="allName" class="col-sm-2 control-label" style="margin-right:30px">自定义顺序</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="text1" id="text1" placeholder="填写顺序字母">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 0 0 15px 0">
+                        <input type="button" id="saveOrUpdate" class="btn btn-primary col-padding-4"
+                               style="margin-left:130px" value="添加" disabled="disabled">
+                        <input type="button" id="reset" class="btn btn-default col-padding-4 margin-left-4"
+                               style="margin-left:30px" value="重置">
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var rootnode = null;
+    var currentNode = null;
+    //var checkFlag=true;
+    var currentId = null;
+    var currentSelNode = null;
+    var apiUrl = getUrlPath();
+    var setting = {
+        async: {
+            enable: true,
+            url: apiUrl + "/departments?noCache=" + new Date().getTime(),
+            dataType: "json",
+            type: "GET",
+            autoParam: ["id"],
+            otherParam: {displayUp: true, level: 1, displayOrg: true, displayStop: true},
+            dataFilter: ret_filter
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "code"
+            }
+        },
+        callback: {
+            //onClick:zTreeOnClick  //添加点击事件
+            onAsyncSuccess: zTreeOnAsyncSuccess,
+            onClick: zTreeOnClick
+        },
+        view: {
+            addDiyDom: addDiyDom
+        }
+    };
+
+    function ret_filter(treeId, parentNode, childNodes) {
+        if (!childNodes || childNodes.length == 0) {
+            var nodes = [];
+            var node = new Object();
+            node.id = parentNode.id + "_nochild";
+            node.code = parentNode.id;
+            node.name = "无下级";
+            nodes.push(node);
+            return nodes;
+        }
+        ;
+        for (var i = 0, l = childNodes.length; i < l; i++) {
+            childNodes[i].isParent = true;
+        }
+        return childNodes;
+    }
+
+    function init_dept_tree() {
+        $.fn.zTree.init($("#treeDemo"), setting);
+    }
+
+    //点击树绑定事件
+    /* function zTreeOnClick(event, treeId, treeNode) {
+        var info=JSON.stringify(treeNode);
+        layer.alert(info, {icon: 5});
+    } */
+    //添加节点后的按钮
+    function addDiyDom(treeId, treeNode) {
+
+        $.ajax({
+            type: "GET",
+            data: {},
+            url: apiUrl + '/userInfo?noCache=' + new Date().getTime(),
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.type != 0) {
+                    var aObj = $("#" + treeNode.tId + "_a");
+                    if ($("#diyBtn_" + treeNode.id).length > 0) return;
+                    if (treeNode.name == "无下级") return;
+                    var editStr = "";
+                    if (treeNode.parentTId == null) {
+                        aObj.append("<div style='float:right;'><label class='fa fa-plus' onclick='showAddModal(" + JSON.stringify(treeNode) + ")'></label></div>");
+                    } else {
+                        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                        var parentNode = treeObj.getNodeByTId(treeNode.parentTId);
+                        aObj.append("<div style='float:right;'><label class='fa fa-plus' onclick='showAddModal(" + JSON.stringify(treeNode) + ")'></label>&nbsp;&nbsp;<label class='fa fa-edit' onclick='showUpdateModal(" + JSON.stringify(treeNode) + "," + JSON.stringify(parentNode) + ")'></label>&nbsp;&nbsp;<label class='fa fa-remove' onclick='remove(" + JSON.stringify(treeNode) + "," + JSON.stringify(parentNode) + ")'></label></div>");
+                    }
+                }
+            },
+            error: function (xmlhttp, textStatus, errorThrown) {
+                ////console.log(xmlhttp);
+            }
+        });
+
+    }
+
+    $("#reset").click(function () {
+//	currentId = rootnode.id;
+//	currentNode = rootnode.allCode;
+
+//	$("#upname").val("");
+        $("#name").val("");
+        $("#allName").val("");
+        $("#text1").val("");
+        $("#serverLabel").val("");
+        $("#inlineCheckbox11").attr("checked", "checked");
+        $("#inlineCheckbox21").attr("checked", "checked");
+        $("#saveOrUpdate").attr("disabled", "disabled");
+        if (!$("#otherCode").is(":disabled")) {
+            $("#otherCode").val("");
+        }
+        $("#numberMsg").html("");
+    });
+
+    //新增
+    function showAddModal(node) {
+        $("#tips").css('display', 'none');
+
+        if (node == null || node == undefined) {
+            node = rootnode;
+        }
+
+        $("#numberMsg").html("");
+        $("#otherCode").attr('disabled', false);
+        $("#numberMsg").html("");
+        //阻止事件冒泡
+        document.getElementById("label_section").innerHTML = "添加部门";
+        document.getElementById("saveOrUpdate").value = "添加";
+        if (node.allCode != null && node.allCode.length == 44) {//二级菜单
+            $("#otherCode").val(node.otherCode);
+            $("#otherCode").attr('disabled', true);
+        } else {
+            $("#otherCode").val('');
+        }
+        $("#upname").val(node.name);
+        $("#name").val("");
+        $("#allName").val("");
+        $("#serverLabel").val("");
+        currentNode = node.allCode + node.id;
+        //currentSelNode = node;
+        $("#saveOrUpdate").attr("disabled", "disabled");
+    }
+
+    //修改
+    function showUpdateModal(node, pNode) {
+        $("#otherCode").attr('disabled', true);
+        $("#tips").css('display', 'none');
+        $("#numberMsg").html("");
+        document.getElementById("label_section").innerHTML = "修改部门";
+        document.getElementById("saveOrUpdate").value = "修改";
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        var parendNode = treeObj.getNodeByTId(node.parentTId);
+        $("#upname").val(parendNode.name);
+        $("#name").val(node.name);
+        $("#allName").val(node.allName);
+        $("#serverLabel").val(node.serverLabel);
+        $("#text1").val(node.text1);
+
+        $("#otherCode").val(node.otherCode);
+
+        if (node.isOrganization == 1) {
+            $("#inlineCheckbox11").attr("checked", true);
+        } else if (node.isOrganization == 0) {
+            $("#inlineCheckbox12").attr("checked", true);
+        }
+        if (node.status == 1) {
+            $("#inlineCheckbox21").attr("checked", true);
+        } else if (node.status == 0) {
+            $("#inlineCheckbox22").attr("checked", true);
+        }
+        currentId = node.id;
+        currentNode = node.allCode;
+        //currentSelNode = pNode;
+        $("#saveOrUpdate").removeAttr("disabled");
+    }
+
+    //删除
+    function remove(node, pNode) {
+        var ids = [];
+        ids.push(node.id);
+        layer.confirm('确实要删除此' + node.name + '吗?操作不可恢复', {
+            btn: ['确定', '取消']
+        }, function () {
+            $.ajax({
+                type: "DELETE",
+                url: apiUrl + "/department",
+                data: JSON.stringify(ids),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (retdata) {
+                    layer.msg('删除成功', {icon: 1});
+                    var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                    treeObj.reAsyncChildNodes(currentSelNode.getParentNode(), "refresh");
+                },
+                error: function (xmlhttp, textStatus, errorThrown) {
+                    var o = JSON.parse(xmlhttp.responseText);
+                    layer.msg(o.message, {icon: 5});
+                }
+            });
+        });
+    }
+
+    $("#saveOrUpdate").click(function () {
+        otherCodeValidateOptions();
+//	if(checkFlag){
+        var flag = $("#saveOrUpdate").val();
+        var list = new Array();
+        if ($("#name").val() == null || $("#name").val() == "") {
+            layer.msg('部门名称不能为空', {icon: 5});
+            return;
+        }
+        var section = {};
+        section['otherCode'] = $("#otherCode").val();
+
+        section["name"] = $("#name").val();
+        var allName = $("#allName").val();
+        if (allName == null || allName == "") {
+            section["allName"] = $("#name").val();
+        } else {
+            section["allName"] = allName;
+        }
+        var serverLabel = $("#serverLabel").val();
+        if (serverLabel == null || serverLabel == "") {
+            section["serverLabel"] = "0000";
+        } else {
+            section["serverLabel"] = serverLabel;
+        }
+        section["status"] = $("input[name='status']:checked").val();
+        section["isOrganization"] = $("input[name='isOrganization']:checked").val();
+        section["upname"] = $("#upname").val();
+        section["code"] = currentNode;
+        section["text1"] = $("#text1").val();
+
+        if (flag == "添加") {
+            list.push(section);
+            $.ajax({
+                type: "POST",
+                url: apiUrl + "/department",
+                dataType: "json",
+                data: JSON.stringify(list),
+                contentType: "application/json; charset=utf-8",
+                success: function (retdata) {
+                    layer.msg('添加成功', {icon: 1});
+                    var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                    treeObj.reAsyncChildNodes(currentSelNode, "refresh");
+                    showAddModal();
+                },
+                error: function (xmlhttp, textStatus, errorThrown) {
+                    var o = JSON.parse(xmlhttp.responseText);
+                    layer.msg(o.message, {icon: 5});
+                }
+            });
+
+        } else if (flag == "修改") {
+            section["id"] = currentId;
+            list.push(section);
+            $.ajax({
+                type: "PUT",
+                url: apiUrl + "/department",
+                dataType: "json",
+                data: JSON.stringify(list),
+                contentType: "application/json; charset=utf-8",
+                success: function (retdata) {
+                    layer.msg('修改成功', {icon: 1});
+                    var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                    treeObj.reAsyncChildNodes(currentSelNode.getParentNode(), "refresh");
+                    showAddModal();
+                },
+                error: function (xmlhttp, textStatus, errorThrown) {
+                    var o = JSON.parse(xmlhttp.responseText);
+                    layer.msg(o.message, {icon: 5});
+                }
+            });
+        }
+//	}
+
+    });
+
+
+    function getRoot() {
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        //返回一个根节点
+        var node = treeObj.getNodesByFilter(function (node) {
+            return node.level == 0
+        }, true);
+        return node;
+    }
+
+    function checkName() {
+        var name = $("#name").val();
+        if (name != null && name != "") {
+            $("#saveOrUpdate").removeAttr("disabled");
+            $("#tips").css("display", "none");
+        } else {
+            $("#saveOrUpdate").attr("disabled", "disabled");
+            $("#tips").css("display", "inline");
+        }
+    }
+
+    //加载ztree
+    $(document).ready(function () {
+        init_dept_tree();
+    });
+
+    function zTreeOnAsyncSuccess() {
+        var node = getRoot();
+        rootnode = getRoot();
+        $("#upname").val(node.name);
+        currentNode = node.allCode + node.id;
+    }
+
+    function zTreeOnClick(event, treeId, treeNode) {
+        currentSelNode = treeNode;
+    }
+
+    //盖章规则号校验
+    function otherCodeValidateOptions() {
+        if ($("#otherCode").val() == null || $("#otherCode").val() == '') {
+            return;
+        } else {
+//		checkFlag=false;
+            var res = {};
+            if (currentId != null) {
+                res['id'] = currentId;
+            }
+
+            res['otherCode'] = $("#otherCode").val();
+
+            if (res['otherCode'].length > 32) {
+                $("#numberMsg").html("长度不能超过32");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: apiUrl + "/otherCode/exist?noCache="
+                    + new Date().getTime(),
+                    data: res,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (retdata) {
+                        $("#numberMsg").html("");
+//					checkFlag=true;
+                    },
+                    error: function (xmlhttp, textStatus, errorThrown) {
+//					checkFlag=false;
+                        $("#otherCode").val(null);
+                        $("#numberMsg").html(
+                            ($.parseJSON(xmlhttp.responseText)).message, {icon: 5});
+                    }
+                });
+            }
+        }
+    };
+</script>
+</html>

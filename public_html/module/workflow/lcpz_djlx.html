@@ -1,0 +1,120 @@
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>业务类型</title>
+
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/ztree/css/zTreeStyle.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/ztreeDiy.css"  type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet" />
+<link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+
+<style type="text/css">
+
+</style>
+</head>
+<body>
+	<!-- 树 -->
+	<div class="leftLayer" style="width:250">
+		<div class="divcontent">
+			<ul id="zTree" class="ztree"></ul>
+		</div>
+	</div> 
+</body>
+<script type="text/javascript">
+	var urlPath=getUrlPath();
+	var _djlxid = null;
+	var _djlxbm = null;
+	var _djlxmc = null;
+	
+	function getDataDjlx(){
+		if(_djlxid == null){
+			return null;
+		}else{
+			$.ajax({
+   				type : "POST",
+   				url : urlPath+"/ywlxController/seldjlxbm.mvc",
+   				async : false,
+   				data : {djlxid:_djlxid},
+   				dataType : "json",
+   				success : function(retdata) {
+   					_djlxbm = retdata.djlxbm;
+   				}
+   			});
+			return [_djlxid,_djlxbm,_djlxmc];
+		}
+	}
+	/************************************************************************************************************/
+
+    // zTree 的参数配置
+    var setting = {
+    	async:{
+    		enable:true,
+    		url:urlPath+"/ywlxController/zTreeYwlx.mvc",
+    		dataType:"json"
+    	},
+    	callback:{
+    		onClick:zTreeOnClick,  //添加点击事件
+    	},
+   		data:{
+   			key: {
+   				name:"djlxmc" //设置 zTree 显示节点时，将 zNodes 的 xtbm 属性当做节点名称
+   			},
+   			simpleData: {
+   				enable: true, //设置为简单类型，false为标准类型
+   				idKey: "djlxid",
+   				pIdKey: "pdjlxid",
+   				rootPId: "NO"
+   			}
+   		}
+    };
+    
+    $(document).ready(function(){
+ 		//获取ztree数据
+		$.post(urlPath+"/ywlxController/zTreeYwlx.mvc",function(retdata) {
+			zTreeObj = $.fn.zTree.init($("#zTree"), setting, retdata);
+		       var nodes = zTreeObj.getNodes();
+		       for (var i = 0; i < nodes.length; i++) { //设置节点展开
+		      	 zTreeObj.expandNode(nodes[i], true, false, true);
+		       }
+		},"json");   
+   	 }); 
+	
+    //点击树绑定事件
+    function zTreeOnClick(event, treeId, treeNode) {   
+    	_djlxid = treeNode.djlxid;
+    	_djlxmc = treeNode.djlxmc;
+    };
+
+/************************************************************************************************************/
+</script>
+</html>

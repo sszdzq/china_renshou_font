@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	<!-- jqgrid样式 -->
+
+	<link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+
+
+	<!--javascript引用部分 -->
+	<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+
+
+	<!-- jqgridjs -->
+
+
+
+	<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	<!-- my97 DatePicker  -->
+	<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+	<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	<script src="../../shared/ocx/makeseal.js"  type="text/javascript" ></script>
+</head>
+<body>
+	<form id="ywlxForm" >
+		<input type="hidden" name="flag" id="flag" value=""></input>
+		<table  id="ywlxTable" style="font-size: 15px;width:100%;border:0px" class="table_insert">
+			<tbody>
+				<tr>
+					<td class="tdtitle must" align="right">单据类型ID：</td>
+					<td>
+						<input type="text" id="djlxid" name="djlxid" class="form_input" value="" style="text-transform: uppercase" readonly="readonly">
+						<input type="hidden" id="pdjlxid" name="pdjlxid" class="form_input" value="">
+					</td>
+					<td class="tdtitle must" align="right">单据类型名称：</td>
+					<td>
+						<input type="text" id="djlxmc" name="djlxmc" class="form_input" checktype="b" value="">
+					</td>
+				</tr>
+				<tr>
+					<td align="right" class="tdtitle must">单据类型编码：</td>
+					<td>
+						<input type="text" id="djlxbm" name="djlxbm" class="form_input"  readonly= "readonly" value="">
+					</td>
+					<td class="tdtitle must" align="right">单据类型级别：</td>
+					<td>
+						<input type="text" id="lxjb" name="lxjb" class="form_input" readonly= "readonly" value="">
+					</td>
+				</tr>
+				<tr>
+					<td align="right" class="tdtitle">单据类型说明：</td>
+					<td colspan="3">
+						<textarea id="bz" name="bz" class="form_input" style="width: 90%;height: 80px"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="4">
+						<p>注意：单据类型ID必须是大写字母或数字组成，并且不唯一。</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+<script type="text/javascript">
+    $("#ywlxForm").formInit();
+    var djlxid = getUrlParam("djlxid");
+    var flag = getUrlParam("flag");
+    var pdjlxid = getUrlParam("pdjlxid");
+	//初始化，用于验证输入数据是否符合要求
+    var urlPath=getUrlPath();
+	$(document).ready(function(){
+        dataInit();
+        $("#djlxid").attr("existurl",urlPath+"/ywlxController/checkDjlxid");
+	});
+	
+	//保存信息
+	function saveData(index){
+	    $("#flag").val(flag);
+		var jfobj = $("#ywlxForm");
+		if(jfobj.validate()){
+			jfobj.formSubmit(urlPath+"/ywlxController/saveYwlx",null,function(retval){
+				if(retval == true){
+					//刷新jqGrid
+					window.parent.doFresh();
+					window.parent.doFresh_djcs();
+					window.parent.doFresh_gndy();
+					//加载树
+					window.parent.locadZtree();
+					//提示信息
+					window.parent.msg("操作成功!");
+					//关闭layer框
+					window.parent.layer.close(index);
+				}else{
+					window.parent.alert(retval.message);
+				}
+			},"json",true);
+		}
+	}
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg); //匹配目标参数
+        if (r != null) {
+            return unescape(r[2]); //返回参数值
+        } else {
+            return null;
+        }
+    }
+
+
+    function dataInit(){
+		if(flag == "addXJ"){
+            $.ajax({
+                type : "get",
+                url : urlPath + '/ywlxController/getBm?noCache=' + new Date().getTime(),
+                contentType : "application/json",
+                dataType : "json",
+                data:{tabname:"work_flow_b_djlx",bmField:"djlxbm",idField:"djlxid",pidField:"pdjlxid",pidValue:djlxid},
+                success:function (data) {
+                    $("#djlxbm").val(data.bm);
+                    $("#lxjb").val(data.js);
+                    $("#pdjlxid").val(djlxid);
+                }
+            });
+		}else{
+            $.ajax({
+                type : "get",
+                url : urlPath + '/ywlxController/getOneYwlx/?noCache=' + new Date().getTime(),
+                contentType : "application/json",
+                dataType : "json",
+                data:{djlxid:djlxid},
+                success:function (data) {
+                    $("#djlxid").attr("readonly","true");
+                    $("#djlxid").val(data.djlxid);
+                    $("#djlxmc").val(data.djlxmc);
+                    $("#djlxbm").val(data.djlxbm);
+                    $("#lxjb").val(data.lxjb);
+                    $("#pdjlxid").val(data.pdjlxid);
+                    $("#bz").val(data.bz);
+                }
+            });
+		}
+	}
+</script>
+</body>
+</html>

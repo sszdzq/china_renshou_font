@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+		<title></title>
+		<!--导入jquery文件-->
+		<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+		<script src="../../shared/js/jquery.extend.min.js" type="text/javascript"></script>
+		<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+		<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+		<script src="../../shared/bootstrap/js/bootstrap-table.js" type="text/javascript"></script>
+		<script src="../../shared/bootstrap/js/bootstrap-table-zh-CN.js" type="text/javascript"></script>
+		<!--导入bootstrap.css文件-->
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap-table.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<!--导入bootstrap.js文件-->
+		<script type="text/javascript" src="../../shared/bootstrap/js/bootstrap.min.js" ></script>
+		<!--创建视口-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- jqgridjs -->
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+<style type="text/css">
+.module-viewer-header {
+    margin-top: 10px;
+    margin-bottom: -1px;
+    height: 40px;
+    background: #f5f6fa;
+    line-height: 38px;
+    border: 1px solid #e1e6eb;
+    position: relative;
+    border-left: 4px solid #6d7781;
+}
+
+.module-viewer-header .module-viewer-title {
+    font-size: 16px;
+    color: #333;
+    display: inline-block;
+    margin-left: 16px;
+}
+
+.panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+.panel-default {
+    border-color: #ddd;
+}
+
+.panel-body {
+    padding: 15px;
+}
+
+.margin-right, .margin-right-1 {
+    margin-right: 8px !important;
+}
+.btn-lg, .btn-group-lg > .btn {
+    padding: 10px 16px;
+    font-size: 18px;
+    line-height: 1.3333333;
+    border-radius: 6px;
+}
+.btn-default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-bottom: 0;
+    font-size: 18px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid black transparent;
+    border-radius: 4px;
+}
+input, button, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+button, html input[type="button"], input[type="reset"], input[type="submit"] {
+    -webkit-appearance: button;
+    cursor: pointer;
+}
+button, select {
+    text-transform: none;
+}
+button {
+    overflow: visible;
+}
+button, input, optgroup, select, textarea {
+    margin: 0;
+    font: inherit;
+    color: inherit;
+}
+</style>
+	</head>
+	<body>
+		<!--创建布局容器-->
+		<div class="container-fluid" style="margin:0 10px 0 10px;">
+			<div class="clearfix"></div>
+				<div class="module-viewer-header">
+		       	 <span class="module-viewer-title">基本信息</span>
+				</div>
+			    <div class="panel panel-default">
+	        		<div class="panel-body">
+			        <div class="row-fluid" >
+						<table id="sealTable" style="border:none;">
+				        </table>		
+					</div>
+	        		</div>
+        		</div>
+				<div class="module-viewer-header">
+		       	 <span class="module-viewer-title">印章预览</span>
+				</div>
+			    <div class="panel panel-default">
+	        		<div class="panel-body">
+			        <div class="row-fluid" >
+						 <img id="sealImgId">		
+					</div>
+	        		</div>
+        		</div>
+				<div class="module-viewer-header">
+		       	 <span class="module-viewer-title">授权信息</span>
+				</div>
+			    <div class="panel panel-default">
+	        		<div class="panel-body">
+			        <div id="userSealId" class="row-fluid" >
+						 		
+					</div>
+	        		</div>
+        		</div>
+
+
+
+			<div class="module-viewer-header">
+				<span class="module-viewer-title">业务类型</span>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div id="serviceId" class="row-fluid" >
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</body>
+<script type="text/javascript">
+
+var aipUrl = getUrlPath();
+var sealTypeArr = ['','公章','公章(法人章)','公章(合同章)','公章(党章)','公章(财务章)','公章(工会章)','个人章','个人章(手写签名)','个人章(文字签名)'];
+
+$(document).ready(function() {
+	var sealId = GetQueryString("sealId");
+	getSealinfo(sealId);
+	
+});
+
+function GetQueryString(name){
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if(r!=null)return  decodeURI(r[2]); return null;
+}
+
+function getSealinfo(id){
+	$.ajax({
+		type : "GET",
+		url : aipUrl+"/seal/"+id+'?noCache='+new Date().getTime(),
+		dataType : "json",
+		async:false,
+		contentType: "application/json; charset=utf-8",
+		success : function(data) {
+			$("#sealTable").append('<tr"><td width="120px" style="text-align:right;border:none;"><b>印章名称：</b></td><td style="border:none;">' +(data.name)+'</td><td width="120px" style="text-align:right;border:none;"><b>印章类型：</b></td><td style="border:none;">' +(sealTypeArr[data.type])+'</td><td width="120px" style="text-align:right;border:none;"><b>所属部门：</b></td><td style="border:none;">' +(data.department.name)+'</td></tr>');
+			$("#sealTable").append('<tr"><td width="120px" style="text-align:right;border:none;"><b>状态：</b></td><td style="border:none;">' +(data.status == 0 ? '注销' : '正常')+'</td><td width="120px" style="text-align:right;border:none;"><b>制章人：</b></td><td style="border:none;">' +(data.createdBy)+'</td><td width="120px" style="text-align:right;border:none;"><b>制章时间：</b></td><td style="border:none;">' +(new Date(data.createdAt*1000).toLocaleString())+'</td></tr>');
+			$("#sealTable").append('<tr"><td width="120px" style="text-align:right;border:none;"><b>印章宽度：</b></td><td style="border:none;">' +(data.sealWidth + 'mm')+'</td><td width="120px" style="text-align:right;border:none;"><b>印章高度：</b></td><td style="border:none;">' +(data.sealHeight + 'mm')+'</td></tr>');
+			var previewData = 'data:image/png;base64,' + data.previewData
+			$("#sealImgId").attr("src",previewData);
+			var users = data.userSeal
+			var userLabel = '';
+			for(var i = 0,len = users.length; i < len; i++){
+				userLabel += "<button type='button' class='btn btn-default btn-lg text-success margin-right' onclick='userDetails("+JSON.stringify(users[i])+")'><i class='fa fa-user text-success margin-right-1' aria-hidden='true'></i>"+users[i].name+"</button>";
+			}
+
+			//角色信息
+			var serviceArr=data.sealServices;
+			if(serviceArr!=null){
+				/*if(serviceArr.length<=0){
+					$("#serviceId").append("<span style='color:#dcdcdc;' class='fa fa-exclamation-triangle'>这里什么都没有！</span>");
+				}*/
+				for(var i=0;i<serviceArr.length;i++){
+					$("#serviceId").append("<span  style='margin:8px 0 0 8px;background-color:#5bc0de;font-size:100%;padding:7px 12px;display:inline-block;color: #fff'>"+serviceArr[i].servName+"</span>");
+				}
+			}/*else{
+				$("#serviceId").append("<span style='color:#dcdcdc;' class='fa fa-exclamation-triangle'>这里什么都没有！</span>");
+			}*/
+
+
+			document.getElementById("userSealId").innerHTML=userLabel;
+		}
+	});
+}
+
+Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+    return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+}; 
+
+function userDetails(data) {
+    var user = data;
+    var userManageDepartmentsStr = '';
+    var userRolesStr = '';
+    var manageDepartArr = user.manageDepartments;
+    var userroleArr = user.userRoles;
+    for(var i = 0,len = manageDepartArr.length; i < len; i++){
+        userManageDepartmentsStr += (manageDepartArr[i].departmentId.name + '-' + manageDepartArr[i].roleId.name + '-(');
+        if (manageDepartArr[i].type === 0) {
+          userManageDepartmentsStr += '不';
+        }
+        userManageDepartmentsStr += '包含下级)';
+        if (i === manageDepartArr.length) return;
+        userManageDepartmentsStr += ',';	
+    }
+    
+    for(var j = 0,len = userroleArr.length; j < len; j++){
+        userRolesStr += userroleArr[j].name;
+        if (j === userroleArr[j].length) return;
+        userRolesStr += ',';
+    }
+    
+    var url = '../../module/seal/user-details-modal.html?loginlId='+user.loginId+'&name='+user.name+'&departName='+user.departmentId.name+'&manageDepart='+userManageDepartmentsStr+'&userrole='+userRolesStr+'&noCache='+new Date().getTime();
+	var index = parent.layer.open({
+		title:' ',
+		type: 2,
+		content: '../../module/seal/user-details-modal.html?loginlId='+user.loginId+'&name='+user.name+'&departName='+user.departmentId.name+'&manageDepart='+userManageDepartmentsStr+'&userrole='+userRolesStr+'&noCache='+new Date().getTime(),
+		area: ['45%', '80%'],
+		btn: ['关闭'], //底部按钮区域
+		maxmin: true,
+		yes: function(index,layero){  //第一个按钮的事件
+			window.parent.layer.close(index);
+		}
+	});
+  };
+</script>
+</html>

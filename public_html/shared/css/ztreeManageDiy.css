@@ -1,0 +1,45 @@
+.ztree li span.button.ico_open{margin-right:2px; background: url(../../shared/ztree/css/img/diy/1_open.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+			.ztree li span.button.ico_close{margin-right:2px; background: url(../../shared/ztree/css/img/diy/1_close.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+			.ztree li span.button.ico_docu{margin-right:2px; background: url() no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+			
+			.ztree li {
+    			padding-top:5px;
+    			padding-bottom:5px;
+    			padding-left:5px;
+    			padding-right:0;
+    			margin-top: 5px;
+    			margin-bottom:5px;
+    			list-style: none;
+    			line-height: 14px;
+    			text-align: left;
+    			white-space: nowrap;
+    			outline: 0;
+			}
+			.ztree li span{
+				float:left;
+			}
+			.ztree li a {
+				border: 1px solid #dae2ea;
+				background-color:#f8faff;
+    			padding: 1px 3px 0 0;
+    			margin: 0;
+    			cursor: pointer;
+    			height: 17px;
+   				color: #333;
+    			text-decoration: none;
+    			vertical-align: top;
+                display: block;
+			}
+			.ztree li a:hover{
+			background-color:#f4f6f7;
+			text-decoration: none;
+			}
+			.ztree li a.curSelectedNode {  
+ 		  	 opacity: 1;
+			}
+			.ztree li span.button.chk {
+			    width: 13px;
+			    height: 13px;
+			    margin: 3px 3px 0 0;
+			    cursor: auto;
+			}

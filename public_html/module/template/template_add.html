@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+    <META HTTP-EQUIV="Expires" CONTENT="0">
+    <title>增加模板</title>
+
+    <link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/document.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/css/main.css" type="text/css"/>
+    <link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css"/>
+    <!-- jqgrid样式 -->
+    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet"/>
+    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet"/>
+    <link href="../../shared/jqgrid/css/ui.jqgrid-bootstrap-ui.css" type="text/css" rel="stylesheet"/>
+    <link href="../../shared/jqgrid/css/ui.jqgrid-bootstrap.css" type="text/css" rel="stylesheet"/>
+
+
+    <!--javascript引用部分 -->
+    <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+    <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+    <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+    <!-- jqgridjs -->
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+    <script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+    <!-- my97 DatePicker  -->
+    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+    <style type="text/css">
+        .row {
+            margin-left: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d9d9d9;
+            cursor: pointer;
+        }
+        .form-group{
+        	float:left;    	
+        	margin: 4px 8px 4px 0;
+        	/* margin-left:25px;
+        	margin-top:15px; */
+        }
+
+		select{
+			width:auto;
+			padding:3px;
+		}
+		body{
+			padding: 0 15px;
+		}
+    </style>
+
+</head>
+<body>
+	<!-- <div style="margin-top: 10px;">
+	   <div class="col-sm-12">
+	       <div class="page-title page-title-border clearfix">
+	           <button class="btn btn-warning pull-right margin-right-2" data-ng-disabled="!vm.isShowAip" onclick="openFile()">重选</button>
+	        </div>
+	    </div>
+	</div> -->
+		<div class="margin-top-1 ng-scope" >
+			<div role="tablist" class="panel-group" >
+		    	<div class="panel-default panel ng-isolate-scope panel-open"  >
+				  <div role="tab" id="accordiongroup-2374-3912-tab" aria-selected="true" class="panel-heading" >
+				    <h4 class="panel-title">
+				      <a role="button" data-toggle="collapse" href="" aria-expanded="true" aria-controls="accordiongroup-2374-3912-panel" tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" uib-accordion-transclude="heading"><span uib-accordion-header="" ng-class="{'text-muted': isDisabled}" class="ng-binding"><span class="ng-scope">
+				            模板配置：
+				            </span><i class="pull-right glyphicon ng-scope glyphicon-chevron-down" ></i>
+				        </span></a>
+				    </h4>
+				  </div>
+				 <div id="accordiongroup-2374-3912-panel" aria-labelledby="accordiongroup-2374-3912-tab" aria-hidden="false" role="tabpanel" class="panel-collapse in collapse"  aria-expanded="true" style="height: auto;">
+				    <div class="panel-body" >
+				        <form id="addTemplateAIP"  class="form-inline margin-top ng-pristine ng-valid ng-scope">
+				            <div class="form-group">
+				                <label>模板名称</label>
+				                <input type="hidden" id="templateId" name="templateId">
+				                <input type="hidden" name="contentData" id="contentData" >
+				                <input type="text"  name="templateName" id="templateName" class="form-control ipt ng-pristine ng-untouched ng-valid"  placeholder="模板名称">
+				            </div>
+				            <div class="form-group col-padding-1 remove-padding-r">
+				                <label>使用部门</label>
+				                <div class="btn-group" role="group">
+				                    <button type="button" onclick="addDept()" class="btn" class="btn btn-default">操作</button>
+				                    <button type="button" onclick="showDept()" class="btn" class="btn btn-default">查看</button>
+				                    <button type="button" onclick="clearDept()" class="btn" class="btn btn-default">清空</button>
+				                </div>
+				            </div>
+				            <div class="form-group">
+				                <label>角色</label>
+				                <input type="text"  id="userRolesName" placeholder="所选角色" class="form-control ipt ng-pristine ng-untouched ng-valid" readOnly >
+				                <button type="button" onclick="openSelectRoleModal()"  class="btn btn-default">选择</button>            
+				            </div>          
+				            <div class="form-group">
+				                <label>模板状态</label>
+				                <select class="form-control ng-pristine ng-untouched ng-valid" id="moldStatus" name="moldStatus" >
+				                  	 <option value="1" selected>正常</option>
+				                   	 <option value="0">注销</option>
+				                </select>
+				            </div>                
+				            <div class="form-group">
+				                <label>操作类型</label>
+				                <select id="operationType" name="operationType"class="form-control ipt ng-pristine ng-untouched ng-valid">
+				                    	<option value="">请选择...</option>
+				                   		<option value="1" selected = "selected">打印和编辑</option>
+				                   		<option value="2">打印</option>
+				                   		<option value="3">编辑</option>           
+				                </select>
+				            </div>         
+				            <div class="form-group">
+				                <label>模板类型</label>
+				                <select id="moldType" name="moldType"  class="form-control ipt ng-pristine ng-untouched ng-valid" >
+				                  	  	<option value="">请选择...</option>
+				                    	<option value="1" selected = "selected">主模板</option>
+				                    	<option value="2">副模板</option>
+				                </select>
+				            </div>
+				            
+				            <div class="form-group col-padding-1 remove-padding-r">
+				                <label>是否套打</label>
+				                <select id="printType" name="printType" class="form-control ng-pristine ng-untouched ng-valid" >
+				                     <option value="1">是</option>
+				                     <option value="0">否</option>
+				                </select>
+				            </div>
+<!-- 				            <div class="form-group col-padding-1 remove-padding-r">
+				                <label>配置模板功能</label>
+				                <button type="button" onclick="configFunc()" class="btn btn-default">配置</button>
+				            </div> -->
+				        </form>
+					  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel panel-default margin-top ng-scope" data-ng-if="!vm.isShowAip">
+	    <div class="panel-body">
+			<OBJECT id=HWPostil1 align='middle' style='LEFT: 0px; WIDTH: 100%; TOP: 0px; HEIGHT: 100%; display:inline'
+			   classid=clsid:FF1FE7A0-0578-4FEE-A34E-FB21B277D561 codebase=../../loadocx/32/HWPostil-client.ocx#Version=3,1,0,6 >
+			    <PARAM NAME='_Version' VALUE='65536'>"
+			    <PARAM NAME='_ExtentX' VALUE='17410'>"
+			    <PARAM NAME='_ExtentY' VALUE='10874'>"
+			    <PARAM NAME='_StockProps' VALUE='0'>"
+			</OBJECT>
+			
+			<div id="tips" class="isShowAip panel panel-default margin-top" data-ng-if="!vm.isShowAip" style="display:none;">
+			    <div class="panel-body">
+			        <p class="text-danger text-align-center row-padding-4 font-s24">
+			            <i class="fa fa-meh-o margin-right" aria-hidden="true"></i>控件未安装或者浏览器不支持,请联系运维!
+			        </p>
+			    </div>
+			</div>
+			
+			<div id="isShowAIP"  class="isShowAip panel panel-default margin-top" data-ng-if="vm.isHideAIP && vm.isShowAip == true" style="display:none;">
+			    <div class="panel-body">
+			        <p class="text-align-center font-s24" style="color:#dcdcdc">
+			            <i class="fa fa-exclamation-triangle  margin-top-4 margin-right" aria-hidden="true"></i>模板已隐藏,请点击下面的按钮显示
+			        </p>
+			        <button type="button" onclick="showAipTemplate()"
+			                class="btn btn-default center-block margin-top margin-bottom-4">显示模板</button>
+			    </div>
+			</div>
+	    </div>
+	</div>
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
+		<div class="modal-dialog" >
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel" style="text-align:left">查看使用部门</h4>
+				</div>
+				<div class="modal-body" >
+					<table id="resultTable">
+
+					</table>
+				</div>
+				<div class="modal-footer text-align-center">
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modals -->
+
+
+<script type="text/javascript">
+
+var templateDepartments=[];
+var templateDeparData=[];
+var roles=[];
+var deptArr = [];
+var urlPath=getUrlPath();
+var obj;
+var _optFlag;
+var templateNameOld;
+	$(document).ready(function(){
+		if (!getBrowser().ie) {
+	    	$("#tips").css("display","inline");
+	    	$("#isShowAIP").css("display","none");
+	        //layer.alert('浏览器不支持控件，请使用IE浏览器。', {icon: 5});
+	        return false;
+	    }
+		aip_init();
+		var id=GetQueryString("id");
+		//console.log(id);
+		if(id!=null&&id!=undefined&&id!="undefined"){
+			//console.log("lalalal");
+			_optFlag="modify";
+			 $.ajax({
+		            type : "GET",
+		            url : urlPath + '/templateAIP/' + id,
+		            async:false,
+		            datatype:"json",
+		            contentType:"text/html",
+		            success : function(data) {
+		            	//console.log(data);
+		            	$("#templateId").val(data.id);
+		            	$("#templateName").val(data.name);
+		            	templateNameOld=data.name;
+		            	$("#moldStatus").val(data.status);
+		            	$("#operationType").val(data.operationType);
+		            	$("#moldType").val(data.type);
+		            	$("#printType").val(data.printType);
+		            	var roleArr=data.roles;
+		            	var roleName="";
+		            	for(var i in roleArr){
+		            		var temp={};
+		            		temp['id']=roleArr[i].id;
+		            		temp['name']=roleArr[i].name;
+		            		roleName+=roleArr[i].name+",";
+		            		roles.push(temp);
+		            	}
+		            	 if(roleName!=""){
+		            		 roleName=roleName.substring(0,roleName.length-1);
+	                	 }
+	                	 $("#userRolesName").val(roleName);
+	                	 var departmentArr=data.templateDepartments;
+	                	 templateDeparData=departmentArr;
+	                	 for(var i in departmentArr){
+	                			var tempData={};
+		            			tempData['departmentId']=departmentArr[i].departmentId.id;
+		            			tempData['alias']=departmentArr[i].alias;
+		            			tempData['departmentName']=departmentArr[i].departmentId.name;
+		            			templateDepartments.push(tempData);
+			            	}
+	                	 $("#contentData").val(data.contentData);
+		                obj.LoadFileBase64(data.contentData);
+		            },
+		            error : function(xmlhttp,textStatus,errorThrown){
+		                layer.msg('获取数据失败', {icon: 5});
+		                return false;
+		            }
+		        });
+		}else{
+			 obj.LoadFile("");
+			 $("#contentData").val(obj.GetCurrFileBase64());
+			 //console.log(obj.GetCurrFileBase64());
+		}
+	});
+
+	function GetQueryString(name){
+	    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if(r!=null)return  decodeURI(r[2]); return null;
+	}
+	function addDept() {
+	    //alert("操作");
+	    hideAipTemplate();
+	    	window.layer.open({
+	            title: '选择使用部门', 
+	            type: 2, 
+	            area: ['800px', '500px'] , 
+	            btn: ['确定','取消'] , 
+	            content: './select-template-departments-modal.html', 
+	            maxmin: true,
+	            yes: function (index, layero) {  //第一个按钮的事件
+	            	//获取单位数据 
+	               	var res = window["layui-layer-iframe" + index].getData();
+	            	var resLength = window["layui-layer-iframe" + index].getResultLength();
+	               	if(resLength == 0){
+	               		parent.layer.msg("请选择结果后再确定",{icon:5});
+	               		return;
+	               	}
+	            	if(res!=null){
+	            		templateDepartments=res;
+	            		templateDeparData=[];
+	            		for(var i in res){
+	            			var tempData={};
+	            			tempData['departmentId']=res[i].departmentId;
+	            			tempData['alias']=res[i].alias;
+	            			templateDeparData.push(tempData);
+	            		}
+	            		layer.close(index);
+	            	}
+	            }
+	        });
+	}
+	
+	function showDept() {
+		hideAipTemplate();
+		$("#myModal").modal("show");
+		$("#resultTable").html("");
+		var dep=templateDepartments;
+		for(var k=0;k<dep.length;k++){
+			$("<tr><td></td> <td>"+dep[k].departmentName+"-别名：</td> <td></td> <td><input type='text' disabled='disabled' name='alias"+k+"' id='alias"+k+"' value='"+dep[k].alias+"'></td> </tr>").appendTo($('#resultTable'));
+		}
+	}
+	
+	
+	function finish(index) {
+	    deptArr = [];
+	    var s = "#layui-layer-iframe" + addFlag;
+	    var res = $(s).contents().find("#second").serializeArray();
+	
+	    for (var i = 0; i < res.length; i++) {
+	        var dept = {};
+	        dept.id = res[i].name;
+	        dept.alias = res[i].value;
+	
+	        deptArr.push(dept);
+	    }
+	    //console.log(deptArr);
+	    var d = "#layui-layer" + addFlag;
+	    $(d).hide();
+	    $(".layui-layer-shade").hide();
+	}
+	
+	function clearDept() {
+		hideAipTemplate();
+	    layer.confirm('确定清空使用部门？', {icon: 3, title:'提示'}, function(index){
+	    	templateDepartments=[];
+	    	templateDeparData=[];
+	    	msg("清空成功。")
+	    	layer.close(index);
+	    });
+	}
+	function selectRole() {
+	    alert("选择");
+	}
+	function configFunc() {
+		hideAipTemplate();
+	    alert("配置");
+	}
+	
+    function openSelectRoleModal(){
+    	hideAipTemplate();
+ 		var index = window.parent.layer.open({
+			title:'指定角色',
+			type: 2,
+			content: '../../module/template/select-role-modal.html',
+			area: ['800px', '500px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	//获取角色数据 
+            	roles = window.parent["layui-layer-iframe" + index].getRoleData();
+                 if(roles!=null&&roles.length>0){
+                	// //console.log(roles);
+                	 var rolesName = "";
+                	 for(var i in roles){
+                		 rolesName+=roles[i].name+",";
+                	 }
+                	 if(rolesName!=""){
+                		 rolesName=rolesName.substring(0,rolesName.length-1);
+                	 }
+                	 $("#userRolesName").val(rolesName);
+                	 window.parent.layer.close(index);	 
+                 }
+            }
+         });
+	}
+    function operationTemplate(){
+    		hideAipTemplate();
+    		var res=[];
+	   	 	var formData = getFormData("addTemplateAIP");
+			var data={};
+			var reqData=null;
+			data['filedData']="";
+			data['templateFunctions']=[];
+			data['contentData']=formData.contentData;
+			if(_optFlag=='modify'){
+				data['id']=formData.templateId;
+			}
+			if(formData.templateName!=""){
+				  data['name']=formData.templateName;
+			}else{
+				alert("模板名称不能为空!");
+                return;
+			}
+			if(templateDeparData.length>0){
+				  data['templateDepartments']=templateDeparData;
+			}else{
+				alert("请选择使用部门！");
+              return;
+			}
+			if(roles.length>0){
+				  data['roles']=roles;
+			}else{
+				alert("请选择角色！");
+                return;
+			}
+			if(formData.moldStatus!=""){
+				  data['status']=formData.moldStatus;
+			}
+			if(formData.operationType!=""){
+				  data['operationType']=formData.operationType*1;
+			}else{
+				alert("请选择操作类型！");
+                return;
+			}
+			if(formData.moldType!=""){
+				  data['type']=formData.moldType*1;
+			}else{
+				alert("请选择模板类型！");
+                return;
+			}
+			if(formData.printType!=""){
+				  data['printType']=formData.printType;
+			}else{
+				alert("请选择模板类型！");
+              	return;
+			}
+			if(_optFlag=="modify"&&formData.templateName==templateNameOld){
+				res.push(data);
+				reqData= JSON.stringify(res);
+			}else{
+				$.ajax({
+	   				type : "GET",
+	   				url : urlPath+'/templateVerifyName',
+	   				data:{
+						name:$("#templateName").val()
+					},
+					dataType : "json",
+					contentType:"application/json;charset=UTF-8",
+					async:false, 
+	   				success : function(retdata) {
+						if (retdata.message == 'true') {
+							res.push(data);
+							reqData= JSON.stringify(res);
+					    } else{
+					    	alert('模板名称已存在');
+					    }
+	   				},
+					error:function (data) {
+						alert(data.message);
+					}
+	   			});
+			}
+   			return reqData;
+    }
+    function aip_init() {
+      	obj = window.document.getElementById("HWPostil1");
+        obj.ShowDefMenu = 0; //隐藏菜单
+        obj.ShowToolBar = 0; //隐藏工具条
+        obj.ShowScrollBarButton = 1;
+        obj.defaultPrinter = "HWSealPrinter";
+        obj.InDesignMode = false;				//退出设计模式
+    }
+    function showAipTemplate(){
+    	$("#HWPostil1").css("display","inline");
+    	$("#isShowAIP").css("display","none");
+    }
+    function hideAipTemplate(){
+    	$("#HWPostil1").css("display","none");
+    	$("#isShowAIP").css("display","inline");
+    }
+    function openFile() {
+    	hideAipTemplate();
+    	layer.confirm('确定重新选择文件？', {       
+            btn: ['确定', '取消']
+         }, function (index, layero) {
+        	layer.closeAll('dialog');
+        	obj.LoadFile("");
+            $("#contentData").val(obj.GetCurrFileBase64());
+            showAipTemplate();
+          }
+        );
+    }
+    
+    //判断浏览器类型
+    function getBrowser () {
+        var ua = navigator.userAgent;
+        var ret = {},
+                webkit = ua.match( /WebKit\/([\d.]+)/ ),
+                chrome = ua.match( /Chrome\/([\d.]+)/ ) ||
+                        ua.match( /CriOS\/([\d.]+)/ ),
+
+                ie = ua.match( /MSIE\s([\d\.]+)/ ) ||
+                        ua.match( /(?:trident)(?:.*rv:([\w.]+))?/i ),
+                firefox = ua.match( /Firefox\/([\d.]+)/ ),
+                safari = ua.match( /Safari\/([\d.]+)/ ),
+                opera = ua.match( /OPR\/([\d.]+)/ );
+
+        webkit && (ret.webkit = parseFloat(webkit[1]));
+        chrome && (ret.chrome = parseFloat(chrome[1]));
+        ie && (ret.ie = parseFloat(ie[1]));
+        firefox && (ret.firefox = parseFloat(firefox[1]));
+        safari && (ret.safari = parseFloat(safari[1]));
+        opera && (ret.opera = parseFloat(opera[1]));
+
+        return ret;
+    }
+
+</SCRIPT>
+</body>
+</html>

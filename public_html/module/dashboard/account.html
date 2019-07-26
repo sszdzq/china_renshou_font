@@ -1,0 +1,515 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="format-detection" content="telephone=no" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />	
+	
+	<!--javascript引用部分 -->
+	<script type="text/javascript" src="../../shared/html5/html5shiv.min.js"></script>
+	<script type="text/javascript" src="../../shared/respond/respond.src.js"></script>
+	<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	<!-- jqgridjs -->
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+	<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	
+	
+	<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	<script src="../../shared/crypto-js/crypto-js.js" type="text/javascript"></script>
+	<!-- my97 DatePicker  -->
+	<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	
+	<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<link href="../../shared/main/css/default.css" rel="stylesheet" type="text/css" />
+<link href="../../shared/main/css/keyframes.css" rel="stylesheet" type="text/css" />
+<link href="../../shared/main/css/jquery.mCustomScrollbar.css" rel="stylesheet" type="text/css" />
+<link href="../../shared/main/css/main.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+.row {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+body {
+    font-size: 14px;
+    text-align: left; 
+}
+label {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+.col-md-7 {
+    width: 226px;
+}
+.col-xs-6 {
+    width: 226px;;
+    display:inline-block;
+}
+.col-xs-offset-1 {
+    margin-left: 8.33333333%;
+}
+
+.col-xs-2 {
+    width: 16.66666667%;
+}
+.col-sm-5 {
+    width: 38.66666667%;
+    margin-top:50px;
+}
+.col-md-offset-1 {
+    margin-left: 8.33333333%;
+}
+.col-md-10 {
+    width: 83.33333333%;
+}
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+    float: left;
+}
+
+.clearfix:before, .clearfix:after, .dl-horizontal dd:before, .dl-horizontal dd:after, .container:before, .container:after, .container-fluid:before, .container-fluid:after, .row:before, .row:after, .form-horizontal .form-group:before, .form-horizontal .form-group:after, .btn-toolbar:before, .btn-toolbar:after, .btn-group-vertical > .btn-group:before, .btn-group-vertical > .btn-group:after, .nav:before, .nav:after, .navbar:before, .navbar:after, .navbar-header:before, .navbar-header:after, .navbar-collapse:before, .navbar-collapse:after, .pager:before, .pager:after, .panel-body:before, .panel-body:after, .modal-header:before, .modal-header:after, .modal-footer:before, .modal-footer:after {
+    display: table;
+    content: " ";
+}
+.clearfix:after, .dl-horizontal dd:after, .container:after, .container-fluid:after, .row:after, .form-horizontal .form-group:after, .btn-toolbar:after, .btn-group-vertical > .btn-group:after, .nav:after, .navbar:after, .navbar-header:after, .navbar-collapse:after, .pager:after, .panel-body:after, .modal-header:after, .modal-footer:after {
+    clear: both;
+}
+.clearfix:before, .clearfix:after, .dl-horizontal dd:before, .dl-horizontal dd:after, .container:before, .container:after, .container-fluid:before, .container-fluid:after, .row:before, .row:after, .form-horizontal .form-group:before, .form-horizontal .form-group:after, .btn-toolbar:before, .btn-toolbar:after, .btn-group-vertical > .btn-group:before, .btn-group-vertical > .btn-group:after, .nav:before, .nav:after, .navbar:before, .navbar:after, .navbar-header:before, .navbar-header:after, .navbar-collapse:before, .navbar-collapse:after, .pager:before, .pager:after, .panel-body:before, .panel-body:after, .modal-header:before, .modal-header:after, .modal-footer:before, .modal-footer:after {
+    display: table;
+    content: " ";
+}
+.col-sm-offset-2 {
+    margin-left: 16.66666667%;
+}
+.col-sm-8 {
+    width: 66.66666667%;
+}
+.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
+    float: left;
+}
+.col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+.hpanel {
+    border: none;
+    box-shadow: none;
+    margin-bottom: 25px;
+}
+.account-icon {
+ 	border-radius: 50%;
+    width: 100px;
+    margin: 5px;
+    -webkit-box-shadow: 0 0 0 5px rgba(247, 221, 221, 0.4);
+    box-shadow: 0 0 0 5px rgba(247, 221, 221, 0.4);
+}
+.bg-info {
+    background-color: #d9edf7;
+}
+.formcontrol, .formcontrol:focus {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.formcontrol {
+    border-color: #cfd1d4;
+    border-radius: 0;
+}
+.form-horizontal .form-group {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+.has-feedback {
+    position: relative;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-horizontal .control-label {
+    padding-top: 7px;
+    margin-bottom: 0;
+    text-align: right;
+    display: inline-block;
+    max-width: 100%;
+    font-weight: bold;
+}
+.text-danger {
+    color: #a94442;
+}
+.msg{
+	width:160px;
+	display:inline-block;
+	padding-top:5px;
+}
+</style>
+</head>
+<body>
+<div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
+	<div class="modal-dialog" >
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="myModalLabel">修改密码</h4>
+			</div>
+			<div class="modal-body" >
+				 <form name="upForm" role="form" class="form-horizontal" novalidate>
+			        <div class="has-feedback form-group">
+			            <label class="col-xs-2 control-label">原密码</label>
+			             <div class="col-xs-6">
+			                <input type="password" id="oldPassword" name="oldPassword" onchange="checkPwForm('oldPassword');" style="height:35px" class="formcontrol"  placeholder="请输入原密码"
+			                       maxlength="20"  >
+			            </div>
+			            <div class="msg text-danger" id="oldPasswordMsg"></div>
+			        </div>
+			        <div class="has-feedback form-group">
+			            <label class="col-xs-2 control-label">新密码</label>
+			
+			            <div class="col-xs-6">
+			                <input type="password" id="newPassword" name="newPassword" onchange="checkPwForm('newPassword');" style="height:35px" class="formcontrol"  placeholder="请输入新密码"
+			                       maxlength="20"  >
+			            </div>
+			            <div class="msg text-danger" id="newPasswordMsg"></div>
+			        </div>
+			        <div class="has-feedback form-group">
+			            <label class="col-xs-2  control-label">确认密码</label>
+			            <div class="col-xs-6">
+			                <input type="password" name="confirmPassword" id="confirmPassword" onchange="checkPwForm('confirmPassword');" class="formcontrol" style="height:35px"  placeholder="请再次输入密码">
+			            </div>
+			            <div class="msg text-danger" id="confirmPasswordMsg"></div>
+			        </div>
+			    </form>
+			</div>
+			<div class="modal-footer text-align-center">
+			  <button type="button"
+			          class="btn col-padding-3 margin-right-2 btn-primary btn-lg" onclick="updatePw()">确定</button>
+			  <button type="button" class="btn btn-default col-padding-3 " onclick="closeupdatePwModal()">取消</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modals -->
+  <div class="panel-body" style="padding-top:50px">
+      <div class="row">
+          <div class="col-sm-5 text-align-center " style="border-right: 1px solid #209e91;">
+              <img class="account-icon" src="../../shared/images/assets/headPortrait/Fruit-2.png">
+              <p class="margin-top-1" style="margin: 0 0 10px;" id="namePtText"></p>
+              <button  type="button" class="btn btn-info" onclick="openUpdateModal();" data-toggle="modal">
+                  <i class="fa fa-pencil" aria-hidden="true"></i>修改密码
+              </button>
+          </div>
+          <div class="col-sm-7">
+              <div class="row">
+                  <div class="col-md-12">
+                      <form name="userForm" id="userForm" class="form-horizontal">
+                          <div class="has-feedback form-group">
+                              <label class="col-md-3 control-label">姓名</label>
+                              <div class="col-md-7">
+                                  <input type="hidden" name="name" id="name">
+                                  <input type="hidden" name="id" id="id">
+                                  <input type="text" name="nowName" id="nowName" class="formcontrol" style="height:35px" placeholder="请输入真实姓名" onchange="checkForm('nowName');">
+                              </div>
+                              <div class="msg text-danger" id="nowNameMsg"></div>
+                          </div>
+                          <div class="has-feedback form-group">
+                              <label class="col-md-3 control-label">性别</label>
+                              <div class="col-md-7" style="text-align:left">
+                                  <label class="radio-inline">
+                                      <input type="radio" name="gender" value="1" >男
+                                  </label>
+                                  <label class="radio-inline">
+                                      <input type="radio" name="gender"  value="0" checked>女
+                                  </label>
+                              </div>
+                          </div>
+                          <div class="has-feedback form-group" >
+                              <label class="col-md-3 control-label">邮箱</label>
+
+                              <div class="col-md-7">
+                                  <input type="email" name="email" id="email" class="formcontrol"style="height:35px"  placeholder="请输入邮箱" onchange="checkForm('email');">
+                              </div>
+                               <div class="msg text-danger" id="emailMsg"></div>
+                          </div>
+                          <div class="has-feedback form-group" >
+                              <label class="col-md-3 control-label">手机</label>
+
+                              <div class="col-md-7">
+                                  <input type="text" name="mobile" id="mobile" class="formcontrol" style="height:35px"  placeholder="请输入手机" onchange="checkForm('mobile');">
+                              </div>
+                               <div class="msg text-danger" id="mobileMsg"></div>
+                          </div>
+                          <div class="has-feedback form-group">
+                              <label class="col-md-3 control-label">生日</label>
+                              <div class="col-md-7">
+                                  <input id="birthday" name="birthday" type="text"  readonly="readonly" style="height:35px"  class="formcontrol" placeholder="请选择生日" onchange="checkForm('birthday');" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd' }) ">
+                              </div>
+                               <div class="msg text-danger" id="birthdayMsg"></div>
+                          </div>
+                          <div class="has-feedback form-group">
+                              <label class="col-md-3 control-label">工作电话</label>
+
+                              <div class="col-md-7">
+                                  <input type="text" name="workTelephone" id="workTelephone" class="formcontrol" style="height:35px"  placeholder="请输入工作电话" onchange="checkForm('workTelephone');">
+                              </div>
+                               <div class="msg text-danger" id="workTelephoneMsg"></div>
+                          </div>
+                          <div class="has-feedback form-group"style="text-align:center" >
+                                <button type="button" class="btn btn-primary col-padding-3" onclick="doModify();">修改</button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<script src="../../shared/main/js/jquery.treeview.js" type="text/javascript"></script>
+<script src="../../shared/main/js/jquery.mousewheel.min.js" type="text/javascript"></script>
+<script src="../../shared/main/js/jquery.mCustomScrollbar.min.js" type="text/javascript"></script>
+<script src="../../shared/main/js/mainpage.js" type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+<script type="text/javascript">
+var proofCode = null;
+var urlPath=getUrlPath();
+$(document).ready(function() {
+	userFormInit();
+	setTimeout(function(){getProofCode()}, 1000);
+});
+function doModify(){
+	
+	var formData = getFormData("userForm");
+	var data={};
+	
+	if(checkForm('nowName')||checkForm('email')||checkForm('mobile')||checkForm('birthday')||checkForm('workTelephone')){
+		return;
+	}
+	data['nowName']=formData.nowName;
+	data['name']=formData.name;
+	data['id']=formData.id;
+	data['gender']=$("input[name='gender']:checked").val()*1;
+	data['email']=$("#email").val();
+	data['mobile']=formData.mobile;
+	data['birthday']=new Date(Date.parse(formData.birthday.replace(/-/g,"/"))).getTime()/1000;
+	data['workTelephone']=formData.workTelephone;
+	var res=JSON.stringify(data);
+	////console.log(res);
+	 $.ajax({
+		type : "PUT",
+		data :res,
+		url : urlPath+"/userInfo",
+		contentType:"application/json;charset=UTF-8",
+		dataType : "json",
+		async:false,
+		success : function(data) {
+			if(data){
+				msg("修改成功！");
+			}
+		}
+	});
+}
+function userFormInit(){
+	$.ajax({
+		type : "GET",
+		data :{},
+		url : urlPath+"/userInfo",
+		dataType : "json",
+		async:false,
+		success : function(data) {
+			if(data!=null){
+				$("#name").val(data.name);
+				$("#namePtText").html(data.name);
+				$("#id").val(data.id);
+				$("#nowName").val(data.name);
+				$("#email").val(data.email);
+				$("input[type=radio][value="+data.gender+"]").attr("checked",'checked');
+				$("#mobile").val(data.mobile);
+				$("#birthday").val(new Date(data.birthday*1000).toLocaleString());
+				$("#workTelephone").val(data.workTelephone);
+			}
+		}
+	});
+}
+
+function openUpdateModal(){
+	$("#myModal").modal('show');
+}
+function closeupdatePwModal(){
+	$("#myModal").modal('hide'); 
+} 
+function updatePw(){
+	if(checkPwForm('oldPassword')||checkPwForm('newPassword')||checkPwForm('confirmPassword')){
+		return;
+	}
+	var newPassword=$("#newPassword").val();
+	newPassword = handlePassword(newPassword);
+	var oldPassword=$("#oldPassword").val();
+	oldPassword = handlePassword(oldPassword);
+	var id=$("#id").val();;
+	var confirmPassword=$("#confirmPassword").val();
+	var data={"newPassword":newPassword,"oldPassword":oldPassword,"id":id,"confirmPassword":confirmPassword};
+	var res=JSON.stringify(data);
+	$.ajax({
+		type : "POST",
+		data :res,
+		url : urlPath+"/updatePw",
+		dataType : "json",
+		contentType:"application/json",
+		async:false,
+		success : function(data) {
+			if(data!=null){
+				msg("修改成功！");
+				$("#myModal").modal('hide'); 
+			}
+		},
+		error:function (e) {
+            var res = $.parseJSON(e.responseText);
+            alert("修改失败,原因："+res.message);
+	    }
+	});
+	
+}
+
+ function checkForm(idName){
+	 var targetInput=$("#"+idName).val();
+	 var msgString="";
+	 var errorFlag=false;
+	 if(targetInput==""&&idName!="workTelephone"){
+		 	msgString="输入不能为空";
+		 	errorFlag=true;
+	 }else{
+		 if(idName=="nowName"&&targetInput.length>10){
+			 msgString="姓名长度不能超过10个字符";
+			 errorFlag=true;
+		 }
+		 if(idName=="email"){
+			 if(targetInput.length>60){
+				 msgString="邮箱长度不能超过60个字符";
+				 errorFlag=true;
+			 }else if(!contentValidate(2,targetInput)){
+				 msgString="邮箱格式不正确";
+				 errorFlag=true;
+			 }
+		 }
+		 if(idName=="mobile"){
+			 if(targetInput.length>11){
+				 msgString="号码长度不能超过11";
+				 errorFlag=true;
+			 }else if(!contentValidate(3,targetInput)){
+				 msgString=="手机格式不正确";
+				 errorFlag=true;
+			 }
+		 }
+		 if(idName=="workTelephone"&&targetInput.length>0&&!contentValidate(4,targetInput)){
+			 msgString="工作电话格式不正确";
+			 errorFlag=true;
+		 }
+	 }
+	 if(errorFlag){
+		 $("#"+idName+"Msg").html('<span class="fa fa-times-circle" style="color:red;font-size:12px">'+msgString+'</span>');
+	 	 $("#"+idName).css("border-color","red");
+	 }else{
+	 	 $("#"+idName+"Msg").html('<span class="fa fa-check text-success-dark" aria-hidden="true"></span>');
+	 	 $("#"+idName).css("border-color","#cccccc");
+	 }
+	return errorFlag;
+ }
+ function checkPwForm(idName){
+	 var targetInput=$("#"+idName).val();
+	 var msgString="";
+	 var errorFlag=false;
+	 if(targetInput==""){
+		 	msgString="输入不能为空";
+		 	errorFlag=true;
+	 }else{
+		 if(idName=="newPassword"){
+			 var oldPassword=$("#oldPassword").val();
+			 if(targetInput.length<8||targetInput.length>20||!contentValidate(1,targetInput)){
+				 msgString="长度必须在8-20位且包含大小写字母，数字";
+				 errorFlag=true;
+			 }
+		 }
+		 if(idName=="confirmPassword"){
+			 var oldPassword=$("#newPassword").val();
+			 if(targetInput!=oldPassword){
+				 msgString="两次输入不一致";
+				 errorFlag=true;
+			 }
+		 }
+	 }
+	 if(errorFlag){
+		 $("#"+idName+"Msg").html('<span class="fa fa-times-circle" style="color:red;font-size:12px">'+msgString+'</span>');
+	 	 $("#"+idName).css("border-color","red");
+	 }else{
+	 	 $("#"+idName+"Msg").html('<span class="fa fa-check text-success-dark" aria-hidden="true"></span>');
+	 	 $("#"+idName).css("border-color","#cccccc");
+	 }
+	return errorFlag;
+ }
+ function contentValidate(type,content){
+	 var regx='';
+	 switch(type){
+	 case 1:regx ='^(?:(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])).{8,20}$';break;//检查密码是否符合规则;
+	 case 2:regx='^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$';break;//校验邮箱
+	 case 3:regx='\\d{11}?';break;//校验手机号
+	 case 4:regx='\\d{5}\\d*';break//校验工作电话
+	 }
+	 var reg=new RegExp(regx);
+	 var result=reg.test(content);
+	 return result;
+ }
+
+ function handlePassword(pwd){
+		var convertPassword = CryptoJS.SHA256(pwd).toString(CryptoJS.enc.HEX);
+		var keyHex = CryptoJS.enc.Utf8.parse(proofCode);
+	    var encrypted = CryptoJS.DES.encrypt(convertPassword,keyHex,{
+	        mode : CryptoJS.mode.ECB,
+	        padding : CryptoJS.pad.Pkcs7
+	    });
+	    ////console.log(encrypted.toString());
+		return encrypted.toString();
+	}
+ function getProofCode(){
+	 	$.ajax({
+			type : "GET",
+			url : urlPath +'/getProofCode',
+			contentType:"text/html",
+			async:false,
+			success : function(retdata) {
+				proofCode = retdata;
+				////console.log(proofCode);
+			},
+			error : function(xmlhttp,textStatus,errorThrown){
+				getProofCode()
+			}
+		}); 
+	}
+//时间格式化
+	function timeFormatter(cellvalue, options, rowObject) {
+		var unixTimestamp = new Date(cellvalue*1000) ;
+		return unixTimestamp.toLocaleString();	
+	}
+	
+Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+
+    return this.getFullYear() + "-" + currMonth + "-" + currDate ;
+};
+</script>
+</body>
+</html>

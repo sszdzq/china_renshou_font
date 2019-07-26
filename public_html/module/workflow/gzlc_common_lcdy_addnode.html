@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>流程信息</title>
+
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet" />
+<link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
+<link rel="stylesheet" href="../../shared/css/workflow.css" type="text/css" />
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+
+<style type="text/css">
+
+</style>
+</head>
+<body>
+<form  id="saveform" name="saveform">
+    <input id="jdgxid" name="jdgxid" type="hidden">
+    <input name="preid" id="preid" type="hidden" >
+    <input id="gzlid" name="gzlid" type="hidden">  
+    <table id="tab_data" class="table_insert" style="width:100%" >
+	  	<tr>
+	  		<td style="width:20%" class="tdtitle must">选择节点：</td>        
+	        <td width="80%">
+		        <select id="jdid" checktype="b" name="jdid" style="width:98%" >
+		        </select>
+	        </td>
+	    </tr>
+	    <tr>
+	    	<td style="width:20%" class="tdtitle" onclick="getExpress();" style="CURSOR: hand;">启动表达式：</td>
+	        <td >
+	            <textarea id="expsm" name="expsm"  rows="3" readonly="readonly" style="width:95%" ></textarea>
+	            <input id="express" name="express" type="hidden" />
+	        </td>
+	    </tr>
+	    <tr>
+	        <td style="width:20%" class="tdtitle">流程说明：</td>
+	        <td >
+	        	<textarea id="sm" name="sm" rows="3" style="width:95%" ></textarea>
+	        </td>
+	    </tr>
+  </table>
+</form>  
+</body>
+<script type="text/javascript">
+	var urlPath=getUrlPath();
+	//初始化，用于验证输入数据是否符合要求
+	$("#saveform").formInit();
+	
+	function saveData(tindex){
+		//检查数据有效性
+		if($("#jdid").val()!=null&&$("#jdid").val()!=""){
+			var tfdata=$("#saveform").getData();
+			var params={};
+			params["jdgxid"]=tfdata.jdgxid;
+			params["gzlid"]=tfdata.gzlid;
+			params["jdid"]=tfdata.jdid;
+			params["preid"]=tfdata.preid;
+			params["expsm"]=tfdata.expsm;
+			params["express"]=tfdata.express;
+			params["sm"]=tfdata.sm;
+			//保存节点数据
+			$.ajax({
+				url : urlPath+"/lcdyController/addNode.mvc",
+           		type: "POST",
+         		data : params,
+           		cache:false,
+           		dataType : "json",
+          		success : function(retval){
+        			window.parent.doFresh();
+        			//刷新流程图
+        			window.parent.layer.close(tindex); //再执行关闭
+           		}
+           	});
+			
+// 			$.ajax("${path}/lcdyController/addNode.mvc?_rd="+Math.random(),tfdata,function(retval){
+// 				if(retval.flag){
+// 					//刷新流程图
+// 					window.parent.doFresh();
+// 					var index = window.parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+// 		        	window.parent.layer.close(index); //再执行关闭   
+// 				}else{//提示失败原因
+// 					alert(retval.msg);
+// 				}
+// 			},"json");
+		}else{
+			alert("请选择要添加的节点！");
+			return false;
+		}
+	}
+	var jdgxid="";
+	var gzlid="";
+	var preid="";
+	$(document).ready(function() {
+		jdgxid=GetQueryString("jdgxid");
+		gzlid=GetQueryString("gzlid");//工作流id
+		preid=GetQueryString("preid");//前节点ID
+		console.log(gzlid+"@@"+preid);
+		$("#gzlid").val(gzlid);
+		$("#preid").val(preid);
+		getWorkflow(jdgxid);
+		
+		//加载节点数据
+		$.post(urlPath+"/lcdyController/getJdList.mvc?_rd="+Math.random(),{gzlid:gzlid,jdgxid:jdgxid},
+			function(retdata){
+				var tjdobj=$("#jdid");
+				var curval=tjdobj.attr("val");
+				$.each(retdata,function(tin,titem){
+					var strsel=" ";
+					if(curval!=null&&curval!=""&&curval==titem.jdid){
+						strsel=" selected='selected' ";
+					}
+					tjdobj.append("<option value='"+titem.jdid+"' "+strsel+">"+titem.jdsm+"</option>");
+				});
+			},"json");
+	});
+	
+    function getExpress(){
+    	window.parent.layer.open({
+			title:'表达式',
+			type: 2,
+			content: '../workflow/gzlc_common_express.html?noCache='+new Date().getTime(),
+			area: ['975px', '450px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+			success: function(layero, index){
+				//获取工作流的参数数据
+				$.get(urlPath+"/lcdyController/getGzlParams.mvc?_rd="+Math.random(),{gzlid:gzlid},function(retdata){
+					//调用表达式初始化方法
+					window.parent["layui-layer-iframe" + index].doinit(retdata);		
+				},"json");
+				//var tdata=[{pname:'dwbm',plable:'起草单位',psm:'起草单位',type:'DW'},{pname:'TEST2',plable:'测试用户',psm:'参数2说明',type:'USER'},{pname:'TEST3',plable:'数据参数',psm:'参数3说明',type:'NUM'}];
+			},
+            yes: function(index){
+            	//获取表达式数据 
+            	var res = window.parent["layui-layer-iframe" + index].getExpress();
+            	if(res==null){
+            		$("#expsm").val("无条件");
+            		$("#express").val("1.0");
+            	}else{
+            		$("#expsm").val(res.bdssm);
+            		$("#express").val(res.startexp);
+            	}
+            	
+            	window.parent.layer.close(index);	 
+            }		
+		});
+    }
+    
+    //获取工作流对象
+    function getWorkflow(jdgxid){
+		$.ajax({
+			type : "POST",
+			url : urlPath+"/LcpzController/getWorkflow.mvc",
+			data : {jdgxid:jdgxid},
+			dataType : "json",
+			async:false,
+			traditional: true,//ajax传递数组的时候traditional必须为true
+			success : function(data) {
+				console.log(data);
+ 				$("#jdid").val(data.jdid);
+				$("#expsm").val(data.expsm);
+				$("#express").val(data.express);
+				$("#sm").val(data.sm);
+				
+				$("#jdgxid").val(data.jdgxid);
+			}
+	    });
+    	
+    	
+    }
+    
+	function GetQueryString(name){
+	    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if(r!=null)return  decodeURI(r[2]); return null;
+	}
+    
+</script>
+</html>

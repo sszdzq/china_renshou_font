@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<!--导入jquery文件-->
+		<script src="../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+		<script src="../shared/js/jquery.extend.min.js" type="text/javascript"></script>
+		<script src="../shared/js/myLayer.js" type="text/javascript"></script>
+		<script src="../shared/layer/layer.js" type="text/javascript"></script>
+		<!--导入bootstrap.css文件-->
+		<link rel="stylesheet" href="../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="./font-awesome/css/font-awesome.min.css"  type="text/css" />
+		<!--导入bootstrap.js文件-->
+		<script type="text/javascript" src="../shared/bootstrap/js/bootstrap.min.js" ></script>
+		<!--创建视口-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- jqgridjs -->
+		<script src="../shared/jqgrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+		<script src="./jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		<!-- echart组件 -->
+		<script src="../shared/plugins/echarts.min.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<!--创建布局容器-->
+		<div class="container-fluid" style="margin:0 10px 0 10px;">
+			<div class="clearfix"></div>
+				<div class="row-fluid" style="margin-top:30px;font-size:18px;background:white;">
+					<div class="span4 text-center" style="height:200px;border:1px solid #E9E9E9";>
+						<img src="../shared/images/assets/headPortrait/Fruit-2.png" width=110 height=110 style="margin-top:30px;border-radius:50%; overflow:hidden;"/>
+						<p id="usernameP" style="margin-top:10px"></p>
+					</div>
+					<div class="span4" style="height:200px;border:1px solid #E9E9E9">
+						<p id="departmentP" class="fa" style="margin-top:40px"></p>
+						<p id="roleNameP" style="margin-top:15px"></p>
+						<p id="lastLoginTimeP" style="margin-top:15px"></p>
+					</div>
+					<div class="span4" style="height:200px;border:1px solid #E9E9E9">
+						<p id="emailP" style="margin-top:40px"></p>
+						<p id="mobileP" style="margin-top:15px"></p>
+						<p id="workTelephoneP" style="margin-top:15px"></p>
+					</div>
+								
+				
+				</div>
+				<div class="row-fluid" style="margin-top:40px;background:white;" >						
+					<div id="moulageManage" onclick="window.open('http://www.baidu.com')" class="span3 text-center" style="height:400px;margin-left;border-right:25px solid #F5F5F5;cursor: pointer;display:none;">
+						<img src="../shared/images/assets/images/dashboard_seal_blue.png" width=120 height=120 style="margin-top:100px;"/>
+						<p style="font-size:18px;margin-top:58px;">
+							<b>印模管理<span id="moulageCountSpan" style="color:blue;margin:0 15px 0 15px"></span>个</b>
+						</p>
+					</div>
+					<div id="sealManage" onclick="window.open('http://www.baidu.com')" class="span3 text-center" style="height:400px;padding:0 30px 0 30px;border-left:5px solid #F5F5F5;border-right:20px solid #F5F5F5;;cursor: pointer;display:none;">
+						<img src="../shared/images/assets/images/dashboard_seal_green.png" width=120 height=120 style="margin-top:100px;"/>
+						<p style="font-size:18px;margin-top:58px;">
+							<b>印章管理<span id="sealCountSpan" style="color:green;margin:0 15px 0 15px"></span>个</b>
+						</p>
+					</div>					
+					<div id="loginUsersChart" class="span3 text-center" style="height:400px;border-left:10px solid #F5F5F5;border-right:10px solid #F5F5F5;display:none;">						
+					</div>	
+									
+					<div id="moulageChart" class="span3 text-center" style="height:400px;border-left:20px solid #F5F5F5;display:none;">
+					</div>	
+					
+				</div>
+				<div id="userCollect" style="margin-top:50px;display:none;">
+					<ul id="tab_1" class="nav nav-pills" >							    
+					    <li id="dayUser" node-data="tab_day_user" class="active"  onclick="getCountData('day','userCollectInfo')"><a data-toggle="tab" href="#tab_task">24小时内登录用户</a></li>
+					    <li id="monthUser" node-data="tab_month_user"  onclick="getCountData('month','userCollectInfo')"><a data-toggle="tab" href="#tab_workhour">1个月内登录用户</a></li>
+					    <li id="yearUser" node-data="tab_year_user"  onclick="getCountData('year','userCollectInfo')"><a data-toggle="tab" href="#tab_checkin">1年内登录用户</a></li>					    
+					</ul>
+					<div style="clear:both"></div>	
+					<div id="userCollectInfo" class="tab-pane"  style="height:300px;background:white;">
+					</div>																																	
+				</div>
+				<div id="userListTable" style="margin:50px 0 50px 0;display:none">
+					<ul id="tab_1" class="nav nav-pills" >							    
+					    <li id="userList" node-data="tab_user_list" class="active"  ><a data-toggle="tab" href="#tab_task">当前登录用户</a></li>
+					</ul>
+					<div style="clear:both"></div>
+					<table id="userTable">
+	                    <thead>
+	                    <tr>
+	                        <th>用户名</th><th>用户姓名</th><th>所属部门</th><th>手机号</th><th>最后操作时间</th><th>操作</th>
+	                    </tr>
+	                    </thead>
+	                    <tbody>     
+	                    </tbody>
+	                </table>																																		
+				</div>
+				<div id="sealCollect" style="display:none;">
+					<ul id="tab_3" class="nav nav-pills" >							    
+					    <li id="daySeal" node-data="tab_day_seal" class="active"  onclick="getCountData('day','sealCollectInfo')"><a data-toggle="tab" href="#tab_task">24小时内印章使用</a></li>
+					    <li id="monthSeal" node-data="tab_month_seal"  onclick="getCountData('month','sealCollectInfo')"><a data-toggle="tab" href="#tab_workhour">1个月内印章使用</a></li>
+					    <li id="yearSeal" node-data="tab_year_seal"  onclick="getCountData('year','sealCollectInfo')"><a data-toggle="tab" href="#tab_checkin">1年内印章使用</a></li>					    
+					</ul>
+					<div style="clear:both"></div>	
+					<div id="sealCollectInfo" class="tab-pane"  style="height:300px;background:white;">
+					</div>																																	
+				</div>
+				
+		</div>
+	</body>
+<script type="text/javascript">
+
+   //图表定义
+   var myPieChart = null;
+   var pieOption = null;
+   var myLineChart = null;
+   var lineOption = null;
+   //当前登录用户id  
+   var currUserId = null;
+   var showOrNot = {
+		      userCollectInfo : false,
+		      sealCollectInfo : false
+		    };
+   
+   $(function(){
+	    getUserinfo();
+	    getCountData('day','userCollectInfo');
+	    getCountData('day','sealCollectInfo'); 
+   }) 
+   
+   function getUserinfo(){
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : "http://localhost:8080/ESS/api/userInfo",
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				currUserId = data.id;
+				var lastloginTimeStr = null;
+				if(data.lastloginTime != null){
+					var unixTimestamp = new Date((data.lastloginTime)*1000) ;
+					lastloginTimeStr = unixTimestamp.toLocaleString();					
+				}
+				var depart =data.department.allName + (data.lowerLevel? '(' : '(不') + '包含下级)';
+				document.getElementById("usernameP").innerHTML=data.name?data.name:data.username;
+				document.getElementById("departmentP").innerHTML='<i class="fa" style="margin-right:10px">&#xf0e8</i><b>所属单位 :</b> '+depart;
+				document.getElementById("roleNameP").innerHTML='<i class="fa" style="margin-right:10px">&#xf007</i><b>身份角色 :</b> '+data.roleName;
+				document.getElementById("lastLoginTimeP").innerHTML='<i class="fa" style="margin-right:10px">&#xf21b</i><b>上次登陆时间 :</b> '+(data.lastloginTime == null?'未登录':lastloginTimeStr);
+				document.getElementById("emailP").innerHTML='<i class="fa" style="margin-right:10px">&#xf003</i><b>邮箱 :</b> '+(data.email == null?'':data.email);
+				document.getElementById("mobileP").innerHTML='<i class="fa" style="margin-right:10px">&#xf10b</i><b>手机号码 :</b> '+(data.mobile == null?'':data.mobile);
+				document.getElementById("workTelephoneP").innerHTML='<i class="fa" style="margin-right:10px">&#xf095</i><b>办公电话 :</b> '+(data.workTelephone == null?'':data.workTelephone);
+			}
+		});
+   }
+   
+   Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+
+       return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+   };
+   
+   function kick(userId){
+	   var ids = [];
+	   ids.push(userId);
+		layer.confirm('确实要踢出此用户吗?', {
+			  btn: ['确定','取消']
+		}, function(){
+			$.ajax({
+				type : "PUT",
+				url : "http://localhost:8080/ESS/api/logoutUsers",
+				data : JSON.stringify(ids),
+				dataType : "json",
+				contentType:"application/json",
+				success : function(retdata) {
+					//layer.msg('用户踢出成功', {icon: 1});
+					location.reload();
+				}
+			});
+		});
+   }
+   
+    function getCountData(dateType,countType){
+		$.ajax({
+			type : "GET",
+			data :{type : dateType},
+			url : "http://localhost:8080/ESS/api/"+countType,
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				showOrNot.countType = true;
+				if(showOrNot.countType && countType == 'sealCollectInfo'){
+					document.getElementById('sealCollect').style.display="block";
+					document.getElementById('sealManage').style.display="block";
+					document.getElementById('moulageManage').style.display="block";
+					document.getElementById('moulageChart').style.display="block";
+				}else if(showOrNot.countType && countType == 'userCollectInfo'){
+					document.getElementById('userCollect').style.display="block";
+					document.getElementById('loginUsersChart').style.display="block";
+					document.getElementById('userListTable').style.display="block";
+				}
+ 	          if(countType == 'userCollectInfo'){
+ 	        	getConfig(1,'当前登录用户'); 
+ 	        	getConfig(0,"用户数");
+	            var loginUsersCount = data.loginUsersCount;
+	            var notLoginUsersCount  = data.userCount - loginUsersCount;
+	            pieOption.series[0].data = [];
+	            pieOption.series[0].data[0] = {value:loginUsersCount === null? 0:loginUsersCount,name:"登录用户"};
+	            pieOption.series[0].data[1] = {value:notLoginUsersCount === null? 0:notLoginUsersCount,name:"未登录用户"};
+	            myPieChart.setOption(pieOption);
+	            
+	            var users = data.loginUsersName;
+	            for(var i = 0,len = users.length; i < len; i++){
+	            	var dostTimeStr = null
+					if(users[i].dostTime != null){
+						var unixTimestamp = new Date((users[i].dostTime)) ;
+						dostTimeStr = unixTimestamp.toLocaleString();					
+					}
+		            $("#userTable tbody").html("");
+					if(users[i].id == currUserId){						
+		            	$("#userTable tbody").append('<tr style="background:white;"><td>'+users[i].loginId+'</td><td>' +users[i].name+'</td><td>'+users[i].department+'</td><td>'+(users[i].mobile == null?'无':users[i].mobile)+'</td><td>'+dostTimeStr+'</td><td><tr>');
+					}else if(users[i].id != currUserId){
+		            	$("#userTable tbody").append('<tr style="background:white;"><td>'+users[i].loginId+'</td><td>' +users[i].name+'</td><td>'+users[i].department+'</td><td>'+(users[i].mobile == null?'无':users[i].mobile)+'</td><td>'+dostTimeStr+'</td><td>'+'<a onclick="kick(\''+users[i].id+'\')">踢出</a>'+'</td><tr>');
+					}
+	            }
+	          }else if(countType == 'sealCollectInfo'){
+	        	  getConfig(0,"印章数");
+	        	  getConfig(1,'印模'); 
+	              var moulageInfo = data.moulageInfo;
+	              pieOption.series[0].data = [];
+	              pieOption.series[0].data[0] = {name:"未审批", value:moulageInfo[0] === null? 0:moulageInfo[0]};
+	              pieOption.series[0].data[1] = {name:"已通过", value:moulageInfo[1] === null? 0:moulageInfo[1]};
+	              pieOption.series[0].data[2] = {name:"未通过", value:moulageInfo[2] === null? 0:moulageInfo[2]};
+	              myPieChart.setOption(pieOption);
+	              var sealCount = data.sealCount;
+	              var moulageCount = moulageInfo[0]+moulageInfo[1]+moulageInfo[2];	              
+	              document.getElementById("moulageCountSpan").innerHTML = sealCount;
+	              document.getElementById("sealCountSpan").innerHTML = moulageCount;
+	          }
+			  getCollectInfo(dateType,countType,data);
+			}
+		});
+      }
+    
+    function getConfig(type,p){
+        switch (type) {
+        case 0:
+         	var lineChartObj = '';
+        	if(p == '用户数'){
+        		lineChartObj = 'userCollectInfo';
+        	}else if(p == '印章数'){
+        		lineChartObj = 'sealCollectInfo';
+        	}
+        	
+        	myLineChart = echarts.init(document.getElementById(lineChartObj)); 
+        	lineOption = {
+            	    tooltip : {
+            	        trigger: 'item',
+            	        formatter:'{a}:{c}',
+            	        backgroundColor:"rgba(248,248,255,0.7)", 
+            	        borderColor: '#1E90FF',
+            	        borderWidth: 1,
+            	        position: function(point, params, dom) {
+                            return [point[0]-50, point[1]-60];
+                        },
+            	        textStyle: {
+            	            color: 'black'
+            	        }
+            	    },
+            	    toolbox: {  
+                        //show: true,  
+                        itemSize: 20,  
+                        itemGap: 30,  
+                        right: 10,  
+                        feature: {  
+                            dataView: {show:true},  
+                            saveAsImage: {  
+                                //excludeComponents :['toolbox'],  
+                                pixelRatio: 2  
+                            }  
+                        }  
+           			 },
+        		    xAxis: {
+        		        type: 'category',
+        		        data:[]
+        		    },
+        		    yAxis: {
+        		        type: 'value',
+        		        minInterval:1
+        		    },
+        		    series: [{
+        		    	name:p,
+        		        type: 'line',
+                        symbol:'circle',//拐点样式
+                        symbolSize: 8,//拐点大小
+        		        data:[],
+        		        itemStyle: {
+        		            normal: {
+        		                color: "#1E90FF",
+        		                lineStyle: {
+        		                	width:2,
+        		                    color: "#1E90FF"
+        		                }
+        		            }
+        		        },
+        		    }]
+        		};
+        	 
+        case 1:
+        	var pieObj = '';
+        	if(p == '当前登录用户'){
+        		pieChartObj = 'loginUsersChart';
+        	}else if(p == '印模'){
+        		pieChartObj = 'moulageChart';
+        	}
+        	myPieChart = echarts.init(document.getElementById(pieChartObj));  
+            pieOption = {
+            	    title : {
+        	            text:  p +'统计',
+        	            align: 'left',
+        	            floating: false,
+        	            x: 10,
+        	            y: 10,
+        	            textStyle: {
+        	                fontSize: 18,
+        	                fontWeight: 'normal',
+        	                color: '#333'          // 主标题文字颜色
+        	            },
+        	        },
+            	    tooltip : {
+            	        trigger: 'item',
+            	        formatter:'{b}<br/>占 : <b>{d}%</b>',
+            	        backgroundColor:"rgba(248,248,255,0.7)", 
+            	        borderColor: '#D8BFD8',
+            	        borderWidth: 1,
+            	        position: function(point, params, dom) {
+                            return [point[0]-50, point[1]-60];
+                        },
+            	        textStyle: {
+            	            color: 'black'
+            	        }
+            	    },
+            	    toolbox: {  
+                        //show: true,  
+                        itemSize: 20,  
+                        itemGap: 30,  
+                        right: 10,  
+                        feature: {  
+                            dataView: {show:true},  
+                            saveAsImage: {  
+                                //excludeComponents :['toolbox'],  
+                                pixelRatio: 2  
+                            }  
+                        }  
+           			 },
+            	    series : [
+            	              {
+            	                  name: '',
+            	                  type: 'pie',
+            	                  radius : '35%',
+            	                  center: ['50%', '60%'],
+            	                  itemStyle: {
+            	                      emphasis: {
+            	                          shadowBlur: 10,
+            	                          shadowOffsetX: 0,
+            	                          shadowColor: 'rgba(0, 0, 0, 0.7)'
+            	                      },
+            	                      normal: {
+            	                          label: {        //此处为指示线文字
+            	                              show: true,
+            	                              position: 'top', //标签的位置
+            	                              textStyle: {
+            	                            	  color:'black',
+            	                                  fontWeight: 'bolder',
+            	                                  fontSize: 11    //文字的字体大小
+            	                              }
+            	                          },
+             	                          labelLine: {    //指示线状态
+            	                              show: true,
+            	                              smooth: 1,
+            	                              length: 13
+            	                          } 
+            	                      }
+            	             	  }
+            	              }
+            	          ],
+            	     color: ['#3498db', '#2ecc71', '#f1c40f', '#f39c12', '#9b59b6', '#c0392b', '#1abc9c', '#d35400', '#bdc3c7', '#34495e', '#7f8c8d', '#16a085', '#27ae60', '#e74c3c', '#8e44ad', '#2980b9', '#95a5a6', '#2c3e50']
+                };
+       }
+     }
+    
+       function getCollectInfo(dateType,countType,data){
+    	
+        var thisHour = new Date().getHours();
+        var today = new Date().getDate();
+        var thisMonth = new Date().getMonth() + 1;
+        var lastMonth = new Date().getMonth() == 0? 12 : new Date().getMonth();
+        var historyInfo = data.historyInfo;
+         if(dateType == 'day'){
+          lineOption.series[0].data = [];
+          for(var h = 1;h<=24;h++){
+        	  lineOption.xAxis.data.push((h+thisHour)%24+'时');
+        	  lineOption.series[0].data[h-1] = (historyInfo[(h+thisHour)%24] === null? 0 : historyInfo[(h+thisHour)%24]);
+          }
+          myLineChart.setOption(lineOption);
+        }else if(dateType == 'month'){
+          var allDays = 0;
+          var d, ds = [], mds=[];
+          lastMonth = (lastMonth < 10 ? "0" : "") + lastMonth;
+          thisMonth = (thisMonth < 10 ? "0" : "") + thisMonth;
+          for(d = 31;d >= 28;d--){
+            if(historyInfo[(lastMonth+ "" + d)] !== undefined){
+              allDays = d;
+              break;
+            }
+          }
+          for(d = 0;d < 30;d++){
+            var day = today - d;
+            if(day > 0){
+              ds.push(thisMonth + (day < 10 ? "0" : "") + day);
+              mds.push(parseInt(thisMonth) + "月" + day + "日");
+            }else{
+              day += allDays;
+              ds.push(lastMonth + (day < 10 ? "0" : "") + day);
+              mds.push(parseInt(lastMonth) + "月" + day + "日");
+            }
+          }
+          lineOption.series[0].data = [];
+          for(d = 29;d >= 0;d--){
+            lineOption.xAxis.data.push(mds[d]);
+            lineOption.series[0].data[29 - d] = (historyInfo[ds[d]] === null? 0 : historyInfo[ds[d]]);
+          }
+          myLineChart.setOption(lineOption);
+        }else{
+        	lineOption.series[0].data = [];
+            for(var m = 0;m<12;m++){
+              lineOption.xAxis.data.push((m+thisMonth)%12+1+'月');
+              lineOption.series[0].data[m] = (historyInfo[(m+thisMonth)%12+1] === null? 0 : historyInfo[(m+thisMonth)%12+1]);
+            }  
+            myLineChart.setOption(lineOption);
+        }
+      } 
+    
+    
+	</script>
+</html>

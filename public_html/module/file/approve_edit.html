@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+	<META HTTP-EQUIV="Expires" CONTENT="0">
+	<title>文档审核</title>
+
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/document.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/main.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css"/>
+	<!-- jqgrid样式 -->
+	<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet"/>
+	<link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet"/>
+
+
+	<!--javascript引用部分 -->
+	<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+	<!-- jqgridjs -->
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+	<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+	<!-- my97 DatePicker  -->
+	<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+	<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	<!-- 控件  -->
+	<script src="../../shared/ocx/hwpostil.js"  type="text/javascript" ></script>
+	<style type="text/css">
+		::-webkit-scrollbar-thumb {
+			background: #d9d9d9;
+			cursor: pointer;
+		}
+
+		select{
+			width:auto;
+			padding:3px;
+		}
+		body{
+			padding: 0 15px;
+		}
+		.panel-body{
+			padding: 5px;
+		}
+		form{
+			font-size: 15px; width: 100%; border: 0px;
+			margin-bottom: 0px !important;
+		}
+		.panel-heading{
+			padding: 4px 15px;
+		}
+
+	</style>
+
+</head>
+<body>
+<div class="margin-top-1" style="height:100%">
+	<div class="panel-group" style="height:100%;overflow:auto;">
+		<div class="panel-default panel  panel-open" id="info" >
+			<div role="tab"   class="panel-heading" onclick="showOrHide('info')" >
+				<h4 class="panel-title">
+					<span ><i class="fa fa-chevron-down" aria-hidden="true"></i>文档基本信息(<font style="color:red">状态:<span id="status"></span></font>)</span>
+				</h4>
+			</div>
+			<div   class="panel-collapse in collapse"  style="height: auto;">
+				<div class="panel-body" id="infoBody">
+					<form id="fileMessage"  class="form-inline">
+						<table id="fileTable" style="" class="table_insert">
+							<tbody>
+							<tr>
+								<td class="tdtitle" align="right">文档编号：</td>
+								<td><input type="text" id="doc_id" name="doci_id"class="form_input" disabled="disabled"></td>
+
+								<td class="tdtitle" align="right">文档标题：</td>
+								<td><input type="text" id="doc_title" name="doc_title"class="form_input" disabled="disabled"></td>
+
+								<td class="tdtitle" align="right">归属机构：</td>
+								<td><input type="text" id="dept_name" name="dept_name" class="form_input" disabled="disabled"></td>
+
+							</tr>
+							<tr>
+								<td class="tdtitle" align="right">业务类型：</td>
+								<td><input type="text" id="service" name="service" class="form_input" disabled="disabled"></td>
+
+								<td class="tdtitle" align="right">提交人：</td>
+								<td><input type="text" id="user_name" name="user_name" class="form_input" disabled="disabled"></td>
+								<td class="tdtitle" align="right">提交时间：</td>
+								<td><input type="text" id="create_time" name="create_time" class="form_input" disabled="disabled"></td>
+
+
+							</tr>
+							<tr >
+								<td class="tdtitle" align="right">上一步办理状态：</td>
+								<td><input type="text" id="last_status" name="last_status" class="form_input" disabled="disabled"></td>
+
+								<td class="tdtitle" align="right">上一步办理时间：</td>
+								<td><input type="text" id="last_time" name="last_time" class="form_input" disabled="disabled"></td>
+
+								<td class="tdtitle" align="right">请求份数：</td>
+								<td><input type="text" id="max_num" name="max_num" class="form_input" disabled="disabled"></td>
+
+							</tr>
+							<tr >
+								<td class="tdtitle" align="right">前办理人：</td>
+								<td><input type="text" id="deal_user" name="deal_user" class="form_input" disabled="disabled"></td>
+
+								<td class="tdtitle" align="right">已打印份数：</td>
+								<td><input type="text" id="cur_num" name="cur_num" class="form_input" disabled="disabled"></td>
+
+								<td class="tdtitle" align="right">打印机构：</td>
+								<td><input type="text" id="print_dept" name="print_dept" class="form_input" disabled="disabled"></td>
+
+							</tr>
+							<tr >
+								<td class="tdtitle" align="right">当前办理人：</td>
+								<td colspan="3">
+									<input type="hidden" id="userId_now" name="userId_now">
+									<input type="hidden" id="filePath" name="filePath">
+									<input type="hidden" id="addma" name="addma">
+									<input type="hidden" id="download" name="download">
+									<input type="text" id="user_now" name="user_now" class="form_input" disabled="disabled">
+								</td>
+
+
+								<!--<td class="tdtitle" align="right">转呈机构：</td>
+								<td><select id="check_id" name="check_id"
+											class="form_input" >
+									<option value="0">总部</option>
+									<option value="1">中心</option>
+								</select></td>-->
+							</tr>
+							</tbody>
+						</table>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default" id="opinion" >
+			<div  class="panel-heading"  onclick="showOrHide('opinion')">
+				<h4 class="panel-title">
+					<span ><i class="fa fa-chevron-right" aria-hidden="true"></i>显示/隐藏审核意见列表</span>
+				</h4>
+			</div>
+			<div class="panel-body" id="opinionBody" style="display: none">
+				<div style="text-align: center">此文档无审核意见!</div>
+			</div>
+		</div>
+		
+		<div class="panel panel-default" id="newOpinion">
+			<div class="panel-body" >
+				<div id="renumberDiv" style="display:none">
+					<span style="width: 10%;text-align: right;display: inline-block;">申请分数：</span>
+					<input type="text" id="renumber" name="renumber" class="form_input" >
+					<span style="width: 10%;text-align: right;display: inline-block;" id="checkId_name">审核部门：</span>
+					<select id="checkId" name="checkId"
+							class="form_input" >
+						<option value="0">总部</option>
+						<option value="1">中心</option>
+					</select>
+					<span style="width: 10%;text-align: right;display: inline-block;" id="workflow">选择流程：</span>
+					<select id="workflow_id" name="workflow_id" style="display: none;width: 150px;" class="form_input" onchange="showWorkflow()">
+						<option></option>
+					</select>
+
+				</div>
+				<span style="width: 10%;text-align: right;display: inline-block;">当前意见：</span>
+				<textarea type="text" id="approve_opinion" name="approve_opinion" class="form_input" style="width: 70%;height: 30px;margin-bottom: 0px"></textarea>
+
+
+				<span style="width: 8%;text-align: right;display: inline-block;">常用语：</span>
+				<select id="commonLanguage" name="commonLanguage" class="form_input" style="width: 8%;">
+					<option></option>
+					<option value="通过！">通过！</option>
+					<option value="拒绝！">拒绝！</option>
+					<option value="退回！">退回！</option>
+
+				</select>
+			</div>
+		</div>
+		<div class="panel panel-default" id="set_doc_dept" style="display: none;">
+			<div class="panel-body" >
+				<table class="table_insert">
+					<tr>
+						<td class="tdtitle" align="right" style="width:10%;">阅读部门：</td>
+						<td><select id="save_set" name="save_set"
+									class="form_input" >
+							<option></option>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="panel panel-default" >
+			<div role="tab"   class="panel-heading" >
+				<h4 class="panel-title">
+					<span><span >正文：</span><i class="pull-right glyphicon  glyphicon-chevron-down" ></i> </span>
+				</h4>
+			</div>
+			<div style="background:#fff;">
+				<div id="aip" name="aip" class="panel-body">
+
+				</div>
+				<div name="listall" id="listall" class="panel-body" style="display:none;">
+					<textarea name="listallvalue" id="listallvalue" style="width:100%;height:100px;"></textarea>
+				</div>
+			</div>
+		</div>
+
+
+</div>
+
+
+
+
+<script type="text/javascript">
+	var services;
+    var statusType=["起草","审核","盖章","打印","已归档","补打申请","已归档","退回"];
+    var approve_status=["起草","审核","盖章","打印","","补打申请","归档","审批退回","","盖章退回","补打拒绝","","补打通过"];
+    var urlPath=getUrlPath();
+    var fromPage="";
+    var filePath="";
+    var fileBase64="";
+    var _docid="";
+    //创建控件对象
+    var hwpobj =new HWPostil("aip");
+    //初始化控件
+    hwpobj.Init({id:"HWPostil2",designMode:1,showMenu:0,showScrollBar:0,});
+    hwpobj.setSilentMode(1);
+    hwpobj.setShowDefMenu(0);
+    hwpobj.setShowToolBar(0); 
+    //加载jqGrid
+    $(document).ready(function() {
+        $("#aip").height(500);
+        var id=GetQueryString("id");
+        _docid=id;
+         fromPage=GetQueryString("fromPage");
+
+        if(fromPage=="makeup"){
+            $("#renumberDiv").show();
+            getWorkflow();
+		}else if(fromPage=="makeupApprove"){
+            $("#renumberDiv").show();
+        }else if(fromPage=="archiveManage"){
+            conditionInit();
+            $("#newOpinion").hide();
+            $("#set_doc_dept").show();
+		}
+
+        informationInit(id);
+    });
+    function getWorkflow(){
+        $.ajax({
+            type : "GET",
+            url : urlPath + "/workflow/getGzlc?djlxbm=003&noCache=" + new Date().getTime(),
+            contentType : "application/json",
+            dataType : "json",
+            success : function(data) {
+                $("#workflow_id").show();
+                $("#workflow").show();
+				if(data!=null){
+					var sHtml="<option></option>";
+					for (var i = 0; i < data.length; i++) {
+						sHtml+="<option value="+data[i].gzlid+">" + data[i].gzlmc+"</option>";
+					}
+					$("#workflow_id").html(sHtml);
+				}
+
+
+            },
+            error : function(data) {
+
+            }
+        });
+	}
+    function GetQueryString(name){
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  decodeURI(r[2]); return null;
+    }
+    function informationInit(id) {
+
+        $.ajax({
+            type : "GET",
+            url : urlPath + "/files/"+id+"?noCache=" + new Date().getTime(),
+            contentType : "application/json",
+            dataType : "json",
+            success : function(data) {
+            	//console.log(data);
+				if(data!=null){
+				    $("#doc_id").val(data.doc_id);
+				    $("#addma").val(data.addma);
+				    $("#download").val(data.download);
+                    $("#doc_title").val(data.doc_title);
+                    $("#dept_name").val(data.dept_name);
+                    $("#service").val(data.serv_name);
+                    $("#user_name").val(data.user_name);
+                    $("#create_time").val(new Date(data.created_at*1000).toLocaleString());
+                    $("#last_status").val(statusType[data.last_status*1]);
+                    $("#last_time").val(new Date(data.updated_at*1000).toLocaleString());
+                    $("#max_num").val(data.max_num);
+                    $("#deal_user").val(data.seal_user_name);
+                    $("#cur_num").val(data.cur_num);
+                    $("#print_dept").val(data.print_deptName);
+                    $("#userId_now").val(data.now_login_user.loginId);
+                    $("#user_now").val(data.now_login_user.name);
+                    $("#save_set").val(data.save_set);
+                    $("#status").html(statusType[data.status*1]);
+                    $("#status2").html(statusType[data.status*1]);
+                    if(fromPage=="makeupApprove"){
+                        $("#renumber").val(data.renumber);
+                        $("#renumber").attr("disabled","disabled");
+
+					}
+                    var approve_opinion=data.approve_opinion;
+                    if(approve_opinion!=null&&approve_opinion.length>0){
+                        $("#opinionBody").html("");
+                        var resultString='';
+                        for(var i=0;i<approve_opinion.length;i++){
+                            var opinion=approve_opinion[i];
+                            resultString+='<div>【'+opinion.user_name+'&nbsp&nbsp'+new Date(opinion.add_time).toLocaleString('china')+'&nbsp&nbsp'+approve_status[opinion.make_type]+'】:'+opinion.app_data+'</div>';
+                        }
+                        $("#opinionBody").append(resultString);
+                    }
+                    if(data.base64!=null && data.base64!=""){
+                    	fileBase64 = data.base64;
+                        hwpobj.LoadFileBase64(data.base64);
+					}
+/*                     if(data.filePath!=null && data.filePath!=""){
+                        filePath = data.filePath+"\\"+data.doc_id+"."+"aip";
+                        $("#filePath").val(filePath);
+                        hwpobj.loadFile(data.filePath+"\\"+data.doc_id+"."+data.doc_type);
+
+					} */
+				}
+            },
+            error : function(data) {
+
+            }
+        });
+    }
+    Date.prototype.toLocaleString = function() {
+        var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+        var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+        var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+        var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+        var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+
+        return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+    };
+
+    function showOrHide(id){
+		var element="#"+id+" .panel-heading .panel-title span i";
+        if($(element).hasClass("fa-chevron-right")){
+            $(element).addClass("fa-chevron-down");
+            $(element).removeClass("fa-chevron-right");
+        }else{
+            $(element).removeClass("fa-chevron-down");
+            $(element).addClass("fa-chevron-right");
+
+        }
+        $("#"+id+"Body").toggle(300);
+
+    }
+ $("#commonLanguage").change(function (){
+     $("#approve_opinion").val($("#commonLanguage").val());
+ });
+
+    function getData(){
+
+        var data={};
+        var approve_opinion=$("#approve_opinion").val();
+
+		data['approve_opinion']=approve_opinion;
+
+        var doc_id=$("#doc_id").val();
+        data['doc_id']=doc_id;
+        if(fromPage=="makeup"){
+            data['renumber']=$("#renumber").val();
+            data['workflow_id']=$("#workflow_id").val();
+            data['checkId']=$("#checkId").val();
+        }else if(fromPage=="archiveManage"){
+            data['save_set']=$("#save_set").val();
+		}
+        data['filePath']=$("#filePath").val();
+        data['base64']= fileBase64;
+        data['addma']=$("#addma").val();
+        data['maxnum']=$("#max_num").val();
+        data['curnum']=$("#cur_num").val();
+        return data;
+    }
+    function conditionInit() {
+        $.ajax({
+            type : "GET",
+            url : urlPath + "/files/conditionInit?noCache=" + new Date().getTime(),
+            contentType : "application/json",
+            dataType : "json",
+            success : function(data) {
+
+                var departments=data.departments;
+                for (var i = 0; i < departments.length; i++) {
+                    $("#save_set").append("<option value="+departments[i].id+">" + departments[i].name+"</option>");
+
+                }
+            },
+            error : function(data) {
+
+            }
+        });
+    }
+    //文档退回
+	function docback(){
+
+	}
+    //手动盖章
+    function sealagin(){
+        var ret = hwpobj.LoginRet("",3,65535,"",urlPath+"/serviceForAip/");
+
+     if(ret == -200){
+            alert("未发现智能卡");
+		}else if(ret != 0){
+            alert("登录失败。请确认服务器状态或智能卡是否正确！"+ret);
+            return false;
+		}
+		//alert(ret);
+        //hwpobj.setValue("SET_SEAL_TYPE_FORADD","PRIVATE");
+        hwpobj.CurrAction = 2568;
+	}
+	//自动盖章
+	function sealauto(){
+        var ret = hwpobj.LoginRet("",3,"65535","","");
+        if(ret == -200){
+            alert("未发现智能卡");
+        }else if(ret != 0){
+            alert("登录失败。请确认服务器状态或智能卡是否正确！"+ret);
+            return false;
+        }
+
+	}
+	//清章
+	function sealclear(){
+		var userid = hwpobj.GetCurrUserID();
+        var sealid=hwpobj.GetNextNote(userid, 0, "");
+		while (sealid!=""){
+            var sealidnext=hwpobj.GetNextNote(userid, 0, sealid);
+            hwpobj.DeleteNote(sealid);
+            sealid=sealidnext;
+		}
+	}
+	
+	function hideAip(){
+		document.getElementById("aip").style.display="none";
+	}
+	
+	function showAip(){
+		document.getElementById("aip").style.display="block";
+	}
+    function changeLcxx(){
+	    var gzlid = $("#workflow_id").val();
+        $("#splcdiv").html("");
+        if(gzlid != null&&gzlid!=""){
+            lcflag = true;
+
+            //查询流程图
+            $.post(urlPath+"/lcdyController/getGzlcJd?noCache=" + new Date().getTime(),{gzlid:gzlid},function(retval){
+                var divgzl=$("#splcdiv");
+                if(retval.flag){
+                    $.each(retval.data,function(tin,titem){
+                        var hexe="";
+                        if(titem.hasexe=="Y"){
+                            hexe="<span class='splcD'></span>";
+                        }
+                        var _tutype=(titem.etype=="one"?" 或 ":" 和 ");
+                        var _uhtml="";
+                        if(titem.users.length>0){
+                            _uhtml+="【";
+                            for(var i=0;i<titem.users.length;i++){
+                                if(i>0){
+                                    _uhtml+=_tutype;
+                                }
+                                _uhtml+="<span uid='"+titem.users[i].yhid+"' data-hasqtip='15'>"+titem.users[i].yhxm+"</span>"+hexe;
+                            }
+                            _uhtml+="】";
+                        }
+
+                        var _nexthtml="";
+                        if(titem.islast!="Y"){
+                            _nexthtml="<span class='splcE'></span>";
+                        }
+                        divgzl.append("<div class='splcA' nodeid='"+titem.jdid+"'><span class='splcB'>"+titem.gnmc+"</span><span class='splcC'>"+_uhtml+"</span>"+_nexthtml+"</div>");
+                    });
+                }else{
+                    $("#service option:first").prop("selected", 'selected');
+                    window.parent.alert("该业务类型没有绑定流程！！");
+                }
+            },"json");
+        }
+    }
+
+    function doSearch(){
+        //console.log("start doSearch"+_docid);
+        informationInit(_docid);
+    }
+</SCRIPT>
+</body>
+</html>

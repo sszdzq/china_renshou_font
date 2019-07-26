@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+	<META HTTP-EQUIV="Expires" CONTENT="0">
+	<title>文档申请</title>
+
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/document.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/main.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css"/>
+	<!-- jqgrid样式 -->
+	<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet"/>
+	<link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet"/>
+
+
+	<!--javascript引用部分 -->
+	<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+	<!-- jqgridjs -->
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+	<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<!-- my97 DatePicker  -->
+	<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+	<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../shared/js/ajaxfileupload.js"></script>
+
+	<script src="../../shared/ocx/hwpostil.js"  type="text/javascript" ></script>
+
+	<style type="text/css">
+		::-webkit-scrollbar-thumb {
+			background: #d9d9d9;
+			cursor: pointer;
+		}
+
+		select{
+			width:auto;
+			padding:3px;
+		}
+		body{
+			padding: 0 15px;
+		}
+		.panel-body{
+			padding: 5px;
+		}
+		form{
+			font-size: 15px; width: 100%; border: 0px;
+			margin-bottom: 0px !important;
+		}
+		.panel-heading{
+			padding: 4px 15px;
+		}
+		.submitDiv{
+			z-index:5;
+		}
+
+	</style>
+
+</head>
+<body>
+		<div class="modal right fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
+			<div class="modal-dialog" >
+				<div class="modal-content">
+					<div class="modal-header">
+					    <button type="button" class="close"  aria-label="Close" onclick='closeModal()'><span aria-hidden="true">×</span>
+					    </button>
+					    <h4 class="modal-title" id="myModalLabel">文件上传提示</h4>
+					</div>
+					<div class="modal-body">
+						<h4 class="modal-title" id="myModalLabel">文件批量上传中<span class="dotting"></span></h4>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+<div class="margin-top-1" style="height:100%">
+	<div class="panel-group" style="height:100%;overflow:scroll;">
+	<form id="fileMessage"  class="form-inline" method="post">
+		<div class="panel-default panel  panel-open"  >
+			<div role="tab"   class="panel-heading" >
+				<h4 class="panel-title">
+					<span   >
+						<span >文档基本信息：</span><i class="pull-right glyphicon  glyphicon-chevron-down" ></i>
+				        </span>
+				</h4>
+			</div>
+			<div   class="panel-collapse in collapse"  style="height: auto;">
+				<div class="panel-body" >
+
+						<table id="fileTable" style="" class="table_insert">
+							<tbody>
+<!-- 							<tr>
+								<td align="right" class="tdtitle">附件：</td>
+								<td>
+									<button type="button" class="btn">选择文件</button>
+									<input type="file" id="fjFile" name="fjFile" style="width:200px;cursor: pointer;" onchange="uploadFj()">
+								</td>
+							</tr> -->
+							<tr>
+								<td class="tdtitle" align="right">文档标题：</td>
+								<td>
+								<!--上传文件类型-->
+								<input type="hidden" id="httptype" name="httptype">
+									<input type="hidden" id="flag" name="flag" value="add">
+
+									<input type="text" id="docTitle" name="docTitle"class="form_input" placeholder="请输入文档标题">
+								</td>
+
+								<td class="tdtitle" align="right">业务类型：</td>
+								<td><select id="service" name="service"
+											class="span3" onchange="serviceOnchange()">
+									<option></option>
+
+								</select></td>
+
+							</tr>
+							<tr>
+								<td class="tdtitle" align="right">业务归属机构：</td>
+								<td><select id="saveSet" name="saveSet"
+											class="form_input" onchange="saveSetOnchange()" >
+									<option></option>
+								</select></td>
+								<td class="tdtitle" align="right">打印部门：</td>
+								<td><select id="printDept" name="printDept"
+											class="form_input" >
+									<option></option>
+								</select></td>
+
+							</tr>
+							<tr >
+								<td class="tdtitle" align="right">预计完成时间：</td>
+								<td><input type="text" id="endedTime" name="endedTime"
+										   readonly="readonly"
+										   onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',minDate:'%y-%M-%d'})">
+								</td>
+								<td class="tdtitle" align="right">打印份数：</td>
+								<td><input type="text" id="maxNum" name="maxNum" class="span1" disabled="disabled"></td>
+
+							</tr>
+							<tr >
+								<td class="tdtitle" align="right">审核部门：</td>
+								<td><select id="checkId" name="checkId"
+											class="form_input" >
+									<option value="0" selected="selected">总部</option>
+									<option value="1" >中心</option>
+								</select></td>
+							</tr>
+							<tr>
+								<td align="right" class="tdtitle">审核过程：</td>
+								<td style="padding-bottom: 5px" colspan="3">
+									<div id="splcdiv" style="width:100%;"></div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan=4>
+								<div class="panel panel-default margin-top " >
+									<div role="tab"   class="panel-heading" >
+										<h4 class="panel-title">
+											<span><span >操作：</span><i class="pull-right glyphicon  glyphicon-chevron-down" ></i> </span>
+										</h4>
+									</div>
+								</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="tdtitle" align="right">正文的类型：</td>
+								<td>
+									<select id="docType" name="docType"class="form_input" >
+										<option value="doc">Word</option>
+										<option value="xls">Excel</option>
+										<option style="display:none;" value="pdf">pdf</option>
+									</select>
+									<button type="button" onclick="newloadfile()" class="btn" class="btn btn-default">起草新OFFICE文档</button>
+									<button type="button" onclick="docOpen()" class="btn" class="btn btn-default">打开本地OFFICE文档</button>
+									<button type="button" onclick="pdfOpen()" class="btn" class="btn btn-default">打开PDF文档</button>
+									<button type="button" onclick="selectall()" class="btn" class="btn btn-default">批量提交文档</button>
+								</td>
+
+							</tr>
+							</tbody>
+						</table>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default margin-top" >
+			<div role="tab"   class="panel-heading" >
+				<h4 class="panel-title">
+					<span><span >正文：</span><i class="pull-right glyphicon  glyphicon-chevron-down" ></i> </span>
+				</h4>
+			</div>
+			<div style="background:#fff;">
+				<div id="aip" name="aip" class="panel-body" >
+
+				</div>
+				<div name="listall" id="listall" class="panel-body" style="display:none;">
+					<textarea name="listallvalue" id="listallvalue" style="width:100%;height:100px;"></textarea>
+				</div>
+			</div>
+
+		</div>
+		<!--提交目标-->
+<!-- 		<input type="hidden" id="TO_ID" name="TO_ID" > -->
+		<!--上传文件类型-->
+		<input type="hidden" id="httptype" name="httptype">
+		<!--上传方式，单个文档或批量-->
+		<input type="hidden" id="httpmodel" name="httpmodel" value="2">
+		<!--添加文件-->
+		<input type="hidden" id="filelist" name="filelist">
+		<input type="hidden" name="TO_NAME" class="SmallStatic" readonly>
+		<input type="hidden" id="OPT" name="OPT" value="">
+		<!--文档编号-->
+		<input type="hidden" id="docId" name="docId">
+		<!--起草部门-->
+		<!-- <input type="hidden" name="from_id" id="from_id" > -->
+		<!--起草时间-->
+		<input type="hidden" name="maketime" id="maketime" >
+		<!--缩略内容-->
+		<input type="hidden" name="docZip" id="docZip" >
+		<!--下个状态-->
+		<input type="hidden" name="STATUS" id="STATUS" value="">		
+		<!--文档base64-->
+		<input type="hidden" name="fileBase64" id="fileBase64">
+<!--
+		<div style="bottom:5px;position: absolute;width: 100%;" align="center"><button type="button"  class="btn btn-default" onclick="saveData()">提交</button></div>
+-->
+		<div role="tab"   class="panel-heading" style="text-align:center;">
+			<button type="button" class="btn" class="btn btn-default" style="width:100px;font-size:15px;" onclick="saveData()">提交</button>
+		</div>
+		</form>
+	</div>
+
+</div>
+
+
+
+
+<script type="text/javascript">
+	var services;
+    var urlPath=getUrlPath();
+	//创建控件对象
+	var hwpobj =new HWPostil("aip");
+	//初始化控件
+	hwpobj.Init({id:"HWPostil2",designMode:1,showMenu:0,showScrollBar:0,});
+	hwpobj.setSilentMode(1);
+ 	hwpobj.setShowDefMenu(0);
+	hwpobj.setShowToolBar(0); 
+    //加载jqGrid
+    $(document).ready(function() {
+        conditionInit();
+        $("#aip").height(500);
+    });
+    function conditionInit() {
+        $.ajax({
+            type : "GET",
+            url : urlPath + "/files/conditionInitByUser?noCache=" + new Date().getTime(),
+            contentType : "application/json",
+            dataType : "json",
+            success : function(data) {
+
+               services=data.services;
+                for (var i = 0; i < services.length; i++) {
+                    if(services[i].printNum!=null){
+                        $("#service").append("<option value="+services[i].servNo+" name="+services[i].printNum+" endtime='"+services[i].endTime+"'>" + services[i].servName+"</option>");
+                    }
+                }
+                var departments=data.departments;
+                for (var i = 0; i < departments.length; i++) {
+                    $("#printDept").append("<option value="+departments[i].id+">" + departments[i].name+"</option>");
+                    $("#saveSet").append("<option value="+departments[i].id+">" + departments[i].name+"</option>");
+
+                }
+            },
+            error : function(data) {
+
+            }
+        });
+    }
+    function serviceOnchange(){
+        var options=$("#service option:selected");
+        var name=options.attr("name");
+        $("#maxNum").val(name);
+        var serviceNo = $("#service").val();
+        changeLcxx(serviceNo);
+        $("#endedTime").val(addDate(new Date(),options.attr("endtime")*1));
+
+	}
+    function saveSetOnchange(){
+        var saveSet= $("#saveSet").val();
+        $("#printDept option[value='"+saveSet+"']").prop("selected", 'selected');
+	}
+
+    function displayaip(hwpobj){
+    	hwpobj.OnCtrlReady();
+		document.getElementById("aip").style.display="block";
+		document.getElementById("listall").style.display="none";
+    	document.getElementById("aip").style.width="100%";
+    	document.getElementById("aip").style.height="600";
+    	document.getElementById("aip").style.margin="0";
+    }
+
+    //新建文档
+    function newloadfile() {
+    	displayaip(hwpobj);
+    	hwpobj.openOriginalFile("",$("#docType").val());
+    	$("#httptype").val(1);
+    }
+
+   //打开本地文件
+    function docOpen() {
+    	displayaip(hwpobj);
+    	hwpobj.openOriginalFile("", "");
+    	$("#httptype").val(1);
+    }
+
+    //打开非office文件
+    function pdfOpen() {
+    	displayaip(hwpobj);
+    	hwpobj.openFile("");
+    	//hwpobj.convertToAip(0,1);
+    	$("#httptype").val(2);
+    	$("#docType").find("option:contains('pdf')").attr("selected",true);
+    }
+    
+    //生成文件编码
+	function generateDocId(){
+		var date = new Date();
+		//10000-99999
+		//var number = Math.floor(Math.random() * 89999 + 10000);
+		//1000000-9999999
+		var number = Math.floor(Math.random() * 8999999 + 1000000);
+		var randomNum = "R"+dateFormatter(date.getHours())+dateFormatter(date.getMinutes())+dateFormatter(date.getSeconds())+number;
+		return randomNum;
+	}
+
+    //格式化时分秒
+    function dateFormatter(dateObj){
+    	return (dateObj < 10 ? "0" : "") + dateObj;
+    }
+
+    //获取所有文档
+    function selectall(){
+		var list=hwpobj.getFileListUnderDir("");
+		if(list.length >4){
+			document.getElementById("aip").style.display="none";
+			document.getElementById("listall").style.display="block";
+			$("#httpmodel").val(1);
+			$("#filelist").val(list);
+			$("#listallvalue").val(list);
+		}else{
+			top.layer.alert("请选择有文件的文件夹");
+		}
+	}
+    //向主页面返回数据
+    function saveData(){
+        var jfobj=$("#fileMessage");
+        var arryList=new Array();
+
+        if(jfobj.validate()){
+            var resultData=jfobj.getData();
+        	var name=resultData.service;
+        	if(name == ""){
+        		top.layer.msg("请选择业务类型", { offset: '100px' });
+        		return;
+        	}
+        	
+        	var modellog=resultData.httpmodel;
+        	//console.log("modellog:"+modellog);
+        	if(modellog == 1){
+        		httpall(resultData);
+        	}else if(modellog == 2){
+        		httpSave(resultData);
+        	}
+            //arryList.push(resultData);
+
+            /*$.ajax({
+                type : "POST",
+                url : urlPath+'/files/save?noCache='+new Date().getTime(),
+                data : JSON.stringify(arryList),
+                dataType : "json",
+                contentType:"application/json",
+                traditional: true,
+                success : function(retdata) {
+                    if(retdata){
+
+                    }else{
+
+                    }
+                }
+            });*/
+        }else{
+
+        }
+    }
+
+  //单个文件上传
+    function httpSave(resultData) {
+    	if(resultData.docTitle  ==""){
+    		top.layer.msg("文档标题不可为空",{offset:'100px'});
+    		return false;
+    	}
+    	if(resultData.service  ==""){
+    		top.layer.msg("业务类型不可为空", { offset: '100px' });
+    		return false;
+    	}
+    	if(resultData.printDept  ==""){
+    		top.layer.msg("打印部门不可为空", { offset: '100px' });
+    		return false;
+    	}
+    	if(resultData.deptId  ==""){
+    		top.layer.msg("业务归属机构不可为空", { offset: '100px' });
+    		return false;
+    	}
+		//console.log("httpmodel:"+resultData.httpmodel);
+    	if(resultData.httpmodel ==2){
+    		httpaip(resultData);
+    	}
+    }
+        
+    function httpaip(resultData){
+        var filecode = generateDocId();
+    	$("#docId").val(filecode);
+    	//var docContent = hwpobj.getValue("DOC_CONTENT_GET_DIRECTLY");
+    	//console.log('docContent:'+docContent);
+    	$("#docZip").val('');
+    	//console.log("httptype:"+$("#httptype").val());
+
+    	if($("#httptype").val()==2){
+    	    //var base64 = hwpobj.getFileBase64("",3);
+    		//$("#fileBase64").val(base64);
+    		var res = $("#fileMessage").getData();
+        	//var arryList=new Array();
+        	//arryList.push(res);
+         	var resultRet = hwpobj.savePdfToServer(urlPath+'/files/save?noCache='+new Date().getTime(),"lifeFile",res);
+        	if(resultRet != 0){
+				top.layer.msg("保存成功！");
+				window.location.reload();        		
+        	}
+
+/*              $.ajax({
+                type : "POST",
+                url : urlPath+'/files/save?noCache='+new Date().getTime(),
+                data : JSON.stringify(arryList),
+                dataType : "json",
+                contentType:"application/json",
+                traditional: true,
+                success : function(retdata) {
+    				top.layer.msg("保存成功！");
+    				window.location.reload();
+                }
+            });  */
+    	}else if($("#httptype").val()==1){
+    		httpoffice();
+    		return;
+    	}
+
+    }  
+    
+
+    function httpoffice(){
+    	//$("#docType").val("doc");
+	    //var base64 = hwpobj.getFileBase64("",2);
+		//$("#fileBase64").val(base64);
+		var res = $("#fileMessage").getData();
+    	//var arryList=new Array();
+    	//arryList.push(res);
+    	var resultRet = hwpobj.saveFileToServer(urlPath+'/files/save?noCache='+new Date().getTime(),"lifeFile",res);
+        //console.log(JSON.stringify(res));
+        //console.log(res);
+        var resultRetofpdf = hwpobj.savePdfToServer(urlPath+'/files/onlysavepdfFile?noCache='+new Date().getTime(),"lifeFile",res);
+    	if(resultRet != 0){
+			top.layer.msg("保存成功！");
+			window.location.reload();        		
+    	}
+    	
+/*          $.ajax({
+            type : "POST",
+            url : urlPath+'/files/save?noCache='+new Date().getTime(),
+            data : JSON.stringify(arryList),
+            dataType : "json",
+            contentType:"application/json",
+            traditional: true,
+            success : function(retdata) {
+				top.layer.msg("保存成功！");
+				window.location.reload();
+            }
+        });  */
+    }
+    
+    //批量上传文档
+	function httpall(resultData){
+		if(resultData.filelist !=""){
+			if(resultData.docTitle  ==""){
+				top.layer.msg("文档标题不可为空", { offset: '100px' });
+				return false;
+			}
+			if(resultData.service  ==""){
+				top.layer.msg("业务类型不可为空", { offset: '100px' });
+				return false;
+			}
+			if(resultData.printDept  ==""){
+				top.layer.msg("打印部门不可为空", { offset: '100px' });
+				return false;
+			}
+			if(resultData.deptId  ==""){
+				top.layer.msg("业务归属机构不可为空", { offset: '100px' });
+				return false;
+			}
+			show_info(resultData);
+		}else{
+			top.layer.msg("请选择有文件的文件夹", { offset: '100px' });
+		}
+	}
+    
+    
+	function show_info(resultData){
+		$('#myModal').modal("show");
+		setTimeout(upall(resultData),10);
+	}
+	
+	//执行批量上传
+	function upall(resultData){
+		var tempTitle = resultData.docTitle;
+		var filelist=resultData.filelist;
+		//hwpobj.SilentMode=1;
+		//var arrayList=new Array();
+		var jsfilepath=filelist.split(";");
+		//console.log(jsfilepath);
+		var allnum=jsfilepath.length;
+		//console.log("filelist----"+filelist);
+		//console.log("jsfilepath------"+jsfilepath);
+		for(var i=0;i<jsfilepath.length-1;i++){
+			if(jsfilepath[i]!==""){
+				var sealDoc = $("#fileMessage").getData();
+				var filepath=jsfilepath[i];
+				var len=filepath.length;
+				var filestype = "";
+				if(filepath.substr(len-4,1)=="."){
+					filestype=filepath.substr(len-3,3);
+				}else if(filepath.substr(len-5,1)=="."){
+					filestype=filepath.substr(len-4,4);
+					if(filestype=="docx"){
+						filestype="doc";
+					}
+					if(filestype=="xlsx"){
+						filestype="xls";
+					}
+				}
+				var filename=filepath.split("\\");
+				var filename=filename[filename.length-1].split(".");
+				var mtitlenew=tempTitle+"-"+filename[0];
+				sealDoc.docTitle = mtitlenew;
+				var base64 = "";
+				if(filestype == "xls" || filestype == "doc"){
+		    	    //base64 = hwpobj.getFileBase64(filepath,2);
+				}else{
+					filestype = "pdf";
+					//base64 = hwpobj.getFileBase64(filepath,3);
+				}
+				//sealDoc.fileBase64 = base64;
+				sealDoc.docType=filestype;
+				sealDoc.docId=generateDocId();
+				//hwpobj.LoadFileBase64(base64);
+				//console.log("filepath:"+filepath);
+				//hwpobj.loadFile(filepath);
+	        	//var docContent = hwpobj.getValue("DOC_CONTENT_GET_DIRECTLY");
+	        	//console.log('批量docContent：'+docContent);
+	        	//sealDoc.docZip = docContent;
+	        	sealDoc.docZip = '';
+	        	//arrayList.push(sealDoc);
+	        	var resultRet = hwpobj.savePatchFileToServer(filepath,urlPath+'/files/save?noCache='+new Date().getTime(),"lifeFile",sealDoc);
+	        	//console.log(JSON.stringify(sealDoc));
+	        	//console.log("filepath"+filepath);
+                //console.log(sealDoc);
+                var resultRetofpdf = hwpobj.savePdfPatchToServer(filepath,urlPath+'/files/onlysavepdfFile?noCache='+new Date().getTime(),"lifeFile",sealDoc);
+                hwpobj.closeDoc();
+			}
+		}
+		top.layer.msg("保存成功！");
+		$('#myModal').modal("hide");
+		window.location.reload();
+/* 
+        $.ajax({
+            type : "POST",
+            url : urlPath+'/files/save?noCache='+new Date().getTime(),
+            data : JSON.stringify(arrayList),
+            dataType : "json",
+            contentType:"application/json",
+            async:true,
+            traditional: true,
+            success : function(retdata) {
+            	//$('#myModal').modal("hide");
+				top.layer.msg("保存成功！");
+				window.location.reload();
+            }
+        }); */
+	}
+
+	function closeModal(){
+		$('#myModal').modal("hide");
+	}
+	
+ 	function uploadFj(){
+		var arr=$("#fjFile").val().split('\\');
+		var fileName=arr[arr.length-1];
+		var fileSuff=fileName.substring(fileName.lastIndexOf(".")+1);
+			var wdid = "1111111111";
+			$.ajaxFileUpload({
+				url:urlPath+"/files/uploadFj.mvc",
+				type: 'post',
+				secureuri: false, //是否需要安全协议，一般设置为false
+				async:true,
+				fileElementId: 'fjFile', //文件上传域的ID
+				data:{},
+				dataType:"json", //返回值类型 一般设置为json
+				contentType:"application/json",
+				success: function (data, status){ //服务器成功响应处理函数
+
+	             	window.parent.msg("保存成功！");
+	
+				},
+				error: function (data, status, e){ //服务器响应失败处理函数
+					window.parent.alert(data+"::"+e);
+				}
+			});
+		}
+    function changeLcxx(serviceNo){
+        $("#splcdiv").html("");
+        if(serviceNo != null&&serviceNo!=""){
+            lcflag = true;
+
+            //查询流程图
+            $.post(urlPath+"/lcdyController/getGzlcJd?noCache=" + new Date().getTime(),{serviceNo:serviceNo},function(retval){
+                var divgzl=$("#splcdiv");
+                if(retval.flag){
+                    $.each(retval.data,function(tin,titem){
+                        var hexe="";
+                        if(titem.hasexe=="Y"){
+                            hexe="<span class='splcD'></span>";
+                        }
+                        var _tutype=(titem.etype=="one"?" 或 ":" 和 ");
+                        var _uhtml="";
+                        if(titem.users.length>0){
+                            _uhtml+="【";
+                            for(var i=0;i<titem.users.length;i++){
+                                if(i>0){
+                                    _uhtml+=_tutype;
+                                }
+                                _uhtml+="<span uid='"+titem.users[i].yhid+"' data-hasqtip='15'>"+titem.users[i].yhxm+"</span>"+hexe;
+                            }
+                            _uhtml+="】";
+                        }
+
+                        var _nexthtml="";
+                        if(titem.islast!="Y"){
+                            _nexthtml="<span class='splcE'></span>";
+                        }
+                        divgzl.append("<div class='splcA' nodeid='"+titem.jdid+"'><span class='splcB'>"+titem.gnmc+"</span><span class='splcC'>"+_uhtml+"</span>"+_nexthtml+"</div>");
+                    });
+                }else{
+                    $("#service option:first").prop("selected", 'selected');
+                    window.parent.alert("该业务类型没有绑定流程！！");
+                }
+            },"json");
+        }
+    }
+
+    function addDate(date, days) {
+        if (days == undefined || days == '') {
+            days = 1;
+        }
+        date.setDate(date.getDate() + days);
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        return date.getFullYear() + '-' + getFormatDate(month) + '-' + getFormatDate(day);
+    }
+
+    // 日期月份/天的显示，如果是1位数，则在前面加上'0'
+    function getFormatDate(arg) {
+        if (arg == undefined || arg == '') {
+            return '';
+        }
+        var re = arg + '';
+        if (re.length < 2) {
+            re = '0' + re;
+        }
+        return re;
+    }
+</SCRIPT>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8" />
+<title>指定管理部门</title>
+<script src="../../shared/js/jquery-1.8.3.min.js"></script>
+<!--导入jquery文件-->
+<script src="../../shared/js/jquery.extend.min.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+<!--导入bootstrap.css文件-->
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/ztree/css/zTreeStyle.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/ztreeDiy.css"  type="text/css" />
+<!--导入bootstrap.js文件-->
+<script type="text/javascript" src="../../shared/bootstrap/js/bootstrap.min.js"></script>
+<!--创建视口-->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+<!-- ztreejs -->
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.excheck.min.js" type="text/javascript"></script>
+
+<link rel="stylesheet" type="text/css" href="../../shared/step/css/jquery.step.css" />
+<script src="../../shared/step/js/jquery.step.min.js"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../partials/css/list-style.css">
+<script src="../../partials/js/jquery-ui.min.js"></script>
+<script src="../../partials/js/list-script.js"></script>
+<style>
+button {
+	display: inline-block;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	text-align: center;
+	cursor: pointer;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	color: #fff;
+	background-color: #5bc0de;
+}
+
+.main {
+
+	margin: 10px auto 0px auto;
+}
+
+#step {
+	margin-bottom: 20px;
+}
+
+.btns {
+	float: right;
+}
+
+.info {
+	float: left;
+	height: 34px;
+	line-height: 34px;
+	margin-left: 40px;
+	font-size: 28px;
+	font-weight: bold;
+	color: #928787;
+}
+
+.info span {
+	color: red;
+}
+
+.list-body > div {
+    display: inline-block;
+    height: 200px;
+    overflow: auto;
+}
+
+.list-body .center-box > button {
+    display: block;
+    color: #434343;
+    width: 50px;
+    height: 30px;
+    background: #fff;
+    font-size: 14px;
+    border: 1px solid #dcdcdc;
+    border-radius: 2px;
+    margin: 10px auto;
+}
+</style>
+</head>
+
+<body>
+	<div class="main">
+		<div id="step"></div>
+	</div>
+
+	<div class="container-fluid"  style="margin: 0px 10px 0px 10px;">
+	<div class="row-fluid" >	
+	    <!-- 选择部门 -->
+		<div class="span7"  id="department">
+			<div>
+				<ul id="treeDemo" class="ztree"></ul>
+			</div>
+		</div>
+		
+		<!-- 是否包含下级div -->
+		<div  class="span7" style="float: left;display: none" id="result">
+			<table id="resultTable">
+
+			</table>
+		</div>
+			
+
+	<div class="span3" style="margin: 10px 0 0 10px; display:inline-block;float:right;">
+		<button id="prevBtn" style="display: none" >上一步</button>
+		<span style="margin: 10px 0 10px 0;"></span>
+		<button id="nextBtn" >下一步</button>
+		<!-- <button id="finishBtn" style="display: none" onclick="getData()">完成</button> -->
+	</div>
+	</div>
+	</div>
+
+	<script type="text/javascript">
+	var aipUrl = getUrlPath();
+	$(document).ready(function() {
+		//加载ztree
+		init_dept_tree();
+		if($("#department").is(":hidden")==false){
+		       $("#prevBtn").hide(); 
+		}	
+	   });
+		var $step = $("#step");
+		var $index = $("#index");
+
+		$step.step({
+			index : 0,
+			time : 500,
+			title : [ "选择部门","选择结果" ]
+		});
+
+		$index.text($step.getIndex());
+			
+			$("#prevBtn").on("click", function() {
+				$step.prevStep();
+				$index.text($step.getIndex());
+				
+				$("#finishBtn").hide();  //点上一步，完成按钮一定隐藏
+				$("#nextBtn").show();
+				if($("#result").is(":hidden")==false){
+					   $("#prevBtn").hide();
+				       $("#department").show();    //如果元素为隐藏,则将它显现
+				       $("#result").hide(); 
+				}			
+			});
+
+			$("#nextBtn").on("click", function() {
+			    
+			    if($("#department").is(":hidden")==false){
+			    	if(getDepData()==null){
+			    	
+			    	}else{
+						$("#department").hide();
+					    $("#result").show();     //如果元素为显现,则将其隐藏
+					    $("#nextBtn").hide();
+					    $("#finishBtn").show(); 
+					    $("#prevBtn").show(); 
+					    loadResult();
+						$step.nextStep();
+						$index.text($step.getIndex());
+			    	}
+				}
+			});
+
+		var setting = {
+			async : {
+				enable : true,
+				url : aipUrl+"/departments",
+				dataType : "json",
+				type : "GET",
+				autoParam : [ "id" ],
+				otherParam : {
+					level : 1,
+					displayOrg : true
+				},
+				dataFilter : ret_filter
+			},
+			data : {
+				simpleData : {
+					enable : true,
+					idKey : "id",
+					pIdKey : "code",
+					nocheck : false
+				}
+			},
+			check : {
+				enable : true,
+				chkStyle: "checkbox",
+				chkboxType:  { "Y": "", "N": "" }
+			},
+			callback : {
+				//onClick:zTreeOnClick  //添加点击事件
+			 	onClick: function (e, treeId, treeNode, clickFlag) { 
+			 		zTree.checkNode(treeNode, !treeNode.checked, true); 
+			 	} 
+			}
+		};
+
+		function ret_filter(treeId, parentNode, childNodes) {
+			if (!childNodes||childNodes.length==0){
+				var nodes=[];
+				var node=new Object();
+				node.id=parentNode.id+"_nochild";
+				node.code=parentNode.id;
+				node.name="无下级";
+				node.nocheck = true;
+				nodes.push(node);
+			 	return nodes;
+			};
+			for (var i = 0, l = childNodes.length; i < l; i++) {
+				childNodes[i].isParent = true;
+			}
+			return childNodes;
+		}
+
+		function init_dept_tree() {
+			zTree=$.fn.zTree.init($("#treeDemo"), setting);
+		}
+
+		//点击树绑定事件
+		function zTreeOnClick(event, treeId, treeNode) {
+			var info = JSON.stringify(treeNode);
+			layer.alert(info, {
+				icon : 5
+			});
+		}
+		
+		
+		function closePage(){
+			if(confirm("您确定要关闭本页吗？")){
+			window.close();
+			}
+		}
+		
+		function getDepData() {
+			var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+			var nodes = treeObj.getCheckedNodes(true);
+			if (nodes[0] != null) {
+	 			return nodes;
+			} else {
+				return null;
+			}
+		}
+		
+		function getResultLength(){
+			if(resultArr[0]==null){
+				return 0;
+			}else{
+				return 1;
+			}
+		}
+		//获取第三步结果展示
+		function loadResult(){
+			$("#resultTable tr").remove();
+			var dep=getDepData();
+			for(var k=0;k<dep.length;k++){
+ 				$("<tr><td></td> <td>"+dep[k].allName+"-别名：</td> <td></td> <td><input type='text' name='alias"+k+"' id='alias"+k+"' value=''></td> </tr>").appendTo($('#resultTable'));
+			}			
+		}
+		var resultArr=[];
+		function getData(){
+			var dep=getDepData();
+			for(var k=0;k<dep.length;k++){
+				var departData={departmentId:null,departmentName:null,alias:""};
+				departData['departmentId'] = dep[k].id;
+				departData['departmentName'] = dep[k].allName;
+				departData['alias']=$("#alias"+k).val();
+				resultArr.push(departData);
+			}
+			 return  resultArr;
+		}
+		
+		
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<meta charset="utf-8">
+		<title></title>
+		<!--导入jquery文件-->
+		<script src="../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+		<script src="../shared/js/jquery.extend.min.js" type="text/javascript"></script>
+		<script src="../shared/js/myLayer.js" type="text/javascript"></script>
+		<script src="../shared/layer/layer.js" type="text/javascript"></script>
+		<!--导入bootstrap.css文件-->
+		<link rel="stylesheet" href="../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/ztree/css/zTreeStyle.css" type="text/css" />
+		<link rel="stylesheet" href="../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../shared/css/ztreeDiy.css"  type="text/css" />
+		<!--导入bootstrap.js文件-->
+		<script type="text/javascript" src="../shared/bootstrap/js/bootstrap.min.js" ></script>
+		<!--创建视口-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- jqgridjs -->
+		<script src="../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		<!-- ztreejs -->
+		<script src="../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+		<script src="../shared/ztree/js/jquery.ztree.excheck.min.js" type="text/javascript"></script>
+		<script src="../shared/plugins/utils.js" type="text/javascript"></script>
+	</head>
+	<body>
+<div class="container-fluid" style="margin:0 10px 0 10px;">	
+        <div>
+            <ul id="treeDemo" class="ztree"></ul>
+        </div>
+        <div class="row-fluid" style="margin:0 0 0 13px;font-family: Tahoma;">
+        <input style="vertical-align:middle; margin-top:0;" type="checkbox" name="lowerLevel" id="lowerLevel" onclick="this.value=this.checked?'true':'false'">是否包含下级
+        </div>
+</div>
+</body>
+<script type="text/javascript">
+jQuery.support.cors = true;
+var apiUrl = getUrlPath();
+var setting = {
+	async: {
+		enable: true,
+		url:apiUrl + "/departments",
+		dataType:"json",
+		type:"GET",
+		autoParam:["id"],
+		//otherParam:{displayUp:false,level:1,displayOrg:true,displayStop:true},
+		otherParam:{displayOrg:true,level:1},
+		dataFilter:ret_filter
+	},
+	data: {
+		simpleData: {
+			enable: true,
+			idKey: "id",
+			pIdKey: "code",
+			nocheck:false
+		}
+	},
+	check: {
+        enable: true,
+        chkStyle: "radio",  //单选框
+        radioType: "all"   //对所有节点设置单选
+    },
+	callback:{
+	 	onClick: function (e, treeId, treeNode, clickFlag) { 
+	 		zTree.checkNode(treeNode, !treeNode.checked, true); 
+	 	} 
+	}
+};
+
+function ret_filter(treeId, parentNode, childNodes) {
+	if (!childNodes||childNodes.length==0){
+		var nodes=[];
+		var node=new Object();
+		node.id=parentNode.id+"_nochild";
+		node.code=parentNode.id;
+		node.name="无下级";
+		node.nocheck = true;
+		nodes.push(node);
+	 	return nodes;
+	};
+	for (var i=0, l=childNodes.length; i<l; i++) {
+		childNodes[i].isParent=true;
+	}
+	return childNodes;
+}
+
+function init_dept_tree(){	
+	zTree=$.fn.zTree.init($("#treeDemo"), setting);
+}
+
+//点击树绑定事件
+function zTreeOnClick(event, treeId, treeNode) {   
+	var info=JSON.stringify(treeNode);
+    layer.alert(info, {icon: 5});
+}
+//加载ztree
+$(document).ready(function() {
+	init_dept_tree();	
+});
+function getData(){
+	var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+	var nodes = treeObj.getCheckedNodes(true);
+	if(nodes[0] != null){
+		nodes[0].lowerLevel = ($("#lowerLevel").val()=='true'?true:false);
+		return nodes[0];
+	}else{
+		return null;
+	}
+}
+
+</script>
+</html>

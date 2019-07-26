@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+
+	<title>文档监控</title>
+
+	<link rel="stylesheet"
+		  href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/index-ess.css"
+		  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"
+		  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/document.css"
+		  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"
+		  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/dj-tab.css"
+		  type="text/css" />
+	<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"
+		  type="text/css" />
+	<!-- jqgrid样式 -->
+	<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"
+		  rel="stylesheet" />
+	<link
+			href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css"
+			type="text/css" rel="stylesheet" />
+
+
+	<!--javascript引用部分 -->
+	<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	<script src="../../shared/ztree/js/jquery.ztree.core.min.js"
+			type="text/javascript"></script>
+
+	<!-- jqgridjs -->
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js"
+			type="text/javascript"></script>
+	<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js"
+			type="text/javascript"></script>
+	<script type="text/javascript"
+			src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+	<script src="../../shared/bootstrap/js/bootstrap.min.js"
+			type="text/javascript"></script>
+	<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+	<!-- my97 DatePicker  -->
+	<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+	<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+	<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+	<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+	<script src="../../shared/js/file_common.js" type="text/javascript"></script>
+</head>
+<body>
+<div class="pagecontent" id="divcontent2">
+	<div class="middleLayer" style="margin:0px 0px 0px 0px;">
+		<!-- 工具条 -->
+		<div id="toolbars" class="toolbars" align="left" style="height: 70px">
+			<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+				<table id="fileTable" style="" class="table_insert">
+					<tbody>
+					<tr>
+						<td class="tdtitle" align="right">业务类型：</td>
+						<td><select id="service" name="service"
+									class="form_input" >
+							<option></option>
+
+						</select></td>
+						<td class="tdtitle" align="right">文档标题：</td>
+						<td><input type="text" id="doc_title" name="doc_title"class="form_input" placeholder="请输入文档名称"></td>
+
+
+						<td class="tdtitle" align="right">打印部门：</td>
+						<td><select id="print_dept" name="print_dept"
+									class="form_input" >
+							<option></option>
+
+						</select></td>
+						<td class="tdtitle" align="right">归属部门：</td>
+						<td><select id="save_set" name="save_set"
+									class="form_input" >
+							<option></option>
+
+						</select></td>
+
+					</tr>
+					<tr >
+						<td class="tdtitle" align="right">提交人：</td>
+						<td><input type="text" id="create_users" name="create_users"class="form_input"></td>
+						<td class="tdtitle" align="right">文档内容：</td>
+						<td><input type="text" id="doc_content" name="doc_content" class="form_input"></td>
+
+						<td class="tdtitle" align="right">提交时间：</td>
+						<td colspan="3"><input type="text"  id="startTime" name="startTime" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+							-
+							<input type="text" name="endTime" id="endTime" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\') }'}) ">
+						</td>
+
+					</tr>
+
+					</tbody>
+				</table>
+
+			</form>
+			<button type="button" onclick="search()" class="btn btn-success" style="float:right;margin-right: 15px"> 查询</button>
+		</div>
+
+		<!-- 页面主内容 -->
+		<div class="gridcontent" >
+			<table id="doc_table"></table>
+			<div id="doc_page"></div>
+		</div>
+	</div>
+</div>
+</body>
+
+<script type="text/javascript">
+    var urlPath=getUrlPath();
+    var lowerLevel=	false;
+    var statusType=["","审核","盖章","打印","","补打申请","已归档","退回","正在盖章","已盖章"];
+    function loadGrid_doc() {
+        $("#doc_table").jqGrid(
+            {
+                url : urlPath+'/files/getFiles?fromPage=monitor&noCache='+new Date().getTime(),
+                datatype : "json",//页面加载的时候不显示数据
+
+                colNames : ['ID','业务编号','业务类型','文档标题','归属机构','打印机构','提交人','提交人id','提交时间','状态','操作'],
+                colModel : [
+                    {name : 'doc_id',index : 'doc_id',hidden:true},
+                    {name : 'id',index : 'id' ,width:100,align:"center"},
+                    {name : 'serv_name',index : 'serv_name',width : 200,align:"center"},
+                    {name : 'doc_title',index : 'doc_title',width : 200,align : "center"},
+                    {name : 'dept_name',index : 'dept_name',width : 130,align : "center"},
+                    {name : 'print_deptName',index : 'print_deptName',width : 150,align : "center"},
+                    {name : 'user_name',index : 'user_name',width : 80,align : "center"},
+                    {name : 'user_id',index : 'user_id',hidden:true},
+                    {name : 'created_at',index : 'created_at',width : 150,align:"center",formatter:timeFormatter},
+                    {name : 'status',index : 'status',width : 80,align:"center",formatter:statusFormatter},
+                    {name : 'operate',index : 'operate',width : 100,align:"center" ,formatter:opFormatter},
+                ],
+                multiselect: false,
+                rowNum : 50,
+                rowList : [ 30,50,100,200 ],
+                pager : '#doc_page'
+            });
+    }
+
+    //加载jqGrid
+    $(document).ready(function() {
+        loadGrid_doc();
+        conditionInit();
+        $(window).resize(function() {
+            $("#doc_table").jqGrid("autoSize");
+        }).trigger('resize');
+
+
+    });
+    function opFormatter(cellvalue, options, rowObject){
+
+        return "<a style=\"color:blue\" href=\"javascript:show('"+rowObject.doc_id+"');\">查看</a>" +
+			"<span style='margin-left:8px;'></span><a style=\"color:blue\" href=\"javascript:sendMessage('"+rowObject.doc_id+"','"+rowObject.status+"');\">催办</a>";
+
+    }
+    function statusFormatter(cellvalue, options, rowObject){
+
+        return '<font style="color:red">'+statusType[cellvalue]+'</font>';
+
+    }
+
+    //发布消息
+    function sendMessage(doc_id,status){
+        var index = window.layer.open({
+            title:'发送催办提醒',
+            type: 2,
+            content: './sendMessage.html?doc_id='+doc_id+'&status='+status+'&noCache='+new Date().getTime(),
+            area: ['550px', '500px'],
+            btn: ['保存','关闭'], //底部按钮区域
+            yes: function(index,layero){  //第一个按钮的事件
+                var res = window["layui-layer-iframe" + index].getData();
+                res = JSON.parse(res);
+
+                if(res.type ==null ||res.grade ==null || res.content =='' || res.title ==''){
+                    layer.msg('内容，标题，等级不能为空！',{icon:5});
+                    return;
+                }
+                if (!res.users.length) {
+                    layer.msg('至少有一个接受消息的用户！',{icon:5});
+                    return;
+                }
+                $.ajax({
+                    type : "POST",
+                    url : urlPath + '/message?noCache='+new Date().getTime(),
+                    dataType : "json",
+                    data:'[' + JSON.stringify(res) + ']',
+                    contentType: "application/json; charset=utf-8",
+                    success : function(retdata) {
+                        layer.close(index);
+                        layer.msg('消息发布成功！', {icon: 1});
+                        doFresh();
+                    },
+                    error : function(xmlhttp,textStatus,errorThrown){
+                        var o = JSON.parse(xmlhttp.responseText);
+                        window.parent.layer.close(index);
+                        layer.msg(o.message, {icon: 5});
+                    }
+                });
+            }
+        });
+    }
+
+</script>
+</html>
+

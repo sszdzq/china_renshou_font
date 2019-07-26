@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<title>印模申请</title>
+<link rel="stylesheet"
+	href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css"
+	type="text/css" />
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"
+	rel="stylesheet" />
+<link
+	href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css"
+	type="text/css" rel="stylesheet" />
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js"
+	type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.src.js"
+	type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js"
+	type="text/javascript"></script>
+<script type="text/javascript"
+	src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js"
+	type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+<script src="../../shared/ocx/makeseal.js" type="text/javascript"></script>
+<style type="text/css">
+  #myForm>div{
+  	margin-bottom:15px;
+  }
+</style>
+</head>
+<body>
+
+			<div style="margin-left:40px">
+				<form name="myForm" id="myForm" role="form" class="form-horizontal margin-top-2">
+					<div class=" ">
+						<label class="col-md-2 margin-left-2 margin-right-2 control-label ">印模名称</label>
+						<div class="col-md-6 ">
+							<input type="text" name="name" id="name" placeholder="请输入名称"><span class="msg margin-left-2" id="nameMsg"></span>
+							<input type="hidden" id="sealId" name="sealId">
+						</div>
+					</div>
+					<div >
+						<label class="col-md-2 margin-left-2 margin-right-2 control-label">所属部门</label>
+						<div class="col-md-4 ng-scope">
+							<input type="text" name="departmentName" id="departmentName" placeholder="请点击按钮选择">
+							<input type="hidden" name="departmentId" id="departmentId">
+							<input type="button" value="选择" class="btn btn-primary col-padding-2" onclick="selectDeapartment()">
+						</div>
+
+					</div>
+					<div>
+						<label
+							class="col-md-2 margin-left-2 margin-right-2 control-label ">印模类型</label>
+						<div class="col-md-6">
+							<select class="form-control" id="type">
+								<option value="" class="" selected="selected">请选择...</option>
+								<option label="公章" value="1">公章</option>
+								<option label="公章(法人章)" value="2">公章(法人章)</option>
+								<option label="公章(合同章)" value="3">公章(合同章)</option>
+								<option label="公章(党章)" value="4">公章(党章)</option>
+								<option label="公章(财务章)" value="5">公章(财务章)</option>
+								<option label="公章(工会章)" value="6">公章(工会章)</option>
+								<option label="个人章" value="7">个人章</option>
+								<option label="个人章(手写签名)" value="8">个人章(手写签名)</option>
+								<option label="个人章(文字签名)" value="9">个人章(文字签名)</option></select>
+						</div>
+					</div>
+
+					<div id="imageView" style="display:none">
+					      <label class="col-md-2 margin-left-2 margin-right-2 control-label">已选图片</label>
+					      <div class="col-md-6">
+					      	<input type="hidden" id="previewData" name="previewData">
+					      	<input type="hidden" id="data" name="data">
+					        <img  id="imgPre" class="img-thumbnail">
+					      </div>
+				    </div>
+				    <div class=" ">
+						<label class="col-md-2 margin-left-2 margin-right-2 control-label">选择文件</label>
+						<button type="button" class="btn btn-primary btn-lg" onclick="selectFile()">选择图片</button>
+					</div>
+					<div class=" ">
+						<label class="col-md-2 margin-left-2  margin-right-2 control-label">文件格式</label>
+						<div class="col-md-8">
+							<p class="form-control-static" style="padding-top: 5px">支持jpg,jpeg,bmp图片格式。最大尺寸:800*800</p>
+						</div>
+					</div>
+					<div class=" ">
+						<label class="col-md-2 margin-left-2  margin-right-2 control-label" >宽度(px)</label>
+						<div class="col-md-6">
+							<input type="text" name="imageWidth" id="imageWidth" class="form-control" readonly="readonly">
+						</div>
+					</div>
+					<div class=" ">
+						<label class="col-md-2 margin-left-2  margin-right-2 control-label" >高度(px)</label>
+						<div class="col-md-6">
+							<input type="text" name="imageHeight" id="imageHeight" class="form-control" readonly="readonly">
+						</div>
+					</div>
+					<div class=" ">
+						<label class="col-md-2 margin-left-2  margin-right-2 control-label" >印章DPI</label>
+						<div class="col-md-6">
+							<input type="text"
+								class="form-control" id="sealSize" readonly="readonly">
+						</div>
+					</div>
+					<div class=" ">
+						<label class="col-md-2 margin-left-2 margin-right-2  control-label" >制章大小</label>
+						<div class="col-md-6">
+							<input type="text" class="form-control" id="makeSealSizeStr" readonly="readonly">
+							<input type="hidden" id="sealWidth" name="sealWidth">
+							<input type="hidden" id="sealHeight" name="sealHeight">
+						</div>
+					</div>
+					<div class=" " id="approval">
+						<label class="col-md-2 margin-left-2 margin-right-2 control-label">审批人</label>
+						<div class="col-md-4">
+							<input type="hidden" name="approvalBy" id="approvalBy">
+							<input type="text" name="approvalByName" id="approvalByName" class="form-control" readonly="readonly" placeholder="请点击按钮选择">
+							<input type="button" value="选择" class="btn btn-primary col-padding-2" onclick="selectPeople()">
+						</div>
+					</div>
+					<div class=" ">
+						<label class="col-md-2 margin-left-2 margin-right-2 control-label">备注</label>
+						<div class="col-md-6">
+							<textarea class="form-control" id="remark" placeholder="请输入备注" style="resize: none"></textarea>
+						</div>
+					</div>
+
+					<div class=" " id="selectservice">
+						<label class="col-md-2 margin-left-2 margin-right-2 control-label">业务类型</label>
+					<div style="overflow-y: hidden; border:1px solid #ccc;  display: inline-block;width:43%;height:auto" >
+						<ul id="sealServiceName" class="sp-list" style="list-style-type:none">
+
+						</ul>
+					</div>
+					<div style="display: inline-block;">
+						<input type="button" value="选择" class="btn btn-primary col-padding-2" onclick="openSelectService()">
+					</div>
+
+				</div>
+
+				</form>
+			</div>
+			 <div class="modal right fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
+			<div class="modal-dialog" >
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h4 class="modal-title" id="myModalLabel">添加区域</h4>
+					</div>
+					<div class="modal-body" >
+						<div id="makeSeal" style="height:300px"></div>
+					</div>
+					<div class="modal-footer text-align-center">
+					  <button type="button"
+					          class="btn col-padding-3 margin-right-2 btn-primary btn-lg" onclick="addDiaLog()">添加区域</button>
+					  <button type="button"
+					          class="btn col-padding-3 margin-right-2 btn-primary btn-lg" onclick="makeSeal()">确定</button>
+					  <button type="button" class="btn btn-default col-padding-3 btn-primary btn-lg" onclick="closeMakeSeal()">取消</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modals -->
+</body>
+<script type="text/javascript">
+	//加载jqGrid
+	var msObj;
+	var urlPath=getUrlPath();
+	var _sealSavaData="";
+	var _optFlag;
+	var _sealId;
+	$(document).ready(function() {
+		/* initMakeSealV6('makeSeal');
+		obj = document.getElementById("makeSealV6");  */
+		msObj=new MakeSeal('makeSeal');
+		msObj.Init({id:'DMakeSealV6',version:'1,1,2,0'});
+		_optFlag=GetQueryString("optFlag");
+		if(_optFlag=='modify'){
+			var _sealId=GetQueryString("sealId");
+			sealFormInit(_sealId);
+		}else if(_optFlag=="addseal"){
+			$("#approval").hide()
+		}
+		if(_optFlag==null||_optFlag==''||_optFlag!="addseal"){
+			$("#selectservice").hide();
+		}
+	});
+
+
+	//选择业务类型
+	//var serviceData=new Array();
+
+	var serviceData=new Array();
+
+
+	function openSelectService(){
+		var ids=new Array();
+			if(serviceData!=null) {
+				if (serviceData.length > 0) {
+					for (var i = 0; i < serviceData.length; i++) {
+						ids.push(serviceData[i].serv_no);
+					}
+				}
+		}
+		var index = window.parent.parent.layer.open({
+			title:'业务类型',
+			type: 2,
+			content: '../../module/organization/select-service-modal.html?back='+ids+'&noCache='+new Date().getTime(),
+			area: ['1000px', '700px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+			yes: function(index){
+				//获取单位数据
+				var res1 = window.parent.parent["layui-layer-iframe" + index].getdata();
+				//console.log(res1);
+				var res=JSON.parse(res1);
+				serviceData=res;
+				if(res1!=null){
+					$("#sealServiceName li").remove();
+					for(var j=0;j<res.length;j++){
+						if(res[j].servId!=" "){
+							var data1="<li id='service"+res[j].id+"' style=\"float: left;margin:0px 10px 3px 10px;background-color:#a1dbff;\"><span>"+res[j].serv_name+"<a class=\"fa fa-times \"  onclick=\"removeService('"+res[j].id+"')\" ></a></span></li>";
+							$("#sealServiceName").append(data1);
+						}
+					}
+					window.parent.parent.layer.close(index);
+				}else{
+
+				}
+			}
+		});
+	}
+
+
+	//删除单个审批权限，x号触发
+	function removeService(id){
+		if(serviceData!=null){
+			for(var i=0;i<serviceData.length;i++){
+				if(id==serviceData[i].id){
+					//从数据中移除项
+					serviceData.splice(i,1);
+					//展示li标签删除
+					$("#sealServiceName li[id=service"+id+"]").remove();
+				}
+			}
+
+		}
+	}
+
+	function GetQueryString(name){
+	    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if(r!=null)return  decodeURI(r[2]); return null;
+	}
+	function sealFormInit(id){
+		$.ajax({
+			type : "GET",
+			url : urlPath+"/seal_image/"+id,
+			dataType : "JSON",
+			success : function(retdata) {
+				if(retdata!=null){
+					var data=retdata.data;
+					$("#name").val(data.name);
+					$("#type").val(data.type);
+					$("#sealId").val(data.id);
+					$("#departmentName").val(data.department.allName);
+           			$("#departmentId").val(data.departmentId);
+           			$("#imgPre").attr("src",'data:image/bmp;base64,'+data.previewData);
+           			$("#previewData").val(data.previewData);
+           			$("#data").val(data.data);
+           			$("#imageView").show();
+           			var makeSealSizeStr='宽：'+Math.floor(data.imageWidth/data.sealSize*25.4)+'mm;'+'高：'+Math.floor(data.imageHeight/data.sealSize*25.4 )+'mm';
+					$("#imageWidth").val(data.imageWidth);
+					$("#imageHeight").val(data.imageHeight);
+					$("#sealSize").val(data.sealSize);
+					$("#makeSealSizeStr").val(makeSealSizeStr);
+					$("#approvalByName").val(retdata.approvalByName);
+           		 	$("#approvalBy").val(data.approvalBy);
+           		 	$("#remark").val(data.remark);
+				}
+			}
+		});
+	}
+	function getData(){
+		var idArr=new Array();
+		var formData = getFormData("myForm");
+		var data={};
+		if(_optFlag=="addseal"){
+			data['sealServices']=serviceData;
+		}
+
+		if(formData.departmentId!=""){
+			   data['departmentId']=formData.departmentId;
+		 }else{
+			 msg("请选择部门！");
+			 return;
+		 }
+		if(formData.type!=""){
+			   data['type']=formData.type;
+		 }else{
+			 msg("请选择类型！");
+			 return;
+		 }
+		if(formData.approvalBy!=""){
+			   data['approvalBy']=formData.approvalBy;
+		 }else{
+			 if(_optFlag!="addseal"){
+				 msg("请选择审批人！");
+				 return;
+			 }
+		 }
+		if(formData.previewData!=""){
+			   data['previewData']=formData.previewData;
+			   data['name']=formData.name;
+			   data['data']=formData.data;
+			   data['sealSize']=formData.sealSize;
+			   data['remark']=formData.remark;
+			   if(_optFlag=="addseal"){
+				   data['sealWidth']=formData.sealWidth;
+				   data['sealHeight']=formData.sealHeight;
+			   }else{
+				   data['id']=formData.sealId;
+				   data['imageWidth']=formData.imageWidth;
+				   data['imageHeight']=formData.imageHeight;
+				   data['imageName']=formData.name+".bmp";
+			   }
+		 }else{
+			 msg("请选择印章图片！");
+			 return;
+		 }
+		if(_optFlag=="addseal"){
+			//idArr.push(data);
+			//var res=JSON.stringify(idArr);
+			return data;
+		}else{
+			idArr.push(data);
+			var res=JSON.stringify(idArr);
+			return res;
+		}
+	}
+	$("#name").change(function(){
+		var port="/seal_image";
+		if(_optFlag=="addseal"){
+			port="/seal";
+		}
+		var name=$("#name").val();
+		if(name==""){
+			$("#nameMsg").html('<b style="color:red">输入不能为空</b>');
+		}else{
+			$.ajax({
+				type : "GET",
+				url : urlPath+port,
+				data:{
+					field:'name',
+					value:name
+				},
+				dataType : "JSON",
+				success : function(retdata) {
+					if(retdata){
+						$("#nameMsg").html("");
+						$("#nameMsg").append('<span class="fa fa-check text-success-dark" aria-hidden="true"></span>');
+					}
+				},
+				error:function (e) {
+	                var res = $.parseJSON(e.responseText);
+	                //console.log(res);
+	                $("#nameMsg").html('<b style="color:red">'+res.message+'</b>');
+			    }
+			});
+		}
+	});
+	function selectFile(){
+		var sealName=$("#name").val();
+		if(sealName==""){
+			msg("请先填入印章名称！");
+		}else{
+			$("#myModal").modal('show');
+			if(_optFlag=="modify"){
+				setTimeout(function(){
+					////console.log(_sealId);
+					var sealId=$("#sealId").val();
+					var sealInfo=msObj.selectBmpFile(sealId,sealName);
+					////console.log(sealInfo);
+					var makeSealSizeStr='宽：'+sealInfo.width+'mm;'+'高：'+sealInfo.height+'mm';
+					$("#imageWidth").val(msObj.obj.lBmpWidth);
+					$("#imageHeight").val(msObj.obj.lBmpHeight);
+					$("#sealSize").val(192);
+					$("#makeSealSizeStr").val(makeSealSizeStr);
+				},800);
+			}else{
+				$.ajax({
+					type : "POST",
+					url : urlPath+"/getUUIDCode",
+					dataType : "text",
+					success : function(retdata) {
+						$("#sealId").val(retdata);
+						setTimeout(function(){
+							var sealInfo=msObj.selectBmpFile(retdata,sealName);
+							////console.log(sealInfo);
+							var makeSealSizeStr='宽：'+sealInfo.width+'mm;'+'高：'+sealInfo.height+'mm';
+							$("#imageWidth").val(msObj.obj.lBmpWidth);
+							$("#imageHeight").val(msObj.obj.lBmpHeight);
+							$("#sealSize").val(192);
+							$("#sealWidth").val(sealInfo.width);
+							$("#sealHeight").val(sealInfo.height);
+							$("#makeSealSizeStr").val(makeSealSizeStr);
+						},800);
+					}
+				});
+			}
+
+		}
+	}
+	function makeSeal(){
+		var previewData=msObj.obj.GetPreviewImg(0);
+		$("#previewData").val(previewData);
+		_sealSaveData=msObj.obj.SaveData();
+		$("#data").val(_sealSaveData);
+		$("#imgPre").attr("src",'data:image/bmp;base64,'+previewData);
+		//console.log(_sealSaveData);
+		$("#myModal").modal('hide');
+		$("#imageView").show();
+	}
+	 function addDiaLog(){
+		  msObj.obj.SetValue("SET_TAGITEM_LIST", "securityCode");
+	      msObj.obj.ShowDiaLog(2, 0);
+	}
+	 function closeMakeSeal(){
+		$("#imageWidth").val(null);
+		$("#imageHeight").val(null);
+		$("#sealSize").val(null);
+		$("#makeSealSizeStr").val(null);
+		$("#imgPre").attr("src",'');
+		$("#imageView").hide();
+		$("#myModal").modal('hide');
+	}
+	 function selectDeapartment(){
+			var index =top.layer.open({
+				title:'选择部门',
+				type: 2,
+				content: '../../partials/select-section-nolow.html',
+				area: ['800px', '500px'],
+				btn: ['确定','关闭'],
+				maxmin: true,
+	            yes: function(index){
+	            	//获取单位数据
+	            	var res = window.parent["layui-layer-iframe" + index].getData();
+	            	 if(res==null){
+	            		 window.parent.layer.alert("请选择部门",{icon:6});
+	            	 }else{
+	            		 $("#departmentName").val(res.name);
+	            		 $("#departmentId").val(res.id);
+	            		 top.layer.close(index);
+	            	 }
+	            }
+			});
+		}
+	 function selectPeople(){
+			var index =top.layer.open({
+				title:'选择人员',
+				type: 2,
+				content: '../seal/select-accredit-people-modal.html',
+				area: ['800px', '500px'],
+				btn: ['确定','关闭'],
+				maxmin: true,
+	            yes: function(index){
+	            	//获取单位数据
+	            	var res = window.parent["layui-layer-iframe" + index].getData();
+	            	 if(res==null){
+	            		 window.parent.layer.alert("请选择人员",{icon:6});
+	            	 }else{
+	            		 //console.log(res[0].name);
+	            		 $("#approvalByName").val(res[0].name);
+	            		 $("#approvalBy").val(res[0].id);
+	            		 top.layer.close(index);
+	            	 }
+	            }
+			});
+		}
+</script>
+</html>

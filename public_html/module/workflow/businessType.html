@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>业务类型</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+		<link rel="stylesheet" href="../../shared/ztree/css/zTreeStyle.css" type="text/css" />
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+		<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>	    
+	    <!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	     <script src="../../shared/ocx/makeseal.js"  type="text/javascript" ></script>
+	    <style type="text/css">
+    .row {
+    margin-left: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    cursor: pointer;
+}
+
+	</style>
+	<style type="text/css">
+	</style>
+</head>
+<body>
+<div class="pagecontent" id="divcontent2">
+	<!-- 树 -->
+	<div class="leftLayer" style="width:250" >
+		<div class="divcontent">
+			<ul id="zTree" class="ztree"></ul>
+		</div>
+	</div>
+	<div class="centerLayer">
+		<div class="middleLayer" >
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<button  onclick="newYwlx()" class="btn btn-danger" id="yw1" name="yt1" type="button">
+					<i class="fa fa-plus-square"></i> 新增业务类型
+				</button>
+				<form id="search_form" class="searchform" onsubmit="return false;">
+					<input type="text" name="djlxmc"  id="djlxmc" placeholder="单据类型名称" />
+					<input type="text" name="djlxbm"  id="djlxbm" placeholder="单据类型编码" />
+					<button type="button" onclick="search()" class="btn btn-primary"><i class="fa fa-th"></i> 查询</button>
+				</form>
+			</div>
+			<!-- 页面主内容 -->
+			<div class="gridcontent">
+				<table id="invoice_grid"></table>
+				<div id="ywgnmap"></div>
+			</div>
+		</div>
+		<!-- 下面 -->
+		<div class="bottomLayer" height="300" controle="true" >
+			<ul class="nav nav-tabs" id="myTab">
+				<li class="active"><a href="#parm" data-toggle="tab">参数</a></li>
+				<li><a href="#func" data-toggle="tab">功能</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane fade in active" id="parm" style="height: 240px">
+					<!-- 工具条 -->
+					<div id="toolbars" class="toolbars">
+						<button  onclick="newYwlxCs()" class="btn btn-danger" id="yw0" name="yt0" type="button">
+							<i class="fa fa-plus-square"></i> 新增参数
+						</button>
+					</div>
+					<!-- 页面主内容 -->
+					<div class="gridcontent">
+						<table id="invoice_grid_djcs"></table>
+						<div id="djcsmap"></div>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="func" style="height:72%;width: 100%">
+					<div id="toolbars" class="toolbars">
+						<button  onclick="newYwlxGn()" class="btn btn-danger" id="yw1" name="yt1" type="button">
+							<i class="fa fa-plus-square"></i> 添加功能
+						</button>
+						<!-- 							<button  onclick="delGndy();" class="btn" id="yw2" name="yt2" type="button"> -->
+						<!-- 								<i class=""></i> 删除 -->
+						<!-- 							</button> -->
+					</div>
+					<!-- 页面主内容 -->
+					<div class="gridcontent">
+						<table id="invoice_grid_gndy"></table>
+						<div id="gndymap"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+    //初始化layer
+    var urlPath=getUrlPath();
+    $("#divcontent2").mylayer("init");
+
+    //标签页
+    $(function(){
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            // 获取已激活的标签页的名称
+            var activeTab = $(e.target).text();
+            // 获取前一个激活的标签页的名称
+            var previousTab = $(e.relatedTarget).text();
+            $(".active-tab span").html(activeTab);
+            $(".previous-tab span").html(previousTab);
+        });
+    });
+
+    var _selid = null;
+    var _pdjlxid = null;
+    var _djlxid = null;
+    var flag = null;
+    var djlxid_ = null;
+    var zTreeYwlx = null;
+
+    //业务类型
+    function loadGrid() {
+        $("#invoice_grid").jqGrid({
+            url : urlPath+'/ywlxController/ywlxQueryPage',
+            datatype : "json",//页面加载的时候不显示数据
+            colModel : [
+                {label:'操作',name : 'cz',index : 'cz',width : 150,sortable:false,align:"center",formatter:optFormatter},
+                {name : 'djlxid',index : 'djlxid',width : 150,hidden : true},
+                {label:'单据类型名称',name : 'djlxmc',index : 'djlxmc',width : 150},
+                {label:'单据类型编码',name : 'djlxbm',index : 'djlxbm',width : 150,align:"center"},
+                {label:'本层编码',name : 'bcbm',index : 'bcbm',width : 100,hidden : true},
+                {label:'类型级别',name : 'lxjb',index : 'lxjb',width : 100,align:"center"},
+                {label:'当前状态',name : 'dqzt',index : 'dqzt',width : 100,formatter : dqztFormatter,align : "center"},
+                {label:'备注',name : 'bz',index : 'bz',width : 300},
+                {label:'父单据类型ID',name : 'pdjlxid',index : 'pdjlxid',width : 150,hidden : true}
+            ],
+            rowNum : 10,
+            rowList : [ 10, 15,30 ],
+            pager : '#ywgnmap',
+            multiselect : false, //多行
+            rownumbers : true, //显示行号
+            onSelectRow: function(id){ //当选择行时触发此事件。rowid：当前行id；status：选择状态，当multiselect 为true时此参数才可用
+            	$("#invoice_grid").onSelectRow(id);
+            	var row = $("#invoice_grid").jqGrid('getRowData', id);
+                djlxid_ = row.djlxid;
+                //加载相关参数信息
+                $("#invoice_grid_djcs").jqGrid('setGridParam',{
+                    postData:{
+                        djlxid : djlxid_
+                    },
+					page:1,
+                    datatype : "json"
+                }).trigger("reloadGrid");
+                //加载相关功能对应信息
+                $("#invoice_grid_gndy").jqGrid('setGridParam',{
+                    postData:{
+                        djlxid : djlxid_
+                    },
+					page:1,
+                    datatype : "json"
+                }).trigger("reloadGrid");
+            }
+        });
+    }
+
+    //参数
+    function loadGrid2() {
+        $("#invoice_grid_djcs").jqGrid({
+            url : urlPath+'/ywlxController/djcsQueryPage',
+            datatype : "local",//页面加载的时候不显示数据
+            colModel : [
+                {label:'操作',name : 'cz',index : 'cz',width : 100,sortable:false,align:"center",formatter:function(cellvalue, options, rowObject){
+                    return "<a style='color: blue' href='javascript:updateYwlxCs(\""+rowObject.csid+"\")'>修改</a>&nbsp;|&nbsp;<a style='color: blue' href='javascript:deteleYwlxCs(\""+rowObject.csid+"\")'>删除</a>";
+                }},
+                {label:'参数ID',name : 'csid',index : 'csid',width : 150,hidden : true},
+                {label:'单据类型ID',name : 'djlxid',index : 'djlxid',width : 150,hidden : true},
+                {label:'参数编码',name : 'pname',index : 'pname',width : 150,align:"center"},
+                {label:'参数名称',name : 'plable',index : 'plable',width : 150},
+                {label:'参数说明',name : 'psm',index : 'psm',width : 300},
+                {label:'参数类型',name : 'ptype',index : 'ptype',width : 100,align : "center",formatter:function(cellvalue, options, rowObject){
+                    if (cellvalue == "DW") {
+                        return "单位";
+                    }
+                    if (cellvalue == "USER") {
+                        return "用户";
+                    }
+                    if (cellvalue == "NUM") {
+                        return "数字";
+                    }
+                    if (cellvalue == "DATE") {
+                        return "日期";
+                    }
+                }},
+                {label:'当前状态',name : 'dqzt',index : 'dqzt',width : 100,formatter : dqztFormatter,align : "center"}
+            ],
+            rowNum : 10,
+            rowList : [ 10, 15,30 ],
+            pager : '#djcsmap',
+            multiselect : false, //多行
+            rownumbers : true //显示行号
+        });
+    }
+
+    //功能
+    function loadGrid3() {
+        $("#invoice_grid_gndy").jqGrid({
+            url : urlPath+'/ywlxController/gndyQueryPage',
+            datatype : "local",//页面加载的时候不显示数据
+            colNames : [ '操作','功能ID', '单据类型ID','功能名称','单据类型名称'],
+            colModel : [
+                {name : 'cz',index : 'cz',width : 100,align : "center",sortable:false,formatter:function(cellvalue, options, rowObject){
+                    return "<a style='color:blue;' href='javascript:deteleYwlxGn(\""+rowObject.gnid+"\",\""+rowObject.djlxid+"\")'>删除</a>";
+                }},
+                {name : 'gnid',index : 'gnid',width : 100,align : "center",hidden : true},
+                {name : 'djlxid',index : 'djlxid',width : 100,align : "center",hidden : true},
+                {name : 'gnmc',index : 'gnmc',width : 200,align : "center"},
+                {name : 'djlxmc',index : 'djlxmc',width : 300,align : "center"}
+            ],
+            rowNum : 10,
+            rowList : [ 10, 15,30 ],
+            pager : '#gndymap',
+            multiselect : false, //多行
+            rownumbers : true //显示行号
+        });
+    }
+
+    //加载jqGrid
+    $(document).ready(function() {
+        loadGrid();
+        loadGrid2();
+        loadGrid3();
+
+        $(window).resize(function() {
+            $("#invoice_grid").jqGrid("autoSize");
+        }).trigger('resize');
+
+        $(window).resize(function() {
+            $("#invoice_grid_djcs").jqGrid("autoSize");
+        }).trigger('resize');
+
+        $(window).resize(function() {
+            $("#invoice_grid_gndy").jqGrid("autoSize");
+        }).trigger('resize');
+    });
+
+    //绑定回车事件
+    document.onkeydown = function(e) {
+        var ev = document.all ? window.event : e;
+        if (ev.keyCode == 13) {
+            search();
+        }
+    };
+    function optFormatter(cellvalue, options, rowObject){
+        var modify = "<a style='color: blue' href='javascript:updateYwlx(\""+rowObject.djlxid+"\")'>修改</a>";
+        var remove = "<a style='color: blue' href='javascript:deteleYwlx(\""+rowObject.djlxid+"\")'>删除</a>";
+        var restart = "<a style='color: blue' href='javascript:startYwlx(\""+rowObject.djlxid+"\")'>启用</a>";
+        var stop = "<a style='color: blue' href='javascript:stopYwlx(\""+rowObject.djlxid+"\")'>停用</a>";
+        var sep = "&nbsp;|&nbsp;";
+        if(rowObject.djlxbm=="003"){
+			return modify;
+        }else if(rowObject.dqzt == 0){
+            return modify+sep+remove+sep+restart;
+		}else if(rowObject.dqzt == 1){
+            return modify+sep+remove+sep+stop;
+		}
+       /*
+        if(rowObject.dqzt == 1){
+            return "<a style='color: blue' href='javascript:updateYwlx(\""+rowObject.djlxid+"\")'>修改</a>&nbsp;|&nbsp;<a style='color: blue' href='javascript:deteleYwlx(\""+rowObject.djlxid+"\")'>删除</a>&nbsp;|&nbsp;";
+        }*/
+    }
+    function dqztFormatter(cellvalue, options, rowObject) {
+        if (cellvalue == 0) {
+            return "无效";
+        }
+        if (cellvalue == 1) {
+            return "有效";
+        }
+    }
+
+    //查询功能
+    function search() {
+        var formData = $("#search_form").getData();
+        $("#invoice_grid").jqGrid('setGridParam', {
+            postData : {
+                djlxbm : formData.djlxbm,
+                djlxmc : formData.djlxmc
+            },
+        }).trigger("reloadGrid");
+    }
+
+    //新增业务类型
+    function newYwlx(){
+        if(_pdjlxid == null){
+            alert("请选择左侧的树！");
+            return;
+        }
+        flag = "addXJ";
+        if(_djlxid == "DJSEAL"){
+            alert("此记录下不能添加下级业务类型！");
+        }else{
+            openEdit(_djlxid,flag);
+        }
+    }
+
+    //修改业务类型
+    function updateYwlx(djlxid){
+        flag = "modify";
+        openEdit(djlxid,flag);
+    }
+
+    //删除业务类型
+    function deteleYwlx(djlxid){
+        //删除提示
+        layer.alert('确定要删除此数据？', {
+            time: 0, //不自动关闭,
+            btn: ['确定', '关闭'],
+            yes: function(index){
+                $.ajax({
+                    type : "POST",
+                    url : urlPath+"/ywlxController/delYwlx",
+                    data : {djlxid:djlxid},
+                    dataType : "json",
+                    traditional: true,//ajax传递数组的时候traditional必须为true
+                    success : function(retdata) {
+                        if (retdata == true) {
+                            layer.msg('删除成功', {icon: 1});
+                            //加载树
+                            locadZtree();
+                            //刷新jqGrid
+                            doFresh();
+                            doFresh_djcs();
+                            doFresh_gndy();
+                        } else {
+                            alert(retdata.message);
+                        }
+                    },
+					error:function (xmlhttp,textStatus,errorThrown) {
+                        var o = JSON.parse(xmlhttp.responseText);
+                        layer.msg(o.message, {icon: 5});
+                    }
+                });
+            }
+        });
+    }
+
+    //启用业务类型
+    function startYwlx(djlxid){
+        //启用提示
+        layer.alert('确定要启用此数据？', {
+            time: 0, //不自动关闭,
+            btn: ['确定', '关闭'],
+            yes: function(index){
+                $.ajax({
+                    type : "POST",
+                    url : urlPath+"/ywlxController/startYwlx",
+                    data : {djlxid:djlxid},
+                    dataType : "json",
+                    traditional: true,//ajax传递数组的时候traditional必须为true
+                    success : function(retdata) {
+                        if (retdata == true) {
+                            layer.msg('操作成功', {icon: 1});
+                            //加载树
+                            locadZtree();
+                            //刷新jqGrid
+                            doFresh();
+                            doFresh_djcs();
+                            doFresh_gndy();
+                        } else {
+                            alert(retdata.message);
+                        }
+                    },
+                    error : function(xmlhttp,textStatus,errorThrown){
+                        layer.msg('操作失败!', {icon: 5});
+                    }
+                });
+            }
+        });
+    }
+
+    //停用业务类型
+    function stopYwlx(djlxid){
+        //停用提示
+        layer.alert('确定要停用此数据？', {
+            time: 0, //不自动关闭,
+            btn: ['确定', '关闭'],
+            yes: function(index){
+                $.ajax({
+                    type : "POST",
+                    url : urlPath+"/ywlxController/stopYwlx",
+                    data : {djlxid:djlxid},
+                    dataType : "json",
+                    traditional: true,//ajax传递数组的时候traditional必须为true
+                    success : function(retdata) {
+                        if (retdata == true) {
+                            layer.msg('操作成功', {icon: 1});
+                            //加载树
+                            locadZtree();
+                            //刷新jqGrid
+                            doFresh();
+                            doFresh_djcs();
+                            doFresh_gndy();
+                        } else {
+                            alert(retdata.message);
+                        }
+                    },
+                    error : function(xmlhttp,textStatus,errorThrown){
+                        layer.msg('操作失败!', {icon: 5});
+                    }
+                });
+            }
+        });
+    }
+
+    //业务类型编辑框
+    function openEdit(djlxid,flag) {
+        var index = layer.open({
+            title:'业务类型信息',
+            type: 2,
+            content: '../workflow/ywlx_edit.html?djlxid='+djlxid+'&pdjlxid='+_pdjlxid+'&flag='+flag,
+            area: ['800px', '350px'],
+            btn: ['保存','关闭'], //底部按钮区域
+            maxmin: true,
+            yes: function(index,layero){  //第一个按钮的事件
+                //调用子页面的方法
+                window["layui-layer-iframe" + index].saveData(index);
+            }
+        });
+    }
+
+    //刷新
+    function doFresh(){
+        $("#invoice_grid").jqGrid('setGridParam',{
+            postData:{}
+        }).trigger("reloadGrid");
+    }
+
+    //刷新参数
+    function doFresh_djcs(){
+        $("#invoice_grid_djcs").jqGrid('setGridParam',{
+            postData:{},
+            datatype : 'local'
+        }).trigger("reloadGrid");
+    }
+
+    //刷新功能
+    function doFresh_gndy(){
+        $("#invoice_grid_gndy").jqGrid('setGridParam',{
+            postData:{},
+            datatype : 'local'
+        }).trigger("reloadGrid");
+    }
+
+    //新增业务类型参数
+    function newYwlxCs(){
+        if(djlxid_ == null){
+            alert("请先选择业务类型！");
+        }else{
+            openEdit_cs(djlxid_,"","add");
+        }
+    }
+
+    //修改业务类型参数
+    function updateYwlxCs(csid){
+        openEdit_cs(djlxid_,csid,"modify");
+    }
+
+    //删除业务类型参数
+    function deteleYwlxCs(csid){
+        //删除提示
+        layer.alert('确定要删除此数据？', {
+            time: 0, //不自动关闭,
+            btn: ['确定', '关闭'],
+            yes: function(index){
+                $.ajax({
+                    type : "POST",
+                    url : urlPath+"/ywlxController/delDjcs",
+                    data : {csid:csid},
+                    dataType : "json",
+                    traditional: true,//ajax传递数组的时候traditional必须为true
+                    success : function(retdata) {
+                        if (retdata == true) {
+                            layer.msg('删除成功', {icon: 1});
+                            //刷新jqGrid
+                            $("#invoice_grid_djcs").jqGrid('setGridParam',{
+                                    postData:{
+                                        djlxid : djlxid_
+                                    },
+                                    datatype : 'json'  //将datatype重置为json,这样就可以显示数据了
+                                }
+                            ).trigger("reloadGrid");
+                        } else {
+                            alert(retdata.message);
+                        }
+                    },
+					error : function(xmlhttp,textStatus,errorThrown){
+                    layer.msg('操作失败!', {icon: 5});
+                }
+                });
+            }
+        });
+    }
+
+    //参数编辑框
+    function openEdit_cs(djlxid_,csid,flag) {
+        var index = layer.open({
+            title:'业务类型参数',
+            type: 2,
+            content: '../workflow/ywlx_djcs.html?csid='+csid+'&djlxid='+djlxid_+'&flag='+flag,
+            area: ['750px', '270px'],
+            btn: ['保存','关闭'], //底部按钮区域
+            maxmin: true,
+            yes: function(index,layero){  //第一个按钮的事件
+                //调用子页面的方法
+                window["layui-layer-iframe" + index].saveData(index);
+            }
+        });
+    }
+
+    //刷新参数
+    function doFresh_djcs2(){
+        $("#invoice_grid_djcs").jqGrid('setGridParam',{
+            postData:{djlxid : djlxid_},
+            datatype : 'json'
+        }).trigger("reloadGrid");
+    }
+
+    //新增业务类型功能
+    function newYwlxGn(){
+        if(djlxid_ == null){
+            alert("请选择业务类型！");
+        }else{
+            layer.open({
+                title:'业务类型功能',
+                type: 2,
+                content: '../workflow/ywlx_gndy.html?djlxid='+djlxid_,
+                area: ['600px', '400px'],
+                btn: ['保存','关闭'], //底部按钮区域
+                maxmin: true,
+                yes: function(index,layero){  //第一个按钮的事件
+                    //调用子页面的方法
+                    window["layui-layer-iframe" + index].saveData(index);
+                }
+            });
+        }
+    }
+
+    //删除业务类型功能
+    function deteleYwlxGn(gnid,djlxid){
+        //删除提示
+        layer.alert('确定要删除此数据？', {
+            time: 0, //不自动关闭,
+            btn: ['确定', '关闭'],
+            yes: function(index){
+                $.ajax({
+                    type : "POST",
+                    url : urlPath+"/ywlxController/delYwlxGn",
+                    data : {djlxid:djlxid,gnid:gnid},
+                    dataType : "json",
+                    traditional: true,//ajax传递数组的时候traditional必须为true
+                    success : function(retdata) {
+                        if (retdata == true) {
+                            layer.msg('删除成功', {icon: 1});
+                            //刷新jqGrid
+                            $("#invoice_grid_gndy").jqGrid('setGridParam',{
+                                postData:{djlxid : djlxid_},
+                                datatype : 'json'  //将datatype重置为json,这样就可以显示数据了
+                            }).trigger("reloadGrid");
+                        } else {
+                            alert(retdata.message);
+                        }
+                    },
+                    error : function(xmlhttp,textStatus,errorThrown){
+                        layer.msg('操作失败!', {icon: 5});
+                    }
+                });
+            }
+        });
+    }
+
+    //刷新参数
+    function doFresh_gndy2(){
+        $("#invoice_grid_gndy").jqGrid('setGridParam',{
+            postData:{djlxid : djlxid_},
+            datatype : 'json'
+        }).trigger("reloadGrid");
+    }
+
+    /**************************************************ZTREE**********************************************/
+
+    $(document).ready(function(){
+        //获取ztree数据
+        $.post(urlPath+"/ywlxController/zTreeYwlx",function(retdata) {
+            var zTreeYwlx = $("#zTree").zTreeInit({
+                data:retdata,//ztree数据
+                name:"djlxmc",//name对应的字段
+                idKey: "djlxid",//id对应字段
+                pIdKey: "pdjlxid",//父id对应字段
+                enable: true, //设置为简单类型，false为标准类型
+                rootPId: "NO",
+                click:function(event, treeId, treeNode) {//单击事件
+                    _pdjlxid = treeNode.pdjlxid;
+                    _djlxid = treeNode.djlxid;
+                    //加载相应信息
+                    $("#invoice_grid").jqGrid('setGridParam',{
+                        postData:{djlxid : _djlxid},
+                        page:1,
+                        datatype : 'json'  //将datatype重置为json,这样就可以显示数据了
+                    }).trigger("reloadGrid");
+                },
+                dblclick:function(event, treeId, treeNode) {//双击事件
+
+                }
+            });
+        },"json");
+    });
+
+    //加载ztree
+    function locadZtree(){
+        $.post(urlPath+"/YwlxController/zTreeYwlx",function(retdata) {
+            $("#zTree").zTreeFresh(retdata.data);
+        },"json");
+    }
+
+    /**************************************************ZTREE**********************************************/
+
+    /////////////////////////////////////////////////弃用备份///////////////////////////////////////////////
+
+    //2018/11/21 弃用  (参数)
+    function doAction_(type){
+        if(type==1){
+            if(djlxid_ == null){
+                alert("请先选择业务类型！");
+            }else{
+                openEdit_(djlxid_,"");
+            }
+        }else if(type==2){
+            var id = $("#invoice_grid_djcs").jqGrid('getGridParam','selrow');
+            var row = $("#invoice_grid_djcs").jqGrid('getRowData', id);
+            if(id == null){
+                alert("请选择要修改的数据！");
+            }else{
+                openEdit_(djlxid_,row.csid);
+            }
+        }else if(type==3){
+            var selectrows = $("#invoice_grid_djcs").jqGrid('getGridParam','selarrrow');
+
+            var csid = [];
+            for(var i=0;i<selectrows.length;i++){
+                var row = $("#invoice_grid_djcs").jqGrid('getRowData', selectrows[i]); //获取此行数据
+                csid[i] = row.csid;
+            }
+            if(selectrows[0] == null){
+                alert('请选择要删除的数据！');
+            }else{
+                //删除提示
+                layer.alert('确定要删除此数据？', {
+                    time: 0, //不自动关闭,
+                    btn: ['确定', '关闭'],
+                    yes: function(index){
+                        $.ajax({
+                            type : "POST",
+                            url : urlPath+"/YwlxController/delDjcs",
+                            data : {csid:csid},
+                            dataType : "json",
+                            traditional: true,//ajax传递数组的时候traditional必须为true
+                            success : function(retdata) {
+                                if (retdata.flag == true) {
+                                    msg('操作成功！');
+                                    //刷新jqGrid
+                                    $("#invoice_grid_djcs").jqGrid('setGridParam',{
+                                            postData:{
+                                                djlxid : djlxid_
+                                            },
+                                            datatype : 'json'  //将datatype重置为json,这样就可以显示数据了
+                                        }
+                                    ).trigger("reloadGrid");
+                                } else {
+                                    alert(retdata.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
+
+    //2018/11/21 弃用 （ 业务类型新增、修改、删除）
+    function doAction(type){
+        if(type==1){
+            // 判断树是否为空，.getNodes().length小于1为空
+            if(zTreeYwlx.getNodes().length<1){
+                flag = "addTJ";
+                openEdit(_djlxid,flag);
+            }else{
+                if(_pdjlxid == null){
+                    alert("请选择左侧的树！");
+                    return;
+                }else{
+                    flag = "addTJ";
+                    openEdit(_djlxid,flag);
+                }
+            }
+        }else if(type==2){
+            if(_pdjlxid == null){
+                alert("请选择左侧的树！");
+                return;
+            }
+            flag = "addXJ";
+            if(_djlxid == "DJSEAL"){
+                alert("此记录下不能添加下级业务类型！");
+            }else{
+                openEdit(_djlxid,flag);
+            }
+        }else if(type==3){
+            flag = "modify";
+
+            var id = $("#invoice_grid").jqGrid('getGridParam','selrow');
+            var row = $("#invoice_grid").jqGrid('getRowData', id);
+            if(row.djlxid == null){
+                alert("请选择要删除的数据！");
+            }else{
+                openEdit(row.djlxid,flag);
+            }
+        }else if(type==4){
+            //获取选定行行id
+            var selectrows = $("#invoice_grid").jqGrid('getGridParam','selarrrow');
+
+            var djlxid = [];
+            for(var i=0;i<selectrows.length;i++){
+                var row = $("#invoice_grid").jqGrid('getRowData', selectrows[i]); //获取此行数据
+                djlxid[i] = row.djlxid;
+            }
+
+            if(selectrows[0] == null){
+                alert('请选择要删除的数据！');
+            }else{
+                //删除提示
+                layer.alert('确定要删除此数据？', {
+                    time: 0, //不自动关闭,
+                    btn: ['确定', '关闭'],
+                    yes: function(index){
+                        $.ajax({
+                            type : "POST",
+                            url : urlPath+"/YwlxController/delYwlx",
+                            data : {djlxid:djlxid},
+                            dataType : "json",
+                            traditional: true,//ajax传递数组的时候traditional必须为true
+                            success : function(retdata) {
+                                if (retdata.flag == true) {
+                                    msg(retdata.msg);
+                                    //加载树
+                                    locadZtree();
+                                    //刷新jqGrid
+                                    $("#invoice_grid").jqGrid('setGridParam',{
+                                            postData:{},
+                                            datatype : 'json'  //将datatype重置为json,这样就可以显示数据了
+                                        }
+                                    ).trigger("reloadGrid");
+                                    $("#invoice_grid_djcs").jqGrid('setGridParam',{
+                                            postData:{},
+                                            datatype : 'local'  //将datatype重置为json,这样就可以显示数据了
+                                        }
+                                    ).trigger("reloadGrid");
+                                    $("#invoice_grid_gndy").jqGrid('setGridParam',{
+                                            postData:{},
+                                            datatype : 'local'  //将datatype重置为json,这样就可以显示数据了
+                                        }
+                                    ).trigger("reloadGrid");
+                                } else {
+                                    alert(retdata.msg, {icon: 5});
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }else if(type==5){
+            $("#invoice_grid").jqGrid('setGridParam',{
+                    postData:{
+                        djlxid : "NO"
+                    },
+                    datatype : 'json'  //将datatype重置为json,这样就可以显示数据了
+                }
+            ).trigger("reloadGrid");
+        }
+    }
+</script>
+</html>

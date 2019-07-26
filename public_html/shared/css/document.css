@@ -1,0 +1,241 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2013-12-17, 21:58:12
+    Author     : FL
+*/
+
+@font-face {
+  font-family: 'JavaKitFont';
+  src: url('Fonts/fontawesome-webfont.eot?v=4.7.0');
+  src: url('Fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'), url('Fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('Fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('Fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('Fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+/**
+form表单的通用样式,去掉form占用的空间
+**/
+form {
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+}
+
+html,body{
+		widht:100%;
+		height:100%;
+		margin: 0px;
+}
+
+* {
+	outline: none; font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei", "微软雅黑";
+}
+/*
+布局样式          
+*/
+.pagecontent,
+.layer-content {
+	width: 100%; height: 100%; margin: 0px; text-align: left;
+}
+
+
+.pagecontent .leftLayer {
+	height: 100%; position: absolute; left:0px; right: 0px; top: 0px; border-right: 5px solid #c5c5c5; 
+}
+.pagecontent .leftLayer>button {
+	width: 12px; height: 50px; line-height: 50px; background-color: #e8e6e6; color: white; font-size: 18px;z-index:999; position: absolute; top: 50%; margin-top: -25px; right: -17px;right: -21px\9; border-radius: 0px 5px 5px 0px; border: none;
+}
+.pagecontent .leftLayer>button:hover {
+	background-color: #c5c5c5;
+}
+.pagecontent .leftLayer>button:focus {
+	outline: none;
+}
+.pagecontent .ri:before {
+	font-family: "JavaKitFont"; content: "\f105"; position: relative; right: 3px;
+}
+.pagecontent .le:before {
+	font-family: "JavaKitFont"; content: "\f104"; position: relative; right: 4px;
+}
+.pagecontent .centerLayer {
+	width: auto; height: 100%; position: absolute; left:0px; right: 0px; top: 0px; 
+}
+
+.pagecontent .rightLayer {
+	height: 100%; position: absolute; top: 0px; right: 0px;border-left: 5px solid #c5c5c5;
+}
+.pagecontent .rightLayer>button {
+	width: 12px; height: 50px; text-algin:center; line-height: 50px; background-color: #e8e6e6; color: white; font-size: 18px; position: absolute; top: 50%; margin-top: -25px; left: -17px; left: -21px\9; border-radius: 5px 0px 0px 5px; border: none;
+}
+.pagecontent .rightLayer>button:hover {
+	background-color: #c5c5c5;
+}
+
+.pagecontent .rightLayer>button:focus {
+	outline: none;
+}
+
+.pagecontent .topLayer {
+	width: 100%; height: 10px; position: absolute; left:0px; top: 0px; border-bottom: 5px solid #c5c5c5;
+}
+.pagecontent .topLayer>button {
+	width: 50px; height: 12px; line-height: 12px; background-color: #e8e6e6; color: white; font-size: 18px; position: absolute; left: 50%; margin-left: -25px; bottom: -17px; border-radius: 0px 0px 5px 5px; border: none;
+}
+.pagecontent .topLayer>button:hover {
+	background-color: #c5c5c5;
+}
+.pagecontent .topLayer>button:focus {
+	outline: none;
+}
+.pagecontent .middleLayer {
+	width: 100%; height: auto; position: absolute; left:0px; top: 0px; bottom: 0px;border-top: 1px solid #efefef;border-bottom: 1px solid #efefef;
+}
+.pagecontent .bottomLayer {
+	width: 100%; height: 10px; position: absolute; left: 0px; bottom: 0px;border-top: 5px solid #c5c5c5;
+}
+.pagecontent .bottomLayer>button {
+	width: 50px; height: 12px; line-height: 12px; background-color: #e8e6e6; color: white; font-size: 18px; position: absolute; left: 50%; margin-left: -25px; top: -17px; border-radius: 5px 5px 0px 0px; border: none;
+}
+.pagecontent .bottomLayer>button:hover {
+	background-color: #c5c5c5;
+}
+.pagecontent .bottomLayer>button:focus {
+	outline: none;
+}
+.pagecontent .up:before {
+	font-family: "JavaKitFont"; content: "\f106";
+}
+.pagecontent .down:before {
+	font-family: "JavaKitFont"; content: "\f107";
+}
+
+.td-nav-title  {
+    display:block;
+    width:31em;
+    word-break:keep-all;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+
+/* 输入框标题背景颜色样式 */
+.tdtitle {
+	color: rgb(66,66,66);
+}
+
+/* 只读table样式 */
+
+table.table_show{
+	border:1px;
+	border-collapse:collapse;
+}
+table.table_show td{
+	border:solid 0px #4A95C9;
+	padding-left: 2px;
+	line-height:28px;
+	}
+
+table .table_show textarea {
+	border: 1px solid #ffffff;
+	background-color: #f6f6f7;
+	scrollbar-face-color:#d0d0d0 ;
+	scrollbar-shadow-color:#FFFFFF;
+	scrollbar-highlight-color:#FFFFFF;
+	scrollbar-3dlight-color:#d0d0d0 ;
+	scrollbar-darkshadow-color:#d0d0d0 ;
+	scrollbar-track-color:#EEEEEE;
+	scrollbar-arrow-color:#ffffff;
+	padding: 5px;
+}
+table .table_show input {
+	border: none;
+	background-color: #fffddd;
+}
+
+table .table_show input_title {
+	color: rgb(66,66,66);
+}
+
+
+/* 录入table样式 */
+table.table_insert{
+	border:1px;
+	border-collapse:collapse;
+	width:100%
+	}
+table.table_insert td{
+	border:solid 1px #f1f3fa;
+	padding:5px 5px 5px 5px;
+	text-align:left;
+	
+}
+table.table_insert td.tdtitle{
+	color: rgb(66,66,66);
+	text-align: right;
+	padding-right: 5px;
+	font-size: 14px;	
+}
+table.table_insert input,select{
+	border: 1px solid #d0d0d0;
+}	
+table.table_insert textarea {
+	border: 1px solid #d0d0d0;
+	/* background-color: #FFFFFF; */
+	scrollbar-face-color:#d0d0d0 ;
+	scrollbar-shadow-color:#FFFFFF;
+	scrollbar-highlight-color:#FFFFFF;
+	scrollbar-3dlight-color:#d0d0d0 ;
+	scrollbar-darkshadow-color:#d0d0d0 ;
+	scrollbar-track-color:#EEEEEE;
+	scrollbar-arrow-color:#ffffff;	
+    }
+/*table蓝细线边框 内外框 样式 */
+table.no_border{
+	border:0px solid #FFFFFF;	
+}
+table.no_border td{
+	border:0px solid #FFFFFF;
+    line-height: 24px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+}
+
+/*工作流显示样式*/
+.splcA {
+    float: left;
+    font-size: 13px;
+    left: 5px;
+    margin-right: 5px;   
+    position: relative;
+}
+
+.splcB {
+    margin-right: 5px;
+}
+
+.splcD {
+    background-image: url(../images/001.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 16px;
+    left: 0px;
+    position: relative;
+    top: 3px;
+    width: 16px;
+}
+.splcE {
+    background-image: url(../images/002.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 16px;
+    position: relative;
+    top: 4px;
+    width: 16px;
+}
+
+
+

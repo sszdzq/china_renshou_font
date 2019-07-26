@@ -1,0 +1,86 @@
+@charset "utf-8";
+/*
+demo JavaKit
+author 王松乐
+Date 2016-10-3
+*/
+/*-----------login 登录界面--------------*/
+html {
+    height: 100%;
+    width: 100%;
+}
+body {
+	width: 100%; height: 100%; background-size: 100%;
+}
+.login {
+	width: 100%; height: 100%;  background: url("../images/phone/BG_phone_new.jpg") no-repeat top center;  background-size: 1080px 800px;position: relative;
+}
+.login>h1 {
+	color: white; margin: 0px; padding: 0px; font-weight: normal; position: relative; top: 15%; font-size: 32px; letter-spacing: 5px;
+}
+.login .window {
+	width: 250px; height:240px;background: url("../images/phone/login_bg_phone.png") no-repeat center; background-size: 280px 267px;position: relative;top: 40px;margin: 0px auto;border-radius: 9px !important;
+}
+.login .cloudopen {
+	width: 150px; height:126px;z-index:1; background: url("../images/phone/cloud_open_new.png") no-repeat top; background-size: 100%;position: relative;;top: 65px;margin: 0px auto;
+}
+.login .cloudclose {
+	width: 150px; height:126px;z-index:1; background: url("../images/phone/cloud_close_new.png") no-repeat top; background-size: 100%;position: relative;top: 65px;left: 0px;margin: 0px auto;
+}
+.login .window>h2 {
+	color: #fff; margin: 0px; padding: 0px; width: 100%; height: 45px; line-height: 45px; text-align: left; text-indent: 18px; font-weight: normal; font-size: 16px; border-bottom: 1px solid rgb(255,255,255); background-color: rgb(38,68,118); border-bottom: 1px solid rgba(255,255,255,0.5); background-color: rgba(38,68,118,0.90);
+}
+.login .window>h2:before {
+	font-family: "JavaKitFont"; content: "\f1d8"; font-size: 18px; margin-right: 6px;
+}
+.login .window .form {
+	width: 280px; height: 220px; margin: 10px auto; text-align: center;position: relative;top: 175px;
+}
+.login .window .form .div1{
+	width: 200px; height: 30px; margin: 0px 0px 5px 60px; text-align: left;position: relative;top: -106px;
+}
+.login .window .form .div2{
+	width: 200px; height: 30px; margin: 0px 0px 5px 60px; text-align: left;position: relative;top: -106px;
+}
+.login .window .form .div3{
+	width: 220px; height: 41px; margin: 0px 25px 5px 30px; text-align: left;position: relative;top: -93px;background-color:transparent;
+}
+.login .window .form .div1 .input1{
+	width: 139px; height: 22px; margin: 0px 0px 0px 5px; text-align: left;position: relative;top: 0px;border: 0px;background-color:transparent;
+}
+.login .window .form .div2 .input2{
+	width: 139px; height: 22px; margin: 1px 0px 0px 5px; text-align: left;position: relative;top: 0px;border: 0px;background-color:transparent;
+}
+.login .window .form>form>span:nth-child(1):after {
+	font-family: "JavaKitFont"; content: "\f007"; font-size: 21px; float: right; margin-right: 10px; color: #71453c;
+}
+.login .window .form>form>span:nth-child(2):after {
+	font-family: "JavaKitFont"; content: "\f13e"; font-size: 21px; float: right; margin-right: 12px; color: #71453c;
+}
+
+/*------------------------追加响应式布局样式-------------------------------*/
+@media screen and (max-width:1920px) {
+	.login .window {width: 50%;}
+	.login .window .form .goto>input[name=code] {width: 52%;}
+	.login .window .form .goto button {display: block; width: 100%; margin: 10px auto;}
+}
+@media screen and (max-width:1095px) {
+	.login .window {width: 50%;}
+	.login .window .form .goto>input[name=code] {width: 52%;}
+	.login .window .form .goto button {display: block; width: 100%; margin: 10px auto;}
+}
+@media all and (max-device-width:960px) {
+	.login>h1 {font-size: 24px;}
+	.login .window {width: 80%;}
+	.login .window .form .goto>input[name=code] {width: 52%;}
+	.login .window .form .goto button {display: block; width: 100%; margin: 10px auto;}
+	.login .window .form .goto a {display: block;}
+}
+
+
+
+
+
+
+
+

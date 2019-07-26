@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>印模申请</title>
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+<style type="text/css">
+  .btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+#addSealForm>div{
+  	margin-bottom:15px;
+  }
+  .form-horizontal .control-label{
+  	width:100px;
+  }
+  .signatureType{
+  	display:none;
+  }
+</style>
+	   
+</head>
+<body>
+<div class="pagecontent" id="divcontent2">
+		<div class="row">
+		    <div class="col-sm-12">
+		        <div class="page-title page-title-border clearfix">
+		            <button class="btn btn-primary btn-lg pull-right" style="margin:8px 20px auto auto;"onclick="applyMold();">印章制作</button>
+		        </div>
+		    </div>
+		</div>
+
+		<div class="middleLayer" style="margin:50px 0px 0px 0px;">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars" style="margin-top:8px">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on">名称</span>
+					<input type="text" name="name" id="name" style="width: 80px" placeholder="印模名称">
+					<span class="add-on" id="type">类别</span>
+					<select id="type">
+						<option value="">请选择</option>
+						<option label="公章" value="1">公章</option>
+						<option label="公章(法人章)" value="2">公章(法人章)</option>
+						<option label="公章(合同章)" value="3">公章(合同章)</option>
+						<option label="公章(党章)" value="4">公章(党章)</option>
+						<option label="公章(财务章)" value="5">公章(财务章)</option>
+						<option label="公章(工会章)" value="6">公章(工会章)</option>
+						<option label="个人章" value="7">个人章</option>
+						<option label="个人章(手写签名)" value="8">个人章(手写签名)</option>
+						<option label="个人章(文字签名)" value="9">个人章(文字签名)</option>
+					</select>
+					<span class="add-on">部门</span>
+					<input type="hidden" name="departmentId" id="departmentId"> 
+					<input id=lowerLevel name="lowerLevel"  type="hidden">
+					<input type="text" name="departmentName" id="departmentName" style="width: 80px" placeholder="部门名称"> 
+					<button type="button" class="btn btn-default" id="section">选择</button>
+					<span class="add-on" style="margin-left:5px;">创建时间</span>
+					<input type="text"  id="starttime" name="starttime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',maxDate: '#F{$dp.$D(\'endtime\')}' }) ">
+					至
+					<input type="text" name="endtime" id="endtime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'starttime\') }'}) ">
+
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style=" float:right;"> 查询</button>
+			</div>
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="mold"></table>
+				<div id="mold_page"></div>
+			</div>
+		</div>
+		<div class="modal right fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
+			<div class="modal-dialog" >
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h4 class="modal-title" id="myModalLabel">印章制作</h4>
+					</div>
+					<div class="modal-body" >
+						<form name="addSealForm" id="addSealForm" role="form" class="form-horizontal margin-top-2" style="margin-left:40px">
+					        <div class="has-feedback form-group">
+					            <label class="margin-left-2 margin-right-2 control-label">印章名称</label>
+					            <div class="col-md-6">
+					           		<input type="hidden" id="sealImageId" name="sealImageId">
+					                <input type="text" name="sealName" id="sealName" class="form-control" placeholder="请输入印章名称">
+					                <span class="msg margin-left-2" id="nameMsg"></span>
+					            </div>
+					        </div>
+					        <div class="has-feedback form-group">
+					            <label class=" margin-left-2 margin-right-2 control-label">印章类别</label>
+					             <div class="col-md-6">
+					           		<input type="hidden" id="sealType" name="sealType">
+									<span class="form-control-static" id="sealTypeName">--</span>	
+							     </div>
+					        </div>
+					        <div class="has-feedback form-group">
+					            <label class=" margin-left-2 margin-right-2 control-label">所属部门</label>
+					            <div class="col-md-6">
+					                <span class="form-control-static" id="sealDepartmentId">--</span>
+					            </div>
+					        </div>
+					        <div class="has-feedback form-group">
+					            <label class=" margin-left-2 margin-right-2 control-label">印章宽高</label>
+					            <div class="col-md-6">
+					            	<input type="hidden" id="sealWidth" name="sealWidth">
+									<input type="hidden" id="sealHeight" name="sealHeight">
+					            	<input type="hidden"  id="sealSize" name="sealSize" >
+					                <input type="text" class="form-control" placeholder="印章宽高" disabled id="sealWH">
+					            </div>
+					        </div>
+					        <div class="signatureType" >
+					            <label class=" margin-left-2 margin-right-2 control-label">制章人证书</label>
+					            <div class="col-md-6">
+					                <select class="form-control" id="makeCert" name="makeCert">
+					                    <option value="">请选择...</option>
+					                </select>
+					            </div>
+					        </div>
+					         <div class="signatureType" >
+					            <label class="margin-left-2 margin-right-2 control-label">用章人证书</label>
+					            <div class="col-md-4" style="display:inline-block;width:35%;float: left;">
+						            <div class="tags" style="white-space: nowrap; overflow: hidden; overflow-x: hidden;">
+						           	 	<ul class="tag-list" id="userCertName"></ul>
+						           	 </div>
+						               <!-- <div style="overflow-y: hidden; border:1px solid #ccc;  display: inline-block;width:80%;height:auto" >  
+											<ul id="userCertName" class="sp-list" style="list-style-type:none"></ul>
+										</div> -->
+						            </div>
+					             <div class="" style="display:inline-block;margin-left:10px;float: left;">
+					                <input type="button" class="btn btn-info" onclick="openSelectCertModal()" value="选择">
+					            </div>
+					            <div style="clear:left"></div>
+					        </div>
+					        <div class="signatureType" >
+					            <label class=" margin-left-2  margin-right-2 control-label">有效期开始</label>
+					            <div class="col-md-6">
+					                <input id="beginTime" name="beginTime" type="text" data-toggle="dropdown" readonly="readonly"
+					                       class="form-control" 
+					                       placeholder="有效期开始时间" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'endTime\') }'}) ">
+					            </div>
+					        </div>
+					        <div class="signatureType">
+					            <label class=" margin-left-2 margin-right-2 control-label">有效期结束</label>
+					            <div class="col-md-6">
+					                <input id="endTime" name="endTime" type="text" data-toggle="dropdown" readonly="readonly"
+					                       class="form-control"
+					                       placeholder="有效期结束时间" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'beginTime\') }'}) ">
+					            </div>
+					        </div>
+					    </form>
+					</div>
+					<div class="modal-footer text-align-center">
+					  <button type="button"
+					          class="btn col-padding-3 margin-right-2 btn-primary btn-lg" onclick="makeSeal()">制章</button>
+					  <button type="button" class="btn btn-default col-padding-3  btn-lg" onclick="closeMakeSeal()">取消</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modals -->
+	</div>
+</body>
+<script type="text/javascript">
+	var urlPath=getUrlPath();
+	var _signatureType;
+	var _userCert=[];
+	var typeMap=['','公章','公章(法人章)','公章(合同章)','公章(党章)','公章(财务章)','公章(工会章)','个人章','个人章(手写签名)','个人章(文字签名)'];
+	function loadGrid_mold() {
+		$("#mold").jqGrid(
+			{
+				url : urlPath+'/seal_images_approval?status=1&isMade=0',
+				datatype : "json",//页面加载的时候不显示数据
+				colNames : [ 'id','印模名称','印模类型','类型隐藏','所属部门','申请人','印模宽度','印模高度','印模DPI','操作'],
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+							 {name : 'name',index : 'name',width : 200,align : "center"},
+							 {name : 'type_info',index : 'type_info',width : 200,align : "center",formatter:typeFormatter},
+							 {name : 'type',index : 'type',hidden:true},
+				             {name : 'departmentId',index : 'departmentId',align : "center",width : 150},
+				             {name : 'createdBy',index : 'createdBy',width : 150,align : "center"},
+				             {name : 'imageWidth',index : 'imageWidth',width : 150,align : "center",formatter:sizeFormatter},
+				             {name : 'imageHeight',index : 'imageHeight',width : 150,align : "center",formatter:sizeFormatter},
+				             {name : 'sealSize',index : 'sealSize',width : 100,hidden:true},
+				             {name : 'operate',index : 'operate',width : 180,align:"center" ,formatter:opFormatter}
+
+				          ],
+				pager : '#mold_page'
+			//	rowList : [ 1, 15,30 ],
+			});
+	}
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid_mold();
+		$(window).resize(function() {
+	        $("#mold").jqGrid("autoSize");
+		}).trigger('resize');	
+		getUserinfo();
+		
+	});
+	function applyMold(){
+		var index =parent.layer.open({
+			title:'印章制作',
+			type: 2,
+			content:'../mold/apply_edit.html?optFlag=addseal',
+			area: ['600px', '85%'],
+			btn: ['申请','取消'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+				var res = window.parent["layui-layer-iframe" + index].getData();
+				var requestMap="POST/api/new_seal";
+				if(res!=null){
+					//console.log("111");
+					//top.alert(res);
+					var resArr=new Array();
+					resArr.push(res);
+					var resArrJson=JSON.stringify(resArr);
+					$.ajax({
+						type : "POST",
+						url : urlPath+"/new_seal?requestMap="+requestMap,
+						data : resArrJson,
+						contentType:"application/json",
+						dataType : "json",
+						success : function(data) {
+							if(data){
+								layer.msg('操作成功！');
+								//关闭页面
+								parent.layer.close(index);
+								doFresh();
+							}
+						},
+		   				error : function(xmlhttp,textStatus,errorThrown){
+		   					var o = JSON.parse(xmlhttp.responseText);
+		   					top.layer.msg(o.message, {icon: 5});
+		   				}
+					});
+					//top.alert(res);
+				}
+            },
+            btn2:function(index,layero){
+            	//关闭页面
+				layer.close(index);
+            }
+		});
+	}
+	function makeSeal(){
+		var postData=getPostData();
+		////console.log(postData);
+		if(postData!=null){
+			$.ajax({
+				type : "POST",
+				url : urlPath+"/seal",
+				data : postData,
+				contentType:"application/json",
+				dataType : "json",
+				success : function(data) {
+					if(data){
+						layer.msg('操作成功！');
+						//关闭页面
+						$("#myModal").modal('hide');
+						doFresh();
+					}
+				},
+   				error : function(xmlhttp,textStatus,errorThrown){
+   					var o = JSON.parse(xmlhttp.responseText);
+   					layer.msg(o.message, {icon: 5});
+   				}
+			});
+		}
+	}
+	function getPostData(){
+		var formData = getFormData("addSealForm");
+		var idArr=new Array();
+		var data={};
+		data['beginTime']=0;
+		data['endTime']=0;
+		data['sealImageHeight']=0;
+		data['sealImageWidth']=0;
+		data['section']=null;
+		data['departmentId']=null;
+		data['userCerts']=[];
+
+		if(formData.sealName!=""){
+			data['name']=formData.sealName;
+		 }else{
+			 msg("请填写印章名称");
+			 return;
+		 }
+		data['sealHeight']=formData.sealHeight;
+		data['sealWidth']=formData.sealWidth;
+		data['sealSize']=formData.sealSize*1;
+		data['type']=formData.sealType*1;
+		data['sealImageId']=formData.sealImageId;
+		if(_signatureType==2){
+
+			if(formData.makeCert!=""){
+				data['makeCert']=formData.makeCert;
+			 }else{
+				 msg("请选择制章人证书！");
+				 return;
+			}
+			 if(_userCert.length>0){
+				data['userCerts']=_userCert;
+			 }else{
+				 msg("请选择用章人证书！");
+				 return;
+			}
+			if(formData.beginTime!=""){
+				data['beginTime']=new Date(Date.parse(formData.beginTime.replace(/-/g,"/"))).getTime()/1000;
+			 }else{
+				 msg("请选择有效开始时间！");
+				 return;
+			}
+			if(formData.endTime!=""){
+				data['endTime']=new Date(Date.parse(formData.endTime.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+			 }else{
+				 msg("请选择有效开始时间！");
+				 return;
+			 }
+		}
+		idArr.push(data);
+		return JSON.stringify(idArr);
+	}
+	function search(){
+		var postData = $('#mold').jqGrid("getGridParam", "postData");
+        $.each(postData, function (k, v) {
+            delete postData[k];
+        });
+		var formData = getFormData("search_form");
+		   var starttime=new Date(Date.parse(formData.starttime.replace(/-/g,"/"))).getTime()/1000;
+		   var endtime=new Date(Date.parse(formData.endtime.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+		   var data={};
+		   if(formData.name!=""){
+			   data['name']=formData.name;
+		   }
+		   if(formData.departmentId!=""){
+			   data['departmentId']=formData.departmentId;
+		   }
+		   if(formData.type!=""){
+			   data['type']=formData.type;
+		   }
+		   if(formData.starttime!=""){
+			   data['startTime']=starttime;
+		   }
+		   if(formData.endtime!=""){
+			   data['endTime']=endtime;
+		   }
+		   if(formData.lowerLevel!=""){
+			   data['lowerLevel']=formData.lowerLevel;
+		   }
+			$("#mold").jqGrid('setGridParam', {
+				    page : 1,
+				    postData :data
+			}).trigger("reloadGrid");
+
+		}
+	//操作格式化
+	function opFormatter(cellvalue, options, rowobj) {
+		var detailOpt="<a href=\"javascript:showDetail('"+rowobj.id+"');\" style='color:blue'>印模详情</a>";
+		var segmentation= "<span style='margin-left: 7px;'>|<span style='margin-left: 7px;'>";
+		var makeOpt= "<a href=\"javascript:openSealModal('"+rowobj.id+"');\" style='color:blue'>制章</a>";
+		return detailOpt+segmentation+makeOpt;
+	}
+	//查看用户详细信息
+	function showDetail(id){
+		var index = layer.open({
+			title:'印模详情',
+			type: 2,
+			content: '../mold/mold_details.html?sealId='+id,
+			area: ['1200px', '85%'],
+			btn: ['关闭'] //底部按钮区域
+		});
+	}
+
+	function openSealModal(id){
+		var sealObj = $("#mold").jqGrid('getRowData',id);
+		addSealFormInit(sealObj);
+		$("#myModal").modal('show');
+	}
+	function addSealFormInit(sealObj){
+		var imageWidthStr=sealObj.imageWidth;
+		var imageHeightStr=sealObj.imageHeight;
+		var imageWidth=imageWidthStr.substring(0,imageWidthStr.length-2)*1;
+		var imageHeight=imageHeightStr.substring(0,imageHeightStr.length-2)*1;
+		var sealDpi=sealObj.sealSize;
+		var sealWidthMM=Math.floor(imageWidth/sealDpi*25.4);
+		var sealHeightMM=Math.floor(imageHeight/sealDpi*25.4);
+		$("#sealImageId").val(sealObj.id);
+		$("#sealName").val(sealObj.name);
+		$("#sealTypeName").html(typeMap[sealObj.type]);
+		$("#sealType").val(sealObj.type);
+		$("#sealDepartmentId").html(sealObj.departmentId);
+		//$("#departmentId").text(sealObj.departmentId);
+		$("#sealWH").val('宽：'+sealWidthMM+'mm,宽：'+sealHeightMM+'mm');
+		$("#sealWidth").val(sealWidthMM);
+		$("#sealHeight").val(sealHeightMM);
+		$("#sealSize").val(sealDpi);
+		if(_signatureType==2){
+			getCert();
+		}
+	}
+	function getCert(){
+		$("#makeCert").empty();
+		$("#makeCert").append('<option value="">请选择...</option>')
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : urlPath+"/all_certs",
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				if(data!=null){
+					for(var i=0;i<data.length;i++){
+						var cert=data[i];
+						if(cert.type == 1 && cert.encryptionType == 1){
+							$("#makeCert").append('<option value="'+cert.id+'">'+cert.name+'</option>')
+						}
+					}
+				}
+			}
+		});
+	}
+	function openSelectCertModal(){
+		var index = layer.open({
+			title:'<h4 align="center">选择用章人证书</h4>',
+			type: 2,
+			content: '../seal/select-cert-modal.html',
+			area: ['800px', '500px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	//获取单位数据 
+            	
+            	var  resCert = window["layui-layer-iframe" + index].getData();
+            	 if(resCert!=null){
+            		 var certName="";
+            		 for(var i in resCert){
+            			certName+="<li id='"+resCert[i].id+"'  class=\"tag-item\"><span>"+resCert[i].name+"<a class=\"fa fa-times \" onclick=\"removeUserCert('"+resCert[i].id+"')\" ></a></span></li>";
+            			 _userCert[i]=resCert[i].id;
+            		 }
+            		 $("#userCertName").append(certName);
+            		 window.layer.close(index);	 
+            	 }
+            }
+		});
+	}
+	function removeUserCert(id){
+		//console.log('removeinterface');
+		if(_userCert!=null){
+			for(var i=0;i<_userCert.length;i++){
+				if(id==_userCert[i]){
+					//从数据中移除项
+					_userCert.splice(i,1);
+					//展示li标签删除
+					$("#userCertName li[id="+id+"]").remove();
+				}
+			}
+		}
+	}
+	function closeMakeSeal(){
+		$("#myModal").modal('hide'); 
+	}
+	$("#section").click(function(){
+		var index = window.parent.layer.open({
+			title:'选择部门',
+			type: 2,
+			content: '../../partials/select-section-modal.html',
+			area: ['1000px', '500px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	//获取单位数据 
+            	var res = window.parent["layui-layer-iframe" + index].getData();
+            	 if(res==null){
+            		 window.parent.layer.alert("请选择部门",{icon:6});
+            	 }else{
+            		 $("#departmentName").val(res.name);
+            		 $("#departmentId").val(res.id);
+            		 if(res.lowerLevel != null && res.lowerLevel != undefined){
+            			 $("#lowerLevel").val(res.lowerLevel);
+            		 } 
+            		 window.parent.layer.close(index);	 
+            	 }
+            }
+		});
+	});
+	$("#sealName").change(function(){
+		port="/seal";
+		var name=$("#sealName").val();
+		if(name==""){
+			$("#nameMsg").html('<b style="color:red">输入不能为空</b>');
+		}else{
+			$.ajax({
+				type : "GET",
+				url : urlPath+port,
+				data:{
+					field:'name',
+					value:name
+				},
+				dataType : "JSON",
+				success : function(retdata) {
+					if(retdata){
+						$("#nameMsg").html("");
+						$("#nameMsg").append('<span class="fa fa-check text-success-dark" aria-hidden="true"></span>');
+					}
+				},
+				error:function (e) {
+	                var res = $.parseJSON(e.responseText);
+	                //console.log(res);
+	                $("#nameMsg").html('<b style="color:red">'+res.message+'</b>');
+			    }
+			});	
+		}
+	});
+	//刷新页面	
+	function doFresh(){
+		 $("#mold").jqGrid('setGridParam',{									 
+				postData:{}
+		}).trigger("reloadGrid"); 
+	}
+	//类型格式化
+	function typeFormatter(cellvalue, options, rowObject) {
+		return typeMap[rowObject.type];
+	}
+	 function getUserinfo(){
+			$.ajax({
+				type : "GET",
+				data :{},
+				url : urlPath+"/userInfo",
+				dataType : "json",
+				async:false,
+				success : function(data) {
+					if(data!=null){
+						_signatureType=data.signatureType;
+						if(_signatureType==2){
+							$(".signatureType").show();
+						}
+					}
+				}
+			});
+	 }
+	//状态格式化
+	function sizeFormatter(cellvalue, options, rowObject) {
+		return cellvalue+'px';
+	}
+	//时间格式化
+	function timeFormatter(cellvalue, options, rowObject) {
+		var unixTimestamp = new Date(cellvalue*1000) ;
+		return unixTimestamp.toLocaleString();	
+	}
+	
+   Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+
+       return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+   };
+</script>
+</html>

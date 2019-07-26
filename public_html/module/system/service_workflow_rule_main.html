@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+    <title>业务类型设置规则</title>
+
+    <link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+    <link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+    <!-- jqgrid样式 -->
+    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+
+
+    <!--javascript引用部分 -->
+    <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+    <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+    <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+    <!-- jqgridjs -->
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+    <script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+    <!-- my97 DatePicker  -->
+    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+    <style type="text/css">
+        .row {
+            margin-left: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d9d9d9;
+            cursor: pointer;
+        }
+
+    </style>
+
+
+
+</head>
+<body >
+<div class="pagecontent" id="divcontent2">
+    <div class="middleLayer" style="margin:0px 0px 0px 0px;">
+        <!-- 工具条 -->
+        <div class="toolbars">
+            <button type="button" onclick="deleteServRule()" class="btn btn-primary" style=" float:left;">删除设置</button>
+        </div>
+
+        <div id="toolbars" class="toolbars">
+            <form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+
+                <span class="add-on">规则名称</span>
+                <input type="text" name="name" id="name" style="width: 80px" placeholder="模板名称" >
+
+                <div class="input-prepend">
+                    <span class="add-on" style="font-size:12px"> 规则状态</span>
+                    <select class="span2" id="status" name="status" style="width:85px;font-size:12px">
+                        <option value="">请选择...</option>
+                        <option value="1">正常</option>
+                        <option value="0">注销</option>
+                    </select>
+                </div>
+
+                <span class="add-on" style="margin-left:5px;">时间</span>
+                <input type="text"  id="startTime" name="startTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+                至
+                <input type="text" name="endTime" id="endTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startTime\')}'}) " >
+
+            </form>
+            <button type="button" onclick="search()" class="btn btn-success" style=" float:right;"> 查询</button>
+
+        </div>
+
+        <!-- 页面主内容 -->
+        <div class="gridcontent">
+            <table id="t_rule"></table>
+            <div id="t_rule_page"></div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+
+
+<script type="text/javascript">
+    var urlPath=getUrlPath();
+    var servNo=serviceNo = GetQueryString("servNo");
+    function loadGrid_users() {
+        $("#t_rule").jqGrid(
+                {
+                    url : urlPath+'/sealRules?noCache='+new Date().getTime()+'&servNo='+servNo,
+                    datatype : "json",//页面加载的时候不显示数据
+                    multiselect:true,
+                    colNames : [ 'id','规则号','规则名称','印章名称','盖章类型','状态','操作','证书id'],
+                    colModel : [
+                        {name : 'id',index : 'id',width : 100,hidden:true},
+                        {name : 'number',index : 'number',width : 200,align : "center"},
+                        {name : 'name',index : 'name',width : 200,align : "center"},
+                        {name : 'sealName',index : 'sealName',width : 200,align : "center"},
+                        {name : 'type',index : 'type',width : 200,align:"center",formatter : typeFormatter},
+                        {name : 'status',index : 'status',width : 80,align:"center",formatter :statusFormatter},
+                        {name : 'operation',index : 'operation',width : 220,align:"center",formatter :operationFormatter},
+                        {name : 'certId',index : 'certId',width : 100,hidden:true},
+                    ],
+                    rowNum : 10,
+                    rowList : [ 10, 15,30 ],
+                    pager : '#t_rule_page'
+                });
+    }
+
+    //加载jqGrid
+    $(document).ready(function() {
+        loadGrid_users();
+        $(window).resize(function() {
+            $("#t_rule").jqGrid("autoSize");
+        }).trigger('resize');
+
+    });
+
+    function GetQueryString(name){
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  decodeURI(r[2]); return null;
+    }
+
+    function typeFormatter(cellvalue, options, rowObject) {
+        if (cellvalue == 1) {
+            return "类型一（绝对坐标）";
+        }
+        if (cellvalue == 2) {
+            return "类型二（书签）";
+        }
+        if (cellvalue == 3) {
+            return "类型三（骑缝章）";
+        }
+        if (cellvalue == 4) {
+            return "类型四（文字-覆盖）";
+        }
+        if (cellvalue == 5) {
+            return "类型五（文字-后面）";
+        }
+        if (cellvalue == 6) {
+            return "类型六（多页绝对坐标）";
+        }
+        if (cellvalue == 7) {
+            return "类型七（多页骑缝章）";
+        }
+    }
+
+    function statusFormatter(cellvalue, options, rowObject) {
+        if (cellvalue == 1) {
+            return "正常";
+        }else{
+            return "注销";
+        }
+    }
+
+    function operationFormatter(cellvalue, options, rowobj) {
+        var operation ="<a href=\"javascript:showDetail(\'"+rowobj.id+"\',\'"+rowobj.certId+"\');\" style='color:blue'>详情</a><span style='margin-left: 7px;'>|<span style='margin-left: 7px;'> <a style='color:blue' href=\"javascript:doUpdate('" + rowobj.id + "');\">修改</a>";
+        return operation;
+    }
+
+    //时间格式化
+    function timeFormatter(cellvalue, options, rowObject) {
+        var unixTimestamp = new Date(cellvalue*1000) ;
+        return unixTimestamp.toLocaleString();
+    }
+    function search(){
+        var postData = $('#t_rule').jqGrid("getGridParam", "postData");
+        $.each(postData, function (k, v) {
+            delete postData[k];
+        });
+
+        var formData = getFormData("search_form");
+
+        var startTime=new Date(formData.startTime).getTime()/1000;
+        var endTime=new Date(formData.endTime).getTime()/1000 + nextDayTime;
+        var data={};
+
+        if(formData.status!=""){
+            data['status']=formData.status;
+        }
+        if(formData.name!=""){
+            data['name']=formData.name;
+        }
+        if(formData.startTime!=""){
+            data['startTime']=startTime;
+        }
+        if(formData.endTime!=""){
+            data['endTime']=endTime;
+        }
+        if(formData.lowerLevel!=""){
+            data['lowerLevel']=formData.lowerLevel;
+        }
+        $("#t_rule").jqGrid('setGridParam', {
+            page : 1,
+            postData :data
+        }).trigger("reloadGrid");
+
+    }
+
+    function doFresh(){
+        $("#t_rule").jqGrid('setGridParam',{
+
+        }).trigger("reloadGrid");
+    }
+
+    function showDetail(id,certId){
+        var index = parent.layer.open({
+            title:'规则详情',
+            type: 2,
+            content: '../../module/template/rule-details.html?id='+id+'&certId='+certId+'&noCache='+new Date().getTime()+'&servFlag=servFlag',
+            area: ['80%', '95%'],
+            btn: ['关闭'], //底部按钮区域
+            maxmin: true,
+            yes: function(index,layero){  //第一个按钮的事件
+                window.parent.layer.close(index);
+            }
+        });
+    }
+
+
+    //删除盖章规则
+    function deleteServRule() {
+        var selectrows = $("#t_rule").jqGrid('getGridParam','selarrrow');
+        if(selectrows[0] == null){
+            top.layer.alert("请选择要删除的数据");
+            return;
+        }
+        var ids = [];
+        for(var i=0;i<selectrows.length;i++){
+            var row = $("#t_rule").jqGrid('getRowData', selectrows[i]); //获取此行数据
+            ids[i] = row.id;
+        }
+        top.layer.confirm('操作不可恢复，确定要删除吗？', {
+            btn: ['确定','取消']
+        }, function(){
+            $.ajax({
+                type : "POST",
+                url : urlPath+'/deleteServSeal?noCache='+new Date().getTime(),
+                data : JSON.stringify(ids),
+                dataType : "json",
+                contentType:"application/json",
+                success : function(retdata) {
+                    top.layer.msg('删除成功！', {icon: 1});
+                    doFresh();
+                },
+                error : function(xmlhttp,textStatus,errorThrown){
+                    top.layer.msg('出现未知异常,删除失败！', {icon: 5});
+                }
+            });
+        });
+    }
+
+    //修改规则
+    function doUpdate(id){
+        var index = layer.open({
+            title:'规则信息',
+            type: 2,
+            content: '../../module/template/rule_add.html?id='+id+'&noCache='+new Date().getTime(),
+            area: ['500px', '500px'],
+            btn: ['保存','关闭'], //底部按钮区域
+            maxmin: true,
+            yes: function(index,layero){  //第一个按钮的事件
+                //调用子页面的方法
+                var res = window["layui-layer-iframe" + index].getData();
+                if(res!=null){  //页面验证成功
+                    var resArr=new Array();
+                    resArr.push(res);
+                    var resArrJson=JSON.stringify(resArr);
+                    $.ajax({
+                        type : "PUT",
+                        url : urlPath+'/sealRule?noCache='+new Date().getTime(),
+                        data : resArrJson,
+                        contentType:"application/json",
+                        dataType : "json",
+                        success : function(retdata) {
+                            if(retdata){
+                                msg('操作成功！');
+                                //关闭页面
+                                layer.close(index);
+                                //刷新
+                                doFresh();
+                            }
+                        },
+                        error:function (data) {
+                            layer.msg(data.message);
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>
+
+</html>

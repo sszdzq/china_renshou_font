@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=8"/>
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+	<META HTTP-EQUIV="Expires" CONTENT="0">
+	<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css"/>
+	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css"/>
+	<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	<script src="../../shared/js/json2.js" type="text/javascript"></script>
+	<script src="../../shared/crypto-js/crypto-js.js" type="text/javascript"></script>
+	<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	<style type="text/css">
+
+	</style>
+</head>
+<body>
+<div class="pagecontent" id="divcontent2">
+
+	<div style="margin-top:50px">
+
+		<form name="addCertForm" role="form" class="form-horizontal margin-top-2" novalidate>
+			<div class="has-feedback form-group text-center">
+				<b>导入方式</b>
+				<select style="width: 120px" id="importType" onchange="changeType()">
+					<option label="本地导入" value="0">本地导入</option>
+					<option label="服务器导入" value="1">服务器导入</option>
+				</select>
+				<input type="button" class="btn btn-default  btn-warning" id="department" onclick="selectd('department')" value="部门数据">
+				<input type="button" class="btn btn-default" id="userData" onclick="selectd('userData')" value="用户数据">
+				<input type="button" class="btn btn-default" id="sealData" onclick="selectd('sealData')" value="印章数据">
+				<input type="button" class="btn btn-default" id="uandr" onclick="selectd('uandr')" value="用户和角色">
+				<input type="button" class="btn btn-default" id="uands" onclick="selectd('uands')" value="用户和印章">
+				<input type="button" class="btn btn-default" id="document" onclick="selectd('document')" value="文档数据">
+				<input type="button" class="btn btn-default" id="print" onclick="selectd('print')" value="打印规则">
+				<input type="button" class="btn btn-danger" id="fileInit2" onclick="fileInit()" value="文档初始化">
+
+			</div>
+			<div class="form-group  text-center" id="type_0" style="margin-top: 20px">
+				<b>数据导入</b>
+				<input type="file" style="display:none" name="fileField" id="fileField" onchange="fileOpert('fileField')">
+				<button type="button" class="btn btn-info" onclick="fileField.click()">选择文件</button>
+				<span class="margin-left text-danger"  id="fileName"></span>
+				<button type="button" class="btn btn-success" onclick="dataImport('department','vm.file.department')">
+					导入
+				</button>
+			</div>
+<!-- 			<div class="form-group  text-center" id="type_0" style="margin-top: 20px">
+				<button type="button" class="btn btn-success" onclick="updateDepartId()">
+					部门旧ID更新
+				</button>
+			</div> -->
+			<div class="form-group text-center" id="type_1" style="margin-top: 20px; display: none">
+				<b>服务器导入</b>
+				<button type="button" class="btn btn-success" onclick="dataImport('department','vm.file.department')">
+					导入
+				</button>
+			</div>
+
+			<div class="has-feedback form-group;" style="float: left;text-align: center">
+				<img style="width: 90%;margin-left: 5%;margin-top: 50px" id="image" src="./images/department.jpg">
+			</div>
+		</form>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+    var aipUrl=getUrlPath();
+    var resultStr="";
+    var xlsType="department";
+    jQuery.support.cors = true;
+    
+/*     //更新相关表部门ID
+	function updateDepartId(){
+        $.ajax({
+            type : "post",
+            url : aipUrl+"/updateDepartId",
+            data : {},
+            contentType:"application/json",
+            dataType : "json",
+            success : function(retdata) {
+				layer.msg('操作成功！');
+            },
+            error: function(xmlhttp,textStatus,errorThrown){
+                var o = JSON.parse(xmlhttp.responseText);
+                layer.msg(o.message, {icon: 5});
+            }
+        });
+	} */
+	
+	function dataImport(){
+        var addData={
+            xlsBase64:resultStr,
+            xlsType:xlsType,
+            type2:'true'
+        };
+        var dataArr=new Array();
+        dataArr.push(addData);
+        var res=JSON.stringify(dataArr);
+        $.ajax({
+            type : "post",
+            url : aipUrl+"/departmentDataImport",
+            data : res,
+            contentType:"application/json",
+            dataType : "json",
+            success : function(retdata) {
+				layer.msg('操作成功！');
+            },
+            error: function(xmlhttp,textStatus,errorThrown){
+                var o = JSON.parse(xmlhttp.responseText);
+                layer.msg(o.message, {icon: 5});
+            }
+        });
+	}
+	function fileInit(){
+        $.ajax({
+            type : "post",
+            url : aipUrl+"/fileInit",
+            data : {},
+            contentType:"application/json",
+            dataType : "json",
+            success : function(retdata) {
+                layer.msg('操作成功！');
+            },
+            error: function(xmlhttp,textStatus,errorThrown){
+                var o = JSON.parse(xmlhttp.responseText);
+                layer.msg(o.message, {icon: 5});
+            }
+        });
+	}
+	
+	function selectd(flag){
+        xlsType=flag;
+        $("#department").removeClass("btn-warning");
+        $("#userData").removeClass("btn-warning");
+        $("#sealData").removeClass("btn-warning");
+        $("#uandr").removeClass("btn-warning");
+        $("#uands").removeClass("btn-warning");
+        $("#document").removeClass("btn-warning");
+        $("#print").removeClass("btn-warning");
+        $('#'+flag).addClass("btn-warning");
+        $("#image").attr("src","./images/"+flag+".jpg");
+
+    }
+	function changeType(){
+	    var type=$("#importType").val();
+	    if(type == 0){
+	        $("#type_0").show();
+            $("#type_1").hide();
+		}else{
+            $("#type_0").hide();
+            $("#type_1").show();
+		}
+	}
+	function fileOpert(id){
+        var filePath=$("#"+id).val();
+        $("#fileName").html(filePath.slice(filePath.lastIndexOf('\\')+1));
+
+        if(IEVersion()==-1){
+            fileToBase64(id);
+        }else{
+            if(IEVersion()>9){
+                fileToBase64(id);
+            }else{
+                fileToBase64_ie(id);
+            }
+        }
+	}
+    /**
+     *文件转base64(ie9以上)
+     */
+    function fileToBase64(id){
+        var fileObj = $("#"+id+"")[0].files[0];
+        var reader = new FileReader();
+        reader.readAsDataURL(fileObj);
+        reader.onload = function(theFile) {
+            resultStr+=theFile.target.result;
+            resultStr=resultStr.slice(resultStr.lastIndexOf(',')+1);
+        };
+    }
+    /**
+     *ie9下文件转base64
+     */
+    function fileToBase64_ie(id){//路径和文档类型
+        var filePath = $("#"+id).val();
+        var realPath, xmlHttp, xml_dom, tmpNode, imgData;
+                realPath =filePath;//获取文件的真实本地路径.
+        var reader = new ActiveXObject("ADODB.Stream");
+        reader.charset = "UTF-8";
+        reader.Type=1;
+        reader.Open();
+        reader.LoadFromFile(realPath);
+        var fileText="";
+        while(!reader.EOS){//是否结束
+            fileText=reader.Read();
+        }
+        reader.Close();
+        xml_dom = new ActiveXObject("MSXML2.DOMDocument");
+        tmpNode = xml_dom.createElement("tmpNode");
+        tmpNode.dataType = "bin.base64";
+        tmpNode.nodeTypedValue = fileText;
+        resultStr=tmpNode.text.replace(/\n/g,"");
+    }
+    /**
+     *判断游览器版本
+     */
+    function IEVersion() {
+        var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+        var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
+        var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
+        var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1;
+        if(isIE) {
+            var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+            reIE.test(userAgent);
+            var fIEVersion = parseFloat(RegExp["$1"]);
+            if(fIEVersion == 7) {
+                return 7;
+            } else if(fIEVersion == 8) {
+                return 8;
+            } else if(fIEVersion == 9) {
+                return 9;
+            } else if(fIEVersion == 10) {
+                return 10;
+            } else {
+                return 6;//IE版本<=7
+            }
+        } else if(isEdge) {
+            return -1;//edge
+        } else if(isIE11) {
+            return 11; //IE11
+        }else{
+            return -1;//不是ie浏览器
+        }
+    }
+</script>
+</html>

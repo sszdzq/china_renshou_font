@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户管理</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+       <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+       <script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	    
+	    <style type="text/css">
+    .row {
+    margin-left: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    cursor: pointer;
+}
+
+	</style>
+
+
+		
+</head>
+<body >
+	<div class="pagecontent" id="divcontent2">
+		<div class="row">
+		    <div class="col-sm-12">
+		        <div class="page-title page-title-border clearfix">
+		            <button class="btn btn-primary pull-right margin-left" onclick="showAddModal()">添加模板</button>
+		        </div>
+		    </div>
+		</div>
+
+
+		<div class="middleLayer" style="margin:50px 0px 0px 0px;">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on">名称</span>
+					<input type="text" name="name" id="name" style="width: 80px" placeholder="模板名称" > 
+					
+					<div class="input-prepend">
+					  	<span class="add-on" style="font-size:12px"> 状态</span>
+					  	<select class="span2" id="status" name="status" style="width:85px;font-size:12px">
+				            <option value="">请选择...</option>
+				            <option value="1">正常</option>
+				            <option value="0">注销</option>
+						</select>
+					</div>
+					
+					<span class="add-on" style="margin-left:5px;">时间</span>
+					<input type="text"  id="startTime" name="startTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+					至
+					<input type="text" name="endTime" id="endTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startTime\')}'}) " >
+
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style=" float:right;"> 查询</button>
+				
+			</div>
+			
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="t_template"></table>
+				<div id="t_template_page"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+
+
+
+<script type="text/javascript">
+    var urlPath=getUrlPath();
+
+	function loadGrid_users() {
+		$("#t_template").jqGrid(
+			{
+				url : urlPath+'/templateAIPs',
+				datatype : "json",//页面加载的时候不显示数据
+				colNames : [ 'id','模板名称','是否套打','模板类型','操作类型','创建时间','状态','操作'],
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+				             {name : 'name',index : 'name',width : 150,align : "center"},
+				             {name : 'printType',index : 'printType',width : 100,formatter : printTypeFormatter,align : "center"},
+				             {name : 'type',index : 'type',width : 100,align:"center",formatter : typeFormatter},
+				             {name : 'operationType',index : 'operationType',width : 100,align:"center",formatter : operationTypeFormatter},
+				             {name : 'createdAt',index : 'createdAt',width : 150,align:"center",formatter :timeFormatter},
+				             {name : 'status',index : 'status',width : 100,align:"center",formatter :statusFormatter},
+				             {name : 'operation',index : 'operation',width : 250,align:"center",formatter :operationFormatter},
+				          ],
+				rowNum : 10,
+				rowList : [ 10, 15,30 ],
+				pager : '#t_template_page'
+			});
+	}
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid_users();
+		$(window).resize(function() {
+	        $("#t_template").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+	function printTypeFormatter(cellvalue, options, rowObject) {
+		if (cellvalue == 1) {
+			return "是";
+		}else{
+			return "否";
+		}
+	}
+	function typeFormatter(cellvalue, options, rowObject) {
+		if (cellvalue == 1) {
+			return "主模板";
+		}
+		if (cellvalue == 2) {
+			return "副模板";
+		}
+	}
+	function operationTypeFormatter(cellvalue, options, rowObject) {
+		if (cellvalue == 1) {
+			return "打印和编辑";
+		}
+		if (cellvalue == 2) {
+			return "打印";
+		}
+		if (cellvalue == 3) {
+			return "编辑";
+		}
+	}
+	
+	function statusFormatter(cellvalue, options, rowObject) {
+		if (cellvalue == 1) {
+			return "正常";
+		}else{
+			return "注销";
+		}
+	}
+	
+	function operationFormatter(cellvalue, options, rowobj) {
+		return "<a href=\"javascript:edit('"+rowobj.name+"','"+rowobj.id+"');\" style='color:blue'>编辑</a> <span style='margin-left: 7px;'>|<span style='margin-left: 7px;'> <a style='color:blue' href=\"javascript:check('"
+		+ rowobj.id + "');\">查看</a> <span style='margin-left: 7px;'>|<span style='margin-left: 7px;'> <a style='color:blue' href=\"javascript:openTemplateRelevanceModal('"
+		+ rowobj.id + "');\">关联模板</a> <span style='margin-left: 7px;'>|<span style='margin-left: 7px;'> <a style='color:blue' href=\"javascript:remove('"
+		+ rowobj.id + "');\">删除</a>";
+	}
+	
+	//时间格式化
+	function timeFormatter(cellvalue, options, rowObject) {
+		var unixTimestamp = new Date(cellvalue*1000) ;
+		return unixTimestamp.toLocaleString();	
+	}
+	function search(){
+		var postData = $('#t_template').jqGrid("getGridParam", "postData");
+        $.each(postData, function (k, v) {
+            delete postData[k];
+        });
+		var formData = getFormData("search_form");
+		
+		   var startTime=new Date(formData.startTime).getTime()/1000;
+		   var endTime=new Date(formData.endTime).getTime()/1000 + nextDayTime;
+		   var data={};
+
+		   if(formData.status!=""){
+			   data['status']=formData.status;
+		   }
+		   if(formData.name!=""){
+			   data['name']=formData.name;
+		   }
+		   if(formData.startTime!=""){
+			   data['startTime']=startTime;
+		   }
+		   if(formData.endTime!=""){
+			   data['endTime']=endTime;
+		   }
+
+		   if(formData.lowerLevel!=""){
+			   data['lowerLevel']=formData.lowerLevel;
+		   }
+			$("#t_template").jqGrid('setGridParam', {
+				    page : 1,
+				    postData :data
+				}).trigger("reloadGrid");	
+
+		}
+	
+	
+	//删除模板
+	function remove(id){
+		var idArr=new Array();
+		idArr.push(id);
+		var res=JSON.stringify(idArr);
+		//删除提示
+		layer.alert('确实要删除此模板吗? 操作不可恢复', {
+			  btn: ['确定', '关闭'],
+			  yes: function(index){
+				  $.ajax({
+						type : "delete",
+						url : urlPath+"/templateAIP",
+						data : res,
+						contentType:"application/json",
+						dataType : "json",
+						success : function(retdata) {
+							if(retdata){
+								layer.msg('删除成功！');
+								//刷新  重新加载数据
+		   					    doFresh();
+							}
+						},
+						error:function (data) {
+							layer.msg(data.message);
+						}
+					});
+			  }
+		});
+	}
+
+	
+	//添加模板
+	function showAddModal(){
+		$("#selectedRole").val("");
+		var index = layer.open({
+			title:'添加模板',
+			type: 2,
+			content: '../../module/template/template_add_modal.html?noCache='+new Date().getTime(),
+			area: ['568px'],
+			btn: ['保存','关闭'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+				
+            	//调用子页面的方法
+            	var res = window["layui-layer-iframe" + index].getData();
+
+            	if(res!=null){  //模板名称不为空
+           			$.ajax({
+           				type : "GET",
+           				url : urlPath+'/templateVerifyName',
+           				data:{
+        					name:res.name
+        				},
+						dataType : "json",
+						contentType:"application/json;charset=UTF-8",
+           				success : function(retdata) {
+							//console.dir(retdata);
+							if (retdata.message == 'true') {
+								layer.close(index);
+								openTemplateAddHtml(res.name);								
+								//parent.$("#ifr_71").attr("src","../../module/template/template_add.html");  
+						    } else{
+						        layer.msg('模板名称已存在');
+						    }
+           				},
+						error:function (data) {
+							layer.msg(data.message);
+						}
+           			});
+            	}else{
+            		layer.msg("模板名称不能为空");
+            	} 
+            }
+		});
+	}
+	
+	function edit(name,id){
+		openTemplateAddHtml(name,id)
+	}
+	function openTemplateAddHtml(templateName,id){
+		//console.log(id);
+		var index = layer.open({
+			title:false,
+			type: 2,
+			content: '../../module/template/template_add.html?id='+id+'&noCache='+new Date().getTime(),
+			area: ['95%','95%'],
+			shift: -1,
+			btn: ['保存模板','重选','关闭'], //底部按钮区域
+			isOutAnim: false ,
+			maxmin: false,
+			success: function(layero, index){
+				  var body = layer.getChildFrame('body', index);
+				   body.find('#templateName').val(templateName);
+			},
+			yes: function(index,layero){  //第一个按钮的事件
+				var res = window["layui-layer-iframe" + index].operationTemplate();
+				if(res!=null){
+					var type="POST";
+					var msg="添加模板操作成功";
+					if(id!=null&&id!=undefined){
+						type="PUT";
+						 msg="修改模板操作成功";
+					}
+					 $.ajax({
+							type : type,
+							url : urlPath+"/templateAIP",
+							data : res,
+							contentType:"application/json;charset=UTF-8",
+							dataType : "json",
+							async:false,
+							success : function(retdata) {
+								////console.log(retdata);
+								if(retdata){
+									layer.msg(msg);
+									doFresh();
+									layer.close(index);
+								}
+							},
+					  		error: function(xmlhttp,textStatus,errorThrown){
+				 				var o = JSON.parse(xmlhttp.responseText);
+				 				layer.msg(o.message, {icon: 5});
+				 		
+				 			}
+						});
+				}
+			},btn2: function(index, layero){
+				window["layui-layer-iframe" + index].openFile();
+				return false;
+			}
+			  
+		});
+		//layer.full(index);
+	}
+	
+	function check(id){
+		layer.open({
+			title: '查看模板',
+			type:2,
+			area: ['900px', '600px'],
+			content: '../template/template-aip-modal.html?id='+id
+		});
+	}
+		
+	function doFresh(){
+		 $("#t_template").jqGrid('setGridParam',{									 
+			}).trigger("reloadGrid"); 
+	}
+</script>
+
+</html>

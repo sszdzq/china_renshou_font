@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>流程定义</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>	    
+	    <!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	     <script src="../../shared/ocx/makeseal.js"  type="text/javascript" ></script>
+<style type="text/css">
+    a{
+        color: blue !important;
+        font-weight: normal;
+        margin-right: 5px;
+    }
+</style>
+
+
+		
+</head>
+<body>
+	<div class="pagecontent" id="divcontent2">
+		<div class="middleLayer">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<button  onclick="newGzlc()" class="btn btn-danger" id="yw0" name="yt0" type="button">
+					<i class="fa fa-plus-square"></i> 新增
+				</button>
+				<form id="search_form" class="searchform" onsubmit="return false;">
+					<div class="input-append">
+						<input type="hidden" id="djlxid" name="djlxid" class="form_input" value="">
+						<input type="hidden" id="djlxbm" name="djlxbm" class="span2" readonly= "readonly" checktype="b">
+						<input type="text" id="djlxmc" name="djlxmc" class="span2" readonly= "readonly" checktype="b">
+						<button class="btn" type="button" onclick="selectDjlx()">单据类型</button>
+					</div>
+					<div class="input-append">
+						<input type="hidden" id="syfwbm" name="syfwbm" class="span7" readonly= "readonly" checktype="b" >
+						<input type="text" id="syfwmc" name="syfwmc" class="form_input" readonly= "readonly" checktype="b" value=>
+						<button class="btn" type="button" onclick="selectDw();">使用范围</button>
+					</div>
+					<input type="text" name="gzlid"  id="gzlid" placeholder="工作流ID"/>
+					<input type="text" name="gzlmc"  id="gzlmc" placeholder="工作流名称"/>
+					<button type="button" onclick="search()" class="btn btn-primary"><i class="fa fa-th"></i> 查询</button>			
+				</form>
+			</div>
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="invoice_grid"></table>
+				<div id="lcpzmap"></div>
+			</div>
+		</div>
+		<div class="bottomLayer" height="230" controle="true" >
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<button  onclick="newJdxx()" class="btn btn-danger" id="yw0" name="yt0" type="button">
+					<i class="fa fa-plus-square"></i> 新增节点
+				</button>
+			</div>				
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="invoice_grid_jdxx"></table>
+				<div id="jdxxtmap"></div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var urlPath=getUrlPath();
+	//初始化layer
+	$("#divcontent2").mylayer("init");
+	
+	var _selid = null;
+	var gzlid_ = null;
+	
+	function loadGrid() {
+		$("#invoice_grid").jqGrid({
+			url : urlPath+'/LcpzController/lcpzQueryPage.mvc',
+			datatype : "json",//页面加载的时候不显示数据
+			colNames : [ '操作','单据类型ID','工作流ID', '单据类型名称','使用范围编码', '使用范围', '流程名称','当前状态','版本号','流程说明'],
+			colModel : [ 
+						 {name : 'cz',index : 'cz',width : 200,sortable:false,align : "center",formatter:function(cellvalue, options, rowObject){
+							 if(rowObject.dqzt == 0){
+								 return "<a style='color:blue;margin-right:5px;' href='javascript:doLcdy(\""+rowObject.gzlid+"\")'>流程定义</a><a style='color:blue;margin-right:5px;' href='javascript:updateGzlc(\""+rowObject.gzlid+"\")'>修改</a><a style='color:blue;margin-right:5px;' href='javascript:delGzlc(\""+rowObject.gzlid+"\")'>删除</a><a style='color:blue;margin-right:5px;' href='javascript:startGzlc(\""+rowObject.gzlid+"\")'>启用</a>";
+							 }
+							 if(rowObject.dqzt == 1){
+								 return "<a style='color:blue;margin-right:5px;' href='javascript:stopGzlc(\""+rowObject.gzlid+"\")'>停用</a>";
+							 }
+						 }}, 
+						 {name : 'djlxid',index : 'djlxid',width : 150,hidden:true}, 
+						 {name : 'gzlid',index : 'gzlid',width : 180,align : "center"},
+						 {name : 'djlxmc',index : 'djlxmc',width : 150,align : "center"},
+			             {name : 'syfwbm',index : 'syfwbm',width : 100,hidden : true}, 
+			             {name : 'syfwmc',index : 'syfwmc',width : 150,align : "center"},
+			             {name : 'gzlmc',index : 'gzlmc',width : 150,align : "center"},
+			             {name : 'dqzt',index : 'dqzt',width : 100,align : "center",formatter : function(cellvalue, options, rowObject) {
+			         		 if (cellvalue == 0) {
+			        			 return "无效";
+			        		 }
+			        		 if (cellvalue == 1) {
+			        			 return "有效";
+			        		 }
+			        	 }},
+			             {name : 'banben',index : 'banben',width : 90,align : "center"}, 
+			             {name : 'gzlsm',index : 'gzlsm',width : 300}
+			             ],
+			pager : '#lcpzmap',
+			multiselect : false, //多行
+			rownumbers : true, //显示行号
+			onSelectRow: function(id){ //当选择行时触发此事件。rowid：当前行id；status：选择状态，当multiselect 为true时此参数才可用
+				$("#invoice_grid").onSelectRow(id);
+				var row = $("#invoice_grid").jqGrid('getRowData', id);
+				gzlid_ = row.gzlid;
+				$("#invoice_grid_jdxx").jqGrid('setGridParam',{									 
+					postData:{
+						gzlid : gzlid_
+					},
+					page : 1,
+					datatype : "json"
+				}).trigger("reloadGrid"); 
+			}
+		});
+	}
+	
+	function loadGrid2() {
+		$("#invoice_grid_jdxx").jqGrid({
+			url : urlPath+'/LcpzController/jdxxQueryPage.mvc',
+			datatype : "local",//页面加载的时候不显示数据
+			colNames : [ '操作','节点ID', '工作流ID', '节点说明', '功能ID', '功能名称','实体状态','过滤方式', '处理方式', '处理时限','允许选择','允许退回', '允许调整人员','当前状态'],
+			colModel : [ 
+						 {name : 'cz',index : 'cz',width : 130,sortable:false,align : "center",formatter:function(cellvalue, options, rowObject){
+							 return "<a href='javascript:updateJdxx(\""+rowObject.jdid+"\")'>修改</a><a href='javascript:delJdxx(\""+rowObject.jdid+"\")'>删除</a>";
+						 }}, 
+			             {name : 'jdid',index : 'jdid',width : 150,hidden : true}, 
+			             {name : 'gzlid',index : 'gzlid',width : 100,hidden : true}, 
+			             {name : 'jdsm',index : 'jdsm',width : 300}, 
+			             {name : 'gnid',index : 'gnid',width : 150,hidden : true},
+			             {name : 'gnmc',index : 'gnmc',width : 100,align : "center"},
+			             {name : 'djzt',index : 'djzt',width : 100,align : "center"},
+			             {name : 'dwglfs',index : 'dwglfs',width : 100,align : "center",formatter:function(cellvalue, options, rowObject){
+			         		 if (cellvalue == 1) {
+			        			 return "按送审用户的单位过滤";
+			        		 }
+			        		 if (cellvalue == 2) {
+			        			 return "按启用流程的单位过滤";
+			        		 }
+			        		 if (cellvalue == 3) {
+			        			 return "不过滤";
+			        		 }
+			        	 }}, 
+			             {name : 'etype',index : 'etype',width : 100,align : "center",formatter : function(cellvalue, options, rowObject){
+			         		 if (cellvalue == "one") {
+			        			 return "一个人";
+			        		 }
+			        		 if (cellvalue == "all") {
+			        			 return "所有人";
+			        		 }
+			        	 }},
+			        	 {name : 'clsy',index : 'clsy',width : 100,align:"center"}, 
+			        	 {name : 'yxxz',index : 'yxxz',width : 100,align : "center",formatter : function(cellvalue, options, rowObject){
+		        			 if (cellvalue == "Y") {
+		        				 return "是";
+		        			 }
+		        			 if (cellvalue == "N") {
+		        				 return "否";
+		        			 }
+		        		 }},
+		        		 {name : 'yxth',index : 'yxth',width : 100,align : "center",formatter : function(cellvalue, options, rowObject){
+		        			 if (cellvalue == "Y") {
+		        				 return "是";
+		        			 }
+		        			 if (cellvalue == "N") {
+		        				 return "否";
+		        			 }
+		        		 }}, 
+		        		 {name : 'tzry',index : 'tzry',width : 100,align : "center",formatter : function(cellvalue, options, rowObject){
+		        			 if (cellvalue == "Y") {
+		        				 return "是";
+		        			 }
+		        			 if (cellvalue == "N") {
+		        				 return "否";
+		        			 }
+		        		 }}, 
+			             {name : 'dqzt',index : 'dqzt',width : 100,align : "center",formatter : function(cellvalue, options, rowObject) {
+			         		 if (cellvalue == 0) {
+			        			 return "无效";
+			        		 }
+			        		 if (cellvalue == 1) {
+			        			 return "有效";
+			        		 }
+			        	 }} 
+			             ],
+			pager : '#jdxxmap',
+			multiselect : false, //多行
+			rownumbers : true, //显示行号
+			onSelectRow: function(id){ //当选择行时触发此事件。rowid：当前行id；status：选择状态，当multiselect 为true时此参数才可用
+				$("#invoice_grid_jdxx").onSelectRow(id);
+			}
+		});
+	}
+
+	//加载jqGrid
+	$(document).ready(function() {
+		loadGrid();
+		loadGrid2();
+		
+		$(window).resize(function() {
+	        $("#invoice_grid").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+		$(window).resize(function() {
+	        $("#invoice_grid_jdxx").jqGrid("autoSize");
+		}).trigger('resize');
+	});
+
+	//绑定回车事件
+	document.onkeydown = function(e) {
+		var ev = document.all ? window.event : e;
+		if (ev.keyCode == 13) {
+			search();
+		}
+	};
+	
+	//查询功能
+	function search() {
+		var formData = $("#search_form").getData();
+		$("#invoice_grid").jqGrid('setGridParam', {
+			postData : {
+				gzlid : formData.gzlid,
+				gzlmc : formData.gzlmc,
+                syfwbm : formData.syfwbm,
+                djlxid : formData.djlxid
+			},
+			page:1,
+			datatype : 'json' //将datatype重置为json,这样就可以显示数据了
+		}).trigger("reloadGrid");
+	}
+	
+	//新增功流程
+	function newGzlc(){
+		openEdit();
+	}
+	
+	//修改流程
+	function updateGzlc(gzlid){
+		openEdit(gzlid);
+	}
+	
+	//删除流程
+	function delGzlc(gzlid){
+		//删除提示
+ 		layer.alert('确定要删除此数据？', {
+		  	//time: 0, //不自动关闭,
+			btn: ['确定', '关闭'],
+			yes: function(index){
+				$.ajax({
+					type : "POST",
+					url : urlPath+"/LcpzController/delLcpz.mvc",
+					data : {gzlid:gzlid},
+					async : false,
+					dataType : "json",
+					success : function(data) {
+						if(data.code == "200"){
+							top.layer.msg(data.message);
+							//刷新jqGrid
+							doFresh();
+							doFresh_jdxx();
+							layer.close(index);							
+						}else{
+							top.layer.msg(data.message);
+							layer.close(index);
+						}
+
+					}
+			    }); 
+		    }
+		}); 
+		
+
+	}
+	
+	//启动流程
+	function startGzlc(gzlid){
+		//启用提示
+		layer.alert('确定要启动流程？', {
+			time: 0, //不自动关闭,
+			btn: ['确定', '关闭'],
+			yes: function(index){
+			    $.ajax({
+					type : "POST",
+					url : urlPath+"/LcpzController/startLcpz.mvc",
+					data : {gzlid:gzlid},
+					dataType : "json",
+					traditional: true,//ajax传递数组的时候traditional必须为true
+					success : function(retdata) {
+							msg('操作成功！');
+							//刷新jqGrid
+							doFresh();
+							doFresh_jdxx();
+				    }
+			    }); 
+			}
+		});
+	}
+	
+	//停用流程
+	function stopGzlc(gzlid){
+		//停用流程提示
+		layer.alert('确定要停用流程？', {
+			time: 0, //不自动关闭,
+			btn: ['确定', '关闭'],
+			yes: function(index){
+			    $.ajax({
+					type : "POST",
+					url : urlPath+"/LcpzController/stopLcpz.mvc",
+					data : {gzlid:gzlid},
+					dataType : "json",
+					traditional: true,//ajax传递数组的时候traditional必须为true
+					success : function(retdata) {
+						msg('操作成功！');
+						//刷新jqGrid
+						doFresh();
+						doFresh_jdxx();
+				    }
+			    }); 
+			}
+		});
+	}
+	
+	//编辑框
+	function openEdit(gzlid) {
+		layer.open({
+			title:'流程定义信息',
+			type: 2,
+			content: '../workflow/lcpz_lcxx.html?gzlid='+gzlid+'&noCache='+new Date().getTime(),
+			area: ['900px', '350px'],
+			btn: ['保存','关闭'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+				//调用子页面的方法
+            	window["layui-layer-iframe" + index].saveData(index);
+            }
+		});
+	}
+	
+	//流程定义
+	function doLcdy(tgzlid){
+		layer.open({
+			title:'工作流程定义',
+			type: 2,
+			content: "../workflow/gzlc_common_lcdy.html?gzlid="+tgzlid,
+			btn: ['刷新','关闭'],
+			area: ['100%', '100%'],
+			//maxmin: false,    			
+            yes: function(index){            	
+            	window["layui-layer-iframe" + index].doFresh();
+            }
+		});
+	}
+	
+	//刷新工作流程
+	function doFresh(){
+		$("#invoice_grid").jqGrid('setGridParam',{									 
+			postData:{}
+		}).trigger("reloadGrid"); 
+	}
+	
+	//刷新工作流程节点
+	function doFresh_jdxx(){
+		$("#invoice_grid_jdxx").jqGrid('setGridParam',{									 
+			postData:{},
+			datatype : "local"
+		}).trigger("reloadGrid"); 
+	}
+	
+	//新增节点
+	function newJdxx(){
+		if(gzlid_ == null){
+			alert("请先选择流程信息");
+		}else{
+			openEdit_jdxx();
+		}
+	}
+	
+	//修改节点信息
+	function updateJdxx(jdid){
+		openEdit_jdxx(jdid);
+	}
+	
+	//删除节点信息
+	function delJdxx(jdid){
+		//删除提示
+		layer.alert('确定要删除此数据？', {
+			time: 0, //不自动关闭,
+			btn: ['确定', '关闭'],
+			yes: function(index){
+				$.ajax({
+					type : "POST",
+					url : urlPath+"/LcpzController/delJdxx.mvc",
+					data : {jdid:jdid},
+					dataType : "json",
+					traditional: true,//ajax传递数组的时候traditional必须为true
+					success : function(retdata) {
+						if (retdata.code == 200) {
+							msg('操作成功！');
+
+							//刷新jqGrid
+							$("#invoice_grid_jdxx").jqGrid('setGridParam',{									 
+								postData:{
+									gzlid : gzlid_
+								},
+								datatype : 'json'  //将datatype重置为json,这样就可以显示数据了
+								}
+						 	).trigger("reloadGrid");
+						} else {
+							alert(retdata.message);
+						}
+						layer.close(index);
+					}
+			   }); 
+		   }
+	   });
+	}
+	
+	//节点编辑框
+	function openEdit_jdxx(jdid) {
+		layer.open({
+			title:'节点信息',
+			type: 2,
+			content: '../workflow/flowDefine_node_add.html?jdid='+jdid+'&gzlid='+gzlid_,
+			area: ['100%', '100%'],
+			btn: ['保存','关闭'], //底部按钮区域
+			//maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+            	//调用子页面的方法
+            	var retdata = window["layui-layer-iframe" + index].saveData();
+            	
+            	if(retdata!=null){
+            		$.ajax({
+       					type : "POST",
+       					url : urlPath+"/LcpzController/saveJdxx.mvc",
+       					data : retdata,
+       					dataType : "json",
+       					traditional: true,
+       					success : function(retdata) {
+       						if(retdata.code == 200){
+       							msg('操作成功！');
+       							//刷新
+           						$("#invoice_grid_jdxx").jqGrid('setGridParam',{									 
+        							postData:{
+        								gzlid : gzlid_
+        							},
+        							datatype : "json"
+        						}).trigger("reloadGrid");
+       							//关闭页面
+           						layer.close(index);
+       						}else{
+       							alert(retdata.message);
+       						}
+       					}
+       				});
+            	}
+            }
+		});
+	}
+    //查询单据类型
+    function selectDjlx(){
+        window.parent.layer.open({
+            title:'单据类型',
+            type: 2,
+            content: '../workflow/lcpz_djlx.html?noCache='+new Date().getTime(),
+            area: ['400px', '300px'],
+            btn: ['确定','取消'],
+            maxmin: true,
+            yes: function(index){
+                //获取页面数据
+                var res = window.parent["layui-layer-iframe" + index].getDataDjlx();
+                if(res != null){
+                    $("#djlxid").val(res[0]);
+                    $("#djlxbm").val(res[1]);
+                    $("#djlxmc").val(res[2]);
+                    window.parent.layer.close(index);
+                    search();
+                }else{
+                    window.parent.alert("请选择单据类型！");
+                }
+            },btn2: function(index, layero){
+                $("#djlxid").val("");
+                $("#djlxbm").val("");
+                $("#djlxmc").val("");
+                window.parent.layer.close(index);
+                search();
+            }
+        });
+    }
+    //查询单位
+    function selectDw(){
+        var index = window.parent.layer
+            .open({
+                title : '选择部门',
+                type : 2,
+                content : '../../partials/select-section-nolower.html?noCache=' + new Date().getTime(),
+                area : [ '400px', '300px' ],
+                btn : [ '确定', '关闭' ],
+                maxmin : true,
+                yes : function(index) {
+                    //获取单位数据
+                    var res = window.parent["layui-layer-iframe" + index]
+                        .getData();
+                    if (res == null) {
+                        window.parent.layer.alert("请选择部门", {
+                            icon : 6
+                        });
+                    } else {
+                        $("#syfwbm").val(res.code);
+                        $("#syfwmc").val(res.name);
+                        window.parent.layer.close(index);
+                        search();
+                    }
+                },btn2: function(index, layero){
+                    $("#syfwbm").val("");
+                    $("#syfwmc").val("");
+                    window.parent.layer.close(index);
+                    search();
+                }
+            });
+    }
+	//时间格式化
+	function timeFormatter(cellvalue, options, rowObject) {
+		var unixTimestamp = new Date(cellvalue*1000) ;
+		return unixTimestamp.toLocaleString();	
+	}
+	
+   Date.prototype.toLocaleString = function() {
+	   var currMonth = (this.getMonth() + 1) < 10 ? '0'+(this.getMonth() + 1):(this.getMonth() + 1);
+	   var currDate = this.getDate() < 10 ? '0'+this.getDate():this.getDate();
+	   var currHours = this.getHours() < 10 ? '0'+this.getHours():this.getHours();
+	   var currMinutes = this.getMinutes() < 10 ? '0'+this.getMinutes():this.getMinutes();
+	   var currSeconds = this.getSeconds() < 10 ? '0'+this.getSeconds():this.getSeconds();
+
+       return this.getFullYear() + "-" + currMonth + "-" + currDate + " " + currHours + ":" + currMinutes + ":" + currSeconds;
+   };
+   
+</script>
+</html>

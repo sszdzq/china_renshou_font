@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>流程信息</title>
+
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/index-ess.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/document.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/dj-tab.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/css/main.css" type="text/css" />
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css" type="text/css" />
+<!-- jqgrid样式 -->
+<link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css" rel="stylesheet" />
+<link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
+
+<!--javascript引用部分 -->
+<script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+<script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+<script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+
+<!-- jqgridjs -->
+<script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+
+<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="../../shared/layer/layer.js" type="text/javascript"></script>
+
+<!-- my97 DatePicker  -->
+<script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+
+<script src="../../shared/js/jquery.validate.min.js"type="text/javascript"></script>
+<script src="../../shared/js/jquery.additional-methods.js"type="text/javascript"></script>
+
+<style type="text/css">
+
+</style>
+</head>
+<body>
+	<form id="lcpzForm" >
+		<input type="hidden" name="flag" id="flag" ></input>
+		<table id="lcpzTable" style="font-size: 15px;width:100%;border:0px" class="table_insert">
+			<tbody>
+				<tr>
+					<td align="right" class="tdtitle must">单据类型：</td>
+					<td>
+						<div class="input-append">	
+							<input type="hidden" id="djlxid" name="djlxid" class="form_input">
+							<input type="hidden" id="djlxbm" name="djlxbm" class="span2" readonly= "readonly" checktype="b">
+							<input type="text" id="djlxmc" name="djlxmc" class="span2" readonly= "readonly" checktype="b">
+							<button class="btn" type="button" onclick="selectDjlx();">单据类型</button>
+						</div>
+					</td>
+					<td class="tdtitle" align="right">工作流ID：</td>
+					<td >
+						<input type="text" id="gzlid" name="gzlid" class="form_input" disabled>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" class="tdtitle must">工作流名称：</td>
+					<td>
+						<input type="text" id="gzlmc" name="gzlmc" class="form_input" checktype="b">
+					</td>
+					<td class="tdtitle  must" align="right" >版本号：</td>
+					<td>
+						<input type="hidden" id="ywxtbm" name="ywxtbm" class="form_input" readonly= "readonly" checktype="b" >
+						<input type="text" id="banben" name="banben" class="form_input" checktype="b" >
+					</td>
+				</tr>
+				<tr>
+					<td align="right" class="tdtitle must">使用范围编码：</td>
+					<td colspan="3">
+						<div class="input-append">
+							<input type="text" id="syfwbm" name="syfwbm" class="span7" readonly= "readonly" checktype="b" >
+							<button class="btn" type="button" onclick="selectDw();">使用范围</button>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="tdtitle must" align="right">使用范围名称：</td>
+					<td>
+						<input type="text" id="syfwmc" name="syfwmc" class="form_input" readonly= "readonly" checktype="b" value=>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" class="tdtitle" style="CURSOR: hand;">工作流说明：</td>
+					<td colspan="3">
+						<textarea rows="3" id="gzlsm" name="gzlsm" style="width:90%"></textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+<script type="text/javascript">
+
+	var urlPath=getUrlPath();
+	//初始化，用于验证输入数据是否符合要求
+	$("#lcpzForm").formInit();
+	
+	var gzlid = "";
+	
+	$(document).ready(function() {
+		gzlid = GetQueryString("gzlid");
+		//console.log(gzlid);
+		if(gzlid == 'undefined'){
+			$("#flag").val('add');
+		}else{
+			$("#flag").val('update');
+			getLcxx(gzlid);
+			$("#gzlid").val(gzlid);
+		}
+	});
+	
+	
+	//获取流程信息
+	function getLcxx(gzlId){
+		$.ajax({
+			type : "POST",
+			url : urlPath+"/LcpzController/getLcxx.mvc",
+			data : {gzlid:gzlId},
+			dataType : "json",
+			traditional: true,//ajax传递数组的时候traditional必须为true
+			success : function(data) {
+				console.log(data.djlxmc);
+				$("#djlxid").val(data.djlxid.djlxid);
+				$("#djlxbm").val(data.djlxbm);
+				$("#djlxmc").val(data.djlxmc);
+				$("#gzlmc").val(data.gzlmc);
+				$("#ywxtbm").val(data.ywxtbm);
+				$("#banben").val(data.banben);
+				$("#syfwbm").val(data.syfwbm);
+				$("#syfwmc").val(data.syfwmc);
+				$("#gzlsm").val(data.gzlsm);
+			}
+	    });		
+	}
+	
+	//保存数据
+	function saveData(index){
+		var jfobj = $("#lcpzForm");
+		if(jfobj.validate()){
+/* 			jfobj.formSubmit(urlPath+"/LcpzController/saveLcpz.mvc",null,function(retval){
+				if(retval.flag){
+					//刷新jqGrid
+					window.parent.doFresh();
+					window.parent.doFresh_jdxx();
+					//提示信息
+					window.parent.msg(retval.msg);
+					//关闭layer框
+					window.parent.layer.close(index);
+				}else{
+					window.parent.alert(retval.msg);
+				}
+			},"json",true); */
+			$.ajax({
+				type : "POST",
+				url : urlPath+"/LcpzController/saveLcpz.mvc?gzlid="+$("#gzlid").val(),
+				data : jfobj.serialize(),
+				dataType : "json",
+				traditional: true,//ajax传递数组的时候traditional必须为true
+				success : function() {
+					top.layer.msg("操作成功!");
+					//刷新jqGrid
+					window.parent.doFresh();
+					window.parent.doFresh_jdxx();
+					//提示信息
+					//关闭layer框
+					window.parent.layer.close(index);					
+				},
+				error : function(xmlhttp,textStatus,errorThrown){
+					var o = JSON.parse(xmlhttp.responseText);
+					layer.msg(o.message, {icon: 5});
+				}
+		    });	
+		}
+	}
+	
+	//查询单据类型
+	function selectDjlx(){
+		window.parent.layer.open({
+			title:'单据类型',
+			type: 2,
+			content: '../workflow/lcpz_djlx.html?noCache='+new Date().getTime(),
+			area: ['400px', '300px'],
+			btn: ['确定','取消'],
+			maxmin: true,
+            yes: function(index){
+            	//获取页面数据
+            	var res = window.parent["layui-layer-iframe" + index].getDataDjlx();
+            	console.log('单据编码@@'+res[1]);
+            	if(res != null && res[0] != "LCYWLX"){
+            		$("#djlxid").val(res[0]);
+            		$("#djlxbm").val(res[1]);
+            		$("#djlxmc").val(res[2]);
+            		window.parent.layer.close(index);
+            	}else{
+            		window.parent.alert("请选择单据类型！");
+            	}
+            }			
+		});
+	}
+	
+	
+	function selectDw() {
+
+		var index = window.parent.layer
+				.open({
+					title : '选择部门',
+					type : 2,
+					content : '../../partials/select-section-nolower.html?noCache=' + new Date().getTime(),
+					area : [ '400px', '300px' ],
+					btn : [ '确定', '关闭' ],
+					maxmin : true,
+					yes : function(index) {
+						//获取单位数据 
+						var res = window.parent["layui-layer-iframe" + index]
+								.getData();
+						if (res == null) {
+							window.parent.layer.alert("请选择部门", {
+								icon : 6
+							});
+						} else {
+							$("#syfwbm").val(res.allCode);
+		             		$("#syfwmc").val(res.name);
+							window.parent.layer.close(index);
+						}
+					}
+				});
+	}
+	
+	function GetQueryString(name){
+	    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if(r!=null)return  decodeURI(r[2]); return null;
+	}
+</script>
+</body>
+</html>

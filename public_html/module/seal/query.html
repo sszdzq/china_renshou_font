@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户管理</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>	    
+	    <!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	     <script src="../../shared/ocx/makeseal.js"  type="text/javascript" ></script>
+	    <style type="text/css">
+    .row {
+    margin-left: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    cursor: pointer;
+}
+
+	</style>
+
+
+		
+</head>
+<body >
+	<div class="pagecontent" id="divcontent2">
+		<div class="middleLayer">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on">印章名称</span>
+					<input type="text" name="name" id="name" style="width: 140px" placeholder="印章名称" > 
+					<span class="add-on" style="margin-left:10px;">印章类别</span>
+					<select id="type" name="type" class="span1" style="width: 140px">
+					</select>					
+					<span class="add-on" style="margin-left:5px;" >部门</span>
+					<div class="input-append">
+						<input class="span2" id=departmentId name="departmentId" readonly="readonly"  type="hidden" >
+						<input class="span2" id=lowerLevel name="lowerLevel" readonly="readonly"  type="hidden">
+					
+						<input class="span2" id=departmentName name="departmentName" type="text" style="width: 135px" disabled="disabled">
+						<button class="btn" type="button" id="section">选择</button>
+					</div>
+
+					<span class="add-on" style="margin-left:5px;">时间</span>
+					<input type="text"  id="startTime" name="startTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+					至
+					<input type="text" name="endTime" id="endTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startTime\') }'}) ">
+
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style=" float:right;"> 查询</button>
+				
+			</div>
+			
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="t_seals"></table>
+				<div id="t_seals_page"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	var apiUrl = getUrlPath();
+	var msObj = null;
+	//当前登录用户id  
+	var currUserId = null;
+	function loadGrid_seals() {
+		$("#t_seals").jqGrid(
+			{
+				url : apiUrl+'/seals',
+				datatype : "json",//页面加载的时候不显示数据
+				multiselect:false,
+				colNames : [ 'id','印章名称','印章类型','所属部门','印章状态','创建人','操作'],
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+							 {name : 'name',index : 'name',width : 200,align : "center"},
+				             {name : 'type',index : 'type',formatter:typeFormatter,width : 150,align : "center"},
+				             {name : 'departmentId',index : 'departmentId',width : 150,align : "center"},
+				             {name : 'status',index : 'status',formatter:statusFormatter,width : 100,align : "center"},
+				             {name : 'createdBy',index : 'createdBy',width : 100,align:"center"},
+				             {name : 'nofile',width : 500,sortable:false,align : "center",formatter:operateFormatter}
+
+				          ],
+				pager : '#t_seals_page',
+ 				rowNum : 20,
+				rowList : [ 10,20,30,50,100 ]
+			});
+	}
+	
+	function statusFormatter(data, options, rowObject) {
+        var status = data ? '正常' : '注销';
+        return status;		
+	}
+	function typeFormatter(data, options, rowObject) {
+	        var name;
+	        switch(data) {
+	          case 1:
+	            name = '公章';
+	            break;
+	          case 2:
+	            name = '公章(法人章)';
+	            break;
+	          case 3:
+	            name = '公章(合同章)';
+	            break;
+	          case 4:
+	            name = '公章(党章)';
+	            break;
+	          case 5:
+	            name = '公章(财务章)';
+	            break;
+	          case 6:
+	            name = '公章(工会章)';
+	            break;
+	          case 7:
+	            name = '个人章';
+	            break;
+	          case 8:
+	            name = '个人章(手写签名)';
+	            break;
+	          case 9:
+	            name = '个人章(文字签名)';
+	            break;
+	        }
+	        return name;		
+	}
+	function getSealType(){
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : apiUrl+"/dictionary?key=seal_types"+"&noCache="+new Date().getTime(),
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				$("#type").append("<option value=''>请选择</option>");
+				for(var i=0;i<data.length;i++){
+					var content="<option value='"+data[i].v+"'>"+data[i].title+"</option>";
+					$("#type").append(content);
+				}
+			} 
+		});
+	}
+	$("#section").click(function(){
+		var index = window.parent.layer.open({
+			title:'选择部门',
+			type: 2,
+			content: '../../partials/select-section-modal.html',
+			area: ['1000px', '500px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	//获取单位数据 
+            	var res = window.parent["layui-layer-iframe" + index].getData();
+            	 if(res==null){
+            		 window.parent.layer.alert("请选择部门",{icon:6});
+            	 }else{
+            		 $("#departmentName").val(res.name);
+            		 $("#departmentId").val(res.id);
+            		 if(res.lowerLevel != null && res.lowerLevel != undefined){
+            			 $("#lowerLevel").val(res.lowerLevel);
+            		 } 
+
+            		 window.parent.layer.close(index);	 
+            	 }
+            }
+		});
+	});
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		getUserinfo();
+		getSealType();
+		loadGrid_seals();
+		$(window).resize(function() {
+	        $("#t_seals").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+	
+   function getUserinfo(){
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : apiUrl+"/userInfo"+"?noCache="+new Date().getTime(),
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				currUsername = data.username;
+			}
+		});
+   }
+
+	function operateFormatter(cellvalue, options, data) {
+
+        var hl= '<a href="javascript:void(0)" style="color:blue" onclick="check(\'' + data.id + '\')">查看</a>';
+        return hl;
+		
+	}
+
+
+	//印章详情
+	function check(id){ 
+  		var index = parent.layer.open({
+			title:'印章详情',
+			type: 2,
+			content: '../../module/seal/seal-details.html?sealId='+id,
+			area: ['80%', '95%'],
+			btn: ['关闭'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+				window.parent.layer.close(index);
+			}
+		}); 
+	}
+  	 //判断浏览器类型
+     function getBrowser () {
+       var ua = navigator.userAgent;
+       var ret = {},
+       webkit = ua.match( /WebKit\/([\d.]+)/ ),
+       chrome = ua.match( /Chrome\/([\d.]+)/ ) ||
+       ua.match( /CriOS\/([\d.]+)/ ),
+
+       ie = ua.match( /MSIE\s([\d\.]+)/ ) ||
+       ua.match( /(?:trident)(?:.*rv:([\w.]+))?/i ),
+       firefox = ua.match( /Firefox\/([\d.]+)/ ),
+       safari = ua.match( /Safari\/([\d.]+)/ ),
+       opera = ua.match( /OPR\/([\d.]+)/ );
+
+       webkit && (ret.webkit = parseFloat(webkit[1]));
+       chrome && (ret.chrome = parseFloat(chrome[1]));
+       ie && (ret.ie = parseFloat(ie[1]));
+       firefox && (ret.firefox = parseFloat(firefox[1]));
+       safari && (ret.safari = parseFloat(safari[1]));
+       opera && (ret.opera = parseFloat(opera[1]));
+
+       return ret;
+     }
+
+
+
+	   
+		function doFresh() {
+			$("#t_seals").jqGrid('setGridParam', {
+				postData : {}
+			}).trigger("reloadGrid");
+		}
+	
+	   function search(){
+		   var postData = $('#t_seals').jqGrid("getGridParam", "postData");
+           $.each(postData, function (k, v) {
+               delete postData[k];
+           });
+		   var formData = getFormData("search_form");
+
+		   var stime=new Date(Date.parse(formData.startTime.replace(/-/g,"/"))).getTime()/1000;
+		   var etime=new Date(Date.parse(formData.endTime.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+		   var queryData={};
+		   if(formData.type!=""){
+			   queryData['type']=formData.type;
+		   }
+		   if(formData.name!=""){
+			   queryData['name']=formData.name;
+		   }
+		   if(formData.departmentId!=""){
+			   data['departmentId']=formData.departmentId;
+		   }
+		   if(formData.lowerLevel!=""){
+			   data['lowerLevel']=formData.lowerLevel;
+		   }
+		   if(formData.startTime != ""){
+			   queryData['startTime']=stime;
+		   }
+		   if(formData.endTime!=""){
+			   queryData['endTime']=etime;
+		   }
+
+		   
+	 	 $("#t_seals").jqGrid('setGridParam', {
+				page : 1,
+				postData :queryData
+			}).trigger("reloadGrid"); 
+	   }
+</script>
+
+</html>

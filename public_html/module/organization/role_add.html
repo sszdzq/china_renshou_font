@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"><META HTTP-EQUIV="Expires" CONTENT="0">
+<title>添加角色</title>
+<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/main.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+       <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+       <script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>
+	    
+	    	<!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	    <!-- 校验js -->
+	     <script type="text/javascript" src="../../shared/js/jquery-validate.js"></script>
+	
+<style type="text/css">
+	label {
+	display: inline-block;
+	max-width: 100%;
+	margin-bottom: 5px;
+	/* font-weight: bold; */
+	margin-right: 8px;
+}
+
+</style>
+ <style type="text/css">
+.valid_message{
+color:#f00;
+}
+
+  </style>
+</head>
+<body>
+<form id="roleForm"> 
+	<table>
+	<tr>
+		<td style="width: 15%">排序号</td>
+		<td>	
+			<input type="hidden" name="id" id="roleId"  maxlength="20" placeholder="请输入角色ID" style="">	
+			<input type="number" name="orderBy" id="orderBy" class="required" data-tip="" data-valid="isNonEmpty" data-error="排序号不能为空" maxlength="20" placeholder="请输入角色排序号" style="">	
+		</td>
+	</tr>
+	<tr>
+		<td>角色名称</td>
+		<td>
+		<input type="text" name="name" id="name" class="required" checkUrl="" data-tip="" data-valid="isNonEmpty" data-error="角色名称不能为空||角色名重复"  maxlength="40" placeholder="请输入角色名称" style="">
+		</td>	
+			
+	</tr>
+	<tr>
+		<td>接口权限</td>
+		<td>
+		<div style="overflow-y: hidden; border:1px solid #ccc;  display: inline-block;width:75%;height:auto"   class="required" data-tip="" data-valid="isUlEmpty" data-error="接口权限必选">  
+			<ul id="interfacePower" class="sp-list" style="list-style-type:none"  >
+			
+		</ul>
+		</div><button class="btn btn-info"  type="button"  onclick="openSelectOperationRoleModal()">选择</button>
+		</td>	
+			
+	</tr>
+	<tr>
+		<td>审批权限</td>
+		<td>
+		<div style="overflow-y: hidden; border:1px solid #ccc;  display: inline-block;width:75%;height:auto" >  
+			<ul id="sprole" class="sp-list" style="list-style-type:none">
+			
+		</ul>
+		</div>
+		<div style="display: inline-block;">
+			<button class="btn btn-info" type="button"  onclick="openSelectApproveRoleModal()">选择</button>
+			<!-- <button class="btn" type="button" onclick="openSelectApproveRoleModal()">选择角色</button> -->
+		</div>
+		</td>	
+			
+	</tr>
+	 <tr>
+		<td>可见菜单</td>
+		<td>
+		<div style="overflow-y: hidden; border:1px solid #ccc;  display: inline-block;width:75%;height:auto"  class="required" data-tip="" data-valid="isUlEmpty" data-error="可见菜单必选">  
+			<ul id="seeMenu" style="list-style-type:none;" class="sp-list">
+			
+		</ul>
+		</div><button class="btn btn-info" type="button" onclick="openMenuModal()">选择</button>
+		</td>		
+	</tr>
+	</table>
+
+	
+	</form> 
+
+</body>
+<script type="text/javascript">
+var aipUrl = getUrlPath();
+//页面加载函数
+$(function(){
+	//检查重名/role/byName
+	$("#name").attr("checkUrl",aipUrl+"/role/byName")
+	   //添加数组IndexOf方法
+    if (!Array.prototype.indexOf){
+      Array.prototype.indexOf = function(elt /*, from*/){
+        var len = this.length >>> 0;
+
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0)
+             ? Math.ceil(from)
+             : Math.floor(from);
+        if (from < 0)
+          from += len;
+
+        for (; from < len; from++){
+          if (from in this && this[from] === elt)
+            return from;
+        }
+        return -1;
+      };
+    }
+	var id=getUrlParms("id");
+	
+	if(id!=null){
+		$("#roleId").val(id);
+			  $.ajax({
+		type : "get",
+		url :aipUrl+ "/role/"+id+"?noCache="+new Date().getTime(),
+		contentType:"application/json",
+		dataType : "json",
+		success : function(retdata) {
+			//排序号和名字回显
+			$("#orderBy").val(retdata.orderBy);
+			$("#name").val(retdata.name);
+			//审批角色id字符串转数组
+			var spArr=retdata.approleRole.split('=');
+			//获取审批角色
+		 $.ajax({
+		type : "GET",
+		data :{},
+		url : aipUrl+"/dictionary?key=approle_role",
+	//	contentType:"application/json",
+		dataType : "json",
+		async:false,
+		success : function(data) {
+			var approveArr=new Array();
+		
+			//遍历后台查询结果
+			for(var i=0;i<data.length;i++){
+				if(spArr.indexOf(data[i].id)!=-1){
+			
+					var data1="<li id='approve"+data[i].id+"'  style=\"float: left;margin:0px 10px 3px 10px;background-color:#a1dbff;\"><span>"+data[i].name+"<a class=\"fa fa-times \" onclick=\"removeApprove("+data[i].id+")\" ></a></span></li>";
+        			$("#sprole").append(data1);
+        		
+        			approveArr.push(data[i]);
+				}
+				
+			}
+			
+			approveData=approveArr;
+			
+		} 
+	});
+			//接口权限数据
+			interfaceData=retdata.operationId;
+			
+			for(var j=0;j<interfaceData.length;j++){
+    			if(interfaceData[j].id!=" "){
+    				var data="<li id='interface"+interfaceData[j].id+"'  style=\"float: left;margin:0px 10px 3px 10px;background-color:#a1dbff;\"><span>"+interfaceData[j].name+"<a class=\"fa fa-times \" onclick=\"removeInterfacePower("+interfaceData[j].id+")\" ></a></span></li>";
+        	
+    				$("#interfacePower").append(data);	
+    			}
+    			
+    		}
+			//菜单数据
+			treeData=retdata.appId;
+			
+			 for(var j=0;j<treeData.length;j++){
+    		
+     				var data="<li id='menu"+treeData[j].id+"'  style=\"float: left;margin:0px 10px 3px 10px;background-color:#a1dbff;\"><span>"+treeData[j].name+"<a class=\"fa fa-times \" onclick=\"removeMenu("+treeData[j].id+")\" ></a></span></li>";
+        
+     				$("#seeMenu").append(data);	
+     			
+     		}
+			
+		}
+	}); 
+	}
+
+})
+//选择审批角色
+var approveData=new Array();
+function openSelectApproveRoleModal(){
+//	//console.log("xiugai");
+	var ids=new Array();
+	if(approveData.length>0){
+		for(var i=0;i<approveData.length;i++){
+			ids.push(approveData[i].id);
+		}
+	}
+	
+	var index = window.parent.layer.open({
+		title:'审批角色',
+		type: 2,
+		content: '../../module/organization/select-approle-modal.html?back='+ids+"&noCache="+new Date().getTime(),
+		area: ['600px', '500px'],
+		btn: ['确定','关闭'],
+		maxmin: true,
+        yes: function(index){
+        	//获取单位数据 
+        	var res1 = window.parent["layui-layer-iframe" + index].getRoleData();
+        	//console.log(res1);
+        	 if(res1!=null){
+        	var res=JSON.parse(res1);
+        	approveData=res;
+        	
+        		 $("#sprole li").remove();
+        		for(var j=0;j<res.length;j++){
+        			if(res[j].id!=" "){
+        				var data="<li id='approve"+res[j].id+"'  style=\"float: left;margin:0px 10px 3px 10px;background-color:#a1dbff;\"><span>"+res[j].name+"<a class=\"fa fa-times \" onclick=\"removeApprove("+res[j].id+")\" ></a></span></li>";
+            			$("#sprole").append(data);	
+        			}
+        			
+        		}
+        		 window.parent.layer.close(index);	 
+        	 }else{
+        		
+        	 }
+        }
+	});
+
+}
+//删除单个审批权限，x号触发
+function removeApprove(id){
+
+	if(approveData!=null){
+
+	
+		for(var i=0;i<approveData.length;i++){
+	
+			if(id==approveData[i].id){
+				//从数据中移除项
+			
+				approveData.splice(i,1);
+				//展示li标签删除
+				$("#sprole li[id=approve"+id+"]").remove();
+			}
+		}
+		
+	}
+}
+var interfaceData=null;
+//选择权限接口
+function openSelectOperationRoleModal(){
+	////console.log(interfaceData);
+	var ids=new Array();
+	if(interfaceData!=null){
+		for(var i=0;i<interfaceData.length;i++){
+			ids.push(interfaceData[i].id);
+		}
+	}
+	
+	var index = window.parent.layer.open({
+		title:'权限接口',
+		type: 2,
+		content: '../../module/organization/select-operation-modal.html?back='+ids+"&noCatch="+new Date().getTime(),
+		area: ['1000px', '700px'],
+		btn: ['确定','关闭'],
+	//	maxmin: true,
+        yes: function(index){
+        	//获取单位数据 
+        	
+        	var res1 = window.parent["layui-layer-iframe" + index].getdata();
+        	var res=JSON.parse(res1);
+    interfaceData=res;
+        	 if(res!=null){
+        		 $("#interfacePower li").remove();
+        		for(var j=0;j<res.length;j++){
+        			if(res[j].id!=" "){
+        				var data="<li id='interface"+res[j].id+"'  style=\"float: left;margin:0px 10px 3px 10px;background-color:#a1dbff;\"><span>"+res[j].name+"<a class=\"fa fa-times \" onclick=\"removeInterfacePower("+res[j].id+")\" ></a></span></li>";
+            	
+        				$("#interfacePower").append(data);	
+        			}
+        			
+        		}
+        		 window.parent.layer.close(index);	 
+        	 }else{
+        		
+        	 }
+        }
+	});
+
+}
+//删除接口权限，x号触发
+function removeInterfacePower(id){
+	
+	if(interfaceData!=null){
+		for(var i=0;i<interfaceData.length;i++){
+			if(id==interfaceData[i].id){
+				//从数据中移除项
+				interfaceData.splice(i,1);
+				//展示li标签删除
+				$("#interfacePower li[id=interface"+id+"]").remove();
+			}
+		}
+		
+	}
+}
+
+//删除可见菜单，x号触发
+function removeMenu(id){
+	
+	if(treeData!=null){
+		for(var i=0;i<treeData.length;i++){
+			if(id==treeData[i].id){
+				//从数据中移除项
+				treeData.splice(i,1);
+				//展示li标签删除
+				$("#seeMenu li[id=menu"+id+"]").remove();
+			}
+		}
+		
+	}
+}
+
+
+var treeData=null;
+//开启菜单选择函数
+function openMenuModal(){
+	var ids=new Array();
+	//判断是否有选中的数据
+	if(treeData!=null){
+		for(var i=0;i<treeData.length;i++){
+			ids.push(treeData[i].id);
+		}
+	}
+	
+	//把id传递到选择页面
+	
+	var index = window.parent.layer.open({
+		title:'选择菜单',
+		type: 2,
+		content: '../organization/select-menu-modal.html?back='+ids,
+		area: ['500px', '500px'],
+		btn: ['确定','关闭'],
+		maxmin: true,
+        yes: function(index){
+        	
+        	//获取单位数据 
+        	var res1 = window.parent["layui-layer-iframe" + index].getData();
+        	
+        	var res=JSON.parse(res1);
+
+        	treeData=res;
+        //	//console.log(treeData);
+        	 if(res==null){
+        		
+        	 }else{
+        		
+        		 $("#seeMenu li").remove();
+        		 for(var j=0;j<res.length;j++){
+        			 
+         				var data="<li id='menu"+res[j].id+"'  style=\"float: left;margin:0px 10px 3px 10px;background-color:#a1dbff;\"><span>"+res[j].name+"<a  class=\"fa fa-times \" onclick=\"removeMenu("+res[j].id+")\" ></a></span></li>";
+            
+         				$("#seeMenu").append(data);	
+         			
+         		}
+
+        		 window.parent.layer.close(index);	 
+        	 }
+        }
+	});
+}
+
+/* //初始化，用于验证输入数据是否符合要求
+V.init("certForm","certTable"); */
+
+	 //取地址栏参数
+	 function getUrlParms(name){
+		   var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		   var r = window.location.search.substr(1).match(reg);
+		   if(r!=null)
+		   return unescape(r[2]);
+		   return null;
+		   } 
+	
+	//获取数据
+	function getData(){
+		//console.log( $("#roleForm").validate('submitValidate'));
+		
+	 if($("#roleForm").validate('submitValidate')){
+	
+			var dataArr=new Array();
+			var data={};
+			if($("#roleId").val()!=null&&$("#roleId").val()!=""){
+				data['id']=	$("#roleId").val();
+			}
+			
+			data['orderBy']=$("#orderBy").val();
+			data['departmentId']=null;
+			data['name']=$("#name").val();
+			var appRoleString="=";
+			for(var i=0;i<approveData.length;i++){
+				appRoleString+=approveData[i].id+"=";
+			}
+			data['approleRole']=appRoleString;
+			data['approveRole']=approveData;
+			data['operationId']=interfaceData;
+			data['appId']=treeData;
+			dataArr.push(data);
+			
+			return JSON.stringify(dataArr);
+	 }else{
+		 return null;
+	 }
+	
+		
+		
+	}
+	//jiaoyan
+	 $('#roleForm').validate({
+
+   onFocus: function() {
+
+     this.parent().addClass('active');
+
+     return false;
+
+   },
+
+   onBlur: function() {
+
+     var $parent = this.parent();
+
+     var _status = parseInt(this.attr('data-status'));
+
+     $parent.removeClass('active');
+
+     if (!_status) {
+
+       $parent.addClass('error');
+
+     }
+
+     return false;
+
+   }
+
+ });
+
+
+
+ $('#roleForm').on('submit', function(event) {
+
+   event.preventDefault();
+
+   $(this).validate('submitValidate'); //return boolean;
+
+ });
+</script>
+</html>

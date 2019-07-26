@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"><META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<title>用户管理</title>
+
+  	<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/font-awesome.min.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/document.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/dj-tab.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/bootstrap/css/bootstrap.css"  type="text/css" />
+		<link rel="stylesheet" href="../../shared/css/index-ess.css"  type="text/css" />
+	    <!-- jqgrid样式 -->
+	    <link href="../../shared/jqgrid/css/ui.jqgrid.css" type="text/css"  rel="stylesheet" />
+	    <link href="../../shared/jqgrid/css/css/flick/jquery-ui-1.8.16.custom.css" type="text/css"  rel="stylesheet" />
+	    
+	    
+	    	<!--javascript引用部分 -->
+	   <script src="../../shared/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	   <script src="../../shared/js/jquery.extend.js" type="text/javascript"></script>
+	   <script src="../../shared/js/myLayer.js" type="text/javascript"></script>
+	   <script src="../../shared/ztree/js/jquery.ztree.core.min.js" type="text/javascript"></script>
+	   
+		<!-- jqgridjs -->
+	    <script src="../../shared/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../../shared/jqgrid/js/jquery.jqGrid.extend.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../shared/jqgrid/js/i18n/grid.locale-cn.js"></script>
+		
+		<script src="../../shared/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	    <script src="../../shared/layer/layer.js" type="text/javascript"></script>	    
+	    <!-- my97 DatePicker  -->
+	    <script src="../../shared/my97/WdatePicker.js" type="text/javascript"></script>	
+	    <script src="../../shared/plugins/utils.js" type="text/javascript"></script>
+	     <script src="../../shared/ocx/makeseal.js"  type="text/javascript" ></script>
+	    <style type="text/css">
+    .row {
+    margin-left: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    cursor: pointer;
+}
+
+	</style>
+
+
+		
+</head>
+<body >
+	<div class="pagecontent" id="divcontent2">
+		<div class="middleLayer">
+			<!-- 工具条 -->
+			<div id="toolbars" class="toolbars">
+				<form id="search_form"  class="searchform" onsubmit="return false;" style=" float:left;">
+					<span class="add-on">印章名称</span>
+					<input type="text" name="name" id="name" style="width: 140px" placeholder="印章名称" > 
+					<span class="add-on" style="margin-left:10px;">印章类别</span>
+					<select id="type" name="type" class="span1" style="width: 140px">
+					</select>					
+					<span class="add-on" style="margin-left:5px;" >部门</span>
+					<div class="input-append">
+						<input class="span2" id=departmentId name="departmentId" readonly="readonly"  type="hidden" >
+						<input class="span2" id=lowerLevel name="lowerLevel" readonly="readonly"  type="hidden">
+					
+						<input class="span2" id=departmentName name="departmentName" type="text" style="width: 135px" disabled="disabled">
+						<button class="btn" type="button" id="section">选择</button>
+					</div>
+
+					<span class="add-on" style="margin-left:5px;">时间</span>
+					<input type="text"  id="startTime" name="startTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd',maxDate: '#F{$dp.$D(\'endTime\')}' }) ">
+					至
+					<input type="text" name="endTime" id="endTime" style="width: 80px" onfocus="WdatePicker({skin:'whyGreen',readOnly:true,dateFmt: 'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startTime\') }'}) ">
+
+				</form>
+				<button type="button" onclick="search()" class="btn btn-success" style=" float:right;"> 查询</button>
+				
+			</div>
+			
+			<!-- 页面主内容 -->	
+			<div class="gridcontent">
+				<table id="t_seals"></table>
+				<div id="t_seals_page"></div>
+			</div>
+			
+			<div id="writeKey" style="dispaly:none;"></div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	var apiUrl = getUrlPath();
+	var msObj = null;
+	//当前登录用户id  
+	var currUserId = null;
+	function loadGrid_seals() {
+		$("#t_seals").jqGrid(
+			{
+				url : apiUrl+'/seals',
+				datatype : "json",//页面加载的时候不显示数据
+				multiselect:false,
+				colNames : [ 'id','印章名称','印章类型','所属部门','印章状态','创建人','操作'],
+				colModel : [ 
+							 {name : 'id',index : 'id',width : 100,key:true,hidden:true},
+							 {name : 'name',index : 'name',width : 200,align : "center"},
+				             {name : 'type',index : 'type',formatter:typeFormatter,width : 150,align : "center"},
+				             {name : 'departmentId',index : 'departmentId',width : 150,align : "center"},
+				             {name : 'status',index : 'status',formatter:statusFormatter,width : 100,align : "center"},
+				             {name : 'createdBy',index : 'createdBy',width : 100,align:"center"},
+				             {name : 'nofile',width : 500,sortable:false,align : "center",formatter:operateFormatter}
+
+				          ],
+				pager : '#t_seals_page',
+ 				rowNum : 20,
+				rowList : [ 10,20,30,50,100 ]
+			});
+	}
+	
+	function statusFormatter(data, options, rowObject) {
+        var status = data ? '正常' : '注销';
+        return status;		
+	}
+	function typeFormatter(data, options, rowObject) {
+	        var name;
+	        switch(data) {
+	          case 1:
+	            name = '公章';
+	            break;
+	          case 2:
+	            name = '公章(法人章)';
+	            break;
+	          case 3:
+	            name = '公章(合同章)';
+	            break;
+	          case 4:
+	            name = '公章(党章)';
+	            break;
+	          case 5:
+	            name = '公章(财务章)';
+	            break;
+	          case 6:
+	            name = '公章(工会章)';
+	            break;
+	          case 7:
+	            name = '个人章';
+	            break;
+	          case 8:
+	            name = '个人章(手写签名)';
+	            break;
+	          case 9:
+	            name = '个人章(文字签名)';
+	            break;
+	        }
+	        return name;		
+	}
+	
+	$("#section").click(function(){
+		var index = window.parent.layer.open({
+			title:'选择部门',
+			type: 2,
+			content: '../../partials/select-section-modal.html',
+			area: ['1000px', '500px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	//获取单位数据 
+            	var res = window.parent["layui-layer-iframe" + index].getData();
+            	 if(res==null){
+            		 window.parent.layer.alert("请选择部门",{icon:6});
+            	 }else{
+            		 $("#departmentName").val(res.name);
+            		 $("#departmentId").val(res.id);
+            		 if(res.lowerLevel != null && res.lowerLevel != undefined){
+            			 $("#lowerLevel").val(res.lowerLevel);
+            		 } 
+
+            		 window.parent.layer.close(index);	 
+            	 }
+            }
+		});
+	});
+	
+	//加载jqGrid
+	$(document).ready(function() {
+		getUserinfo();
+		getSealType();
+		loadGrid_seals();
+		$(window).resize(function() {
+	        $("#t_seals").jqGrid("autoSize");
+		}).trigger('resize');	
+		
+	});
+	
+   function getUserinfo(){
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : apiUrl+'/userInfo?noCache='+new Date().getTime(),
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				currUsername = data.username;
+			}
+		});
+   }
+
+	function operateFormatter(cellvalue, options, data) {
+
+        var hl= '<a href="javascript:void(0)" style="color:blue" onclick="check(\'' + data.id + '\')">查看</a>' +
+          '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="accredit(\'' + data.id + '\',' + data.type + ')">授权</a>' +
+          '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="changeStatus(\'' + data.id + '\')">' + (data.status == 1 ? '注销' : '启用') + '</a>' +
+          '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="writeKey(\'' + data.id + '\')">写入key</a>' +
+          '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="remove(\'' + data.id + '\')">删除</a>'+
+          '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="openKeyWordsModel(\'' + data.id + '\')">设置关键字</a>'+
+          '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="modifySeal(\'' + data.id + '\')">修改</a>';
+
+       /* if(data.num ===0){
+          hl = hl+'&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="bindCert(\'' + data.id + '\')">绑定证书</a>';
+        }else{
+          hl = hl+'&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="unbindCert(\'' + data.id + '\')">证书解绑</a>';
+        }*/
+		hl = hl+'&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="openSelectService(\'' + data.id + '\')">设置业务类型</a>';
+        return hl;
+		
+	}
+
+
+	//印章详情
+	function check(id){ 
+  		var index = parent.layer.open({
+			title:'印章详情',
+			type: 2,
+			content: '../../module/seal/seal-details.html?sealId='+id+'&noCache='+new Date().getTime(),
+			area: ['80%', '95%'],
+			btn: ['关闭'], //底部按钮区域
+			maxmin: true,
+			yes: function(index,layero){  //第一个按钮的事件
+				window.parent.layer.close(index);
+			}
+		}); 
+	}
+
+	//选择业务类型
+	function openSelectService(id){
+		var ids=new Array();
+		$.ajax({
+			type : "GET",
+			url : apiUrl+"/seal/"+id+'?noCache='+new Date().getTime(),
+			dataType : "json",
+			async:false,
+			contentType: "application/json; charset=utf-8",
+			success : function(data) {
+				var sealServices=data.sealServices;
+				if(sealServices!=null){
+					for (var j = 0; j < sealServices.length; j++) {
+						ids.push(sealServices[j].servNo);
+					}
+				}
+			}
+		});
+
+		var index = window.parent.parent.layer.open({
+			title:'业务类型',
+			type: 2,
+			content: '../../module/organization/select-service-modal.html?back='+ids+'&noCache='+new Date().getTime(),
+			area: ['1000px', '700px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+			yes: function(index){
+				//获取单位数据
+				var res1 = window.parent.parent["layui-layer-iframe" + index].getdata();
+				//console.log(res1);
+//				var res=JSON.stringify(res1);
+				if(res1!=null){
+					var keywords = {"id":id,"sealServices":res1};
+					$.ajax({
+						type : "POST",
+						url : apiUrl + '/setService'+'?noCache='+new Date().getTime(),
+						dataType : "json",
+						data:JSON.stringify(keywords),
+						contentType : 'application/json;charset=utf-8',
+						success : function(retdata) {
+							layer.msg("设置成功", {icon: 1});
+							window.parent.layer.close(index);
+							return true;
+						},
+						error : function(xmlhttp,textStatus,errorThrown){
+							layer.msg("设置印章关键字失败", {icon: 5});
+							window.parent.layer.close(index);
+							return true;
+						}
+					});
+					window.parent.parent.layer.close(index);
+				}else{
+
+				}
+			}
+		});
+	}
+
+	//印章授权
+	function accredit(id,type){
+		if(type == 7 || type == 8 || type == 9){
+			//单选
+			var index = window.parent.layer.open({
+				title:'选择授权人',
+				type: 2,
+				content: '../../module/seal/select-accredit-people-modalRadio.html?sealId='+id+'&noCache='+new Date().getTime(),
+				area: ['500px', '400px'],
+				btn: ['确定','关闭'],
+				maxmin: true,
+	            yes: function(index){
+	            	var res = window.parent["layui-layer-iframe" + index].getData();
+	            	var userIds = [];
+	            	if(res != null){
+	            		if(res.length > 0){
+	            			for(var i = 0; i < res.length;i++){
+		            			userIds[i] = res[i].id;
+		            		}
+	            		}else{
+	            			userIds[0] = null;
+	            		}
+	            	}
+	            	var o = {"sealId":id,"userIds":userIds};
+	            	$.ajax({
+	        			type : "POST",
+	        			url : apiUrl + "/user_seals",
+	        			dataType : "json",
+	        			data:JSON.stringify(o),
+	        			contentType: "application/json; charset=utf-8",
+	        			success : function(retdata) {
+	        				window.parent.layer.close(index);
+	        				layer.msg('授权成功', {icon: 1});
+	        			},
+	        			error : function(xmlhttp,textStatus,errorThrown){
+	        				var o = JSON.parse(xmlhttp.responseText);
+	        				window.parent.layer.close(index);
+	        				layer.msg(o.message, {icon: 5});
+	        			}
+	        		});
+	            	}
+	});			
+		}else{
+			//多选
+			var index = window.parent.layer.open({
+				title:'选择授权人',
+				type: 2,
+				content: '../../module/seal/select-accredit-people-modal.html?sealId='+id+'&noCache='+new Date().getTime(),
+				area: ['500px', '400px'],
+				btn: ['确定','关闭'],
+				maxmin: true,
+	            yes: function(index){
+	            	var res = window.parent["layui-layer-iframe" + index].getData();
+	            	var userIds = [];
+	            	if(res != null){
+	            		if(res.length > 0){
+	            			for(var i = 0; i < res.length;i++){
+		            			userIds[i] = res[i].id;
+		            		}
+	            		}else{
+	            			userIds[0] = null;
+	            		}
+	            	}
+	            	var o = {"sealId":id,"userIds":userIds};
+	            	$.ajax({
+	        			type : "POST",
+	        			url : apiUrl + "/user_seals",
+	        			dataType : "json",
+	        			data:JSON.stringify(o),
+	        			contentType: "application/json; charset=utf-8",
+	        			success : function(retdata) {
+	        				window.parent.layer.close(index);
+	        				layer.msg('授权成功', {icon: 1});
+	        			},
+	        			error : function(xmlhttp,textStatus,errorThrown){
+	        				var o = JSON.parse(xmlhttp.responseText);
+	        				window.parent.layer.close(index);
+	        				layer.msg(o.message, {icon: 5});
+	        			}
+	        		});
+	            	}
+	});
+		}
+	}
+	//注销启用
+	function changeStatus(id){		
+		$.ajax({
+			type : "GET",
+			url : apiUrl + '/changeStatus/' + id+'?noCache='+new Date().getTime(),
+			dataType : "json",
+			contentType:"application/json",
+			success : function(retdata) {
+		        if (retdata == 0) {
+		        	layer.msg('注销成功', {icon: 1});
+		          } else if (retdata == 1) {
+		        	  layer.msg('启用成功', {icon: 1});;
+		          }
+				doFresh();
+			},
+			error : function(xmlhttp,textStatus,errorThrown){
+				var o = JSON.parse(xmlhttp.responseText);
+				layer.msg(o.message, {icon: 5});
+			}
+		});	
+	}
+	//写入key
+	function writeKey(id){
+      if (!getBrowser().ie) {
+          layer.msg('浏览器不支持控件，请使用IE浏览器。', {icon: 5});
+          return false;
+      }
+  	
+  	//创建控件对象
+  	var msObj=new MakeSeal("writeKey");
+  	//初始化控件
+  	msObj.Init({id:'DMakeSealV6',width:'0px',height:'0px',version:'1,1,2,0'});
+  	
+		$.ajax({
+			type : "GET",
+			url : apiUrl + '/sealData/' + id,
+			async:false,
+			datatype:"json",
+			contentType:"text/html",
+			success : function(data) {
+		        var log = {
+		                sealId: id,
+		                keySn: getInfoFromKey(msObj)
+		              };
+                var logs = [];
+                logs.push(log);
+                var message = msWriteKey(msObj,data);
+                if (!message){
+                	 layer.msg('写入印章失败,请检查是否插入USB KEY或是否安装控件！', {icon: 5});
+                    return false;
+                  } else {
+              		$.ajax({
+            			type : "POST",
+            			url : apiUrl + '/addWriteToKeysLog',
+            			dataType : "json",
+            			data:JSON.stringify(logs),
+            			async:false,
+            			contentType:"application/json",
+            			success : function(retdata) {
+                        	layer.msg('写入印章成功', {icon: 1});
+                            return true;
+            			},
+            			error : function(xmlhttp,textStatus,errorThrown){
+                        	layer.msg('写入印章成功,但添加日志失败', {icon: 1});
+                            return true;            			
+            			}
+            		});	
+				}
+			},
+ 			error : function(xmlhttp,textStatus,errorThrown){
+		        layer.msg('获取印章数据失败', {icon: 5});
+		        return false;
+			} 
+		});	
+	}
+	
+	//获取keysn
+    function getInfoFromKey(msObj){
+        try{
+            return msObj.GetInfoFromKey().keysn;
+          }catch(e){
+              layer.msg('获取信息异常，请检查key驱动是否安装以及浏览器是否支持控件！',{icon:5});
+          }
+    }
+	
+	//写入key
+	function msWriteKey(msObj,data){
+        return msObj.WriteKey(data);		
+	}
+    
+    
+	//设置关键字
+	function openKeyWordsModel(id){
+        if(!id) {
+          layer.msg("无法获取印章id",{icon:5});
+          return;
+        }
+        
+		var index = parent.layer.open({
+			title:'查询关键字设置',
+			type: 2,
+			content: '../../module/seal/seal-keywords-setting.html?sealId='+id+'&noCache='+new Date().getTime(),
+			area: ['590px', '220px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	//获取关键字数据 
+            	var res = window.parent["layui-layer-iframe" + index].getData();
+				if(res == ''){
+					window.parent.layer.close(index);	
+					parent.layer.msg("设置失败,关键字不能为空!!",{icon:5});
+					return;
+				}
+			    //正则验证
+		        var pattern = new RegExp("[`~!@#$^&*%()=|{}''\\[\\]<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？]");
+
+		        if(pattern.test(res)){
+		        	window.parent.layer.close(index);	
+		        	parent.layer.msg("设置失败,关键字中包含@#$*或其他特殊字符",{icon:5});
+		            return;
+		        }
+		        
+		        var keywords = {"id":id,"sealWords":res};
+          		$.ajax({
+        			type : "POST",
+        			url : apiUrl + '/setKeyWords'+'?noCache='+new Date().getTime(),
+        			dataType : "json",
+        			data:JSON.stringify(keywords),
+        			contentType : 'application/json;charset=utf-8',
+        			success : function(retdata) {
+                    	layer.msg("设置成功", {icon: 1});
+                    	window.parent.layer.close(index);
+                        return true;
+        			},
+        			error : function(xmlhttp,textStatus,errorThrown){
+                    	layer.msg("设置印章关键字失败", {icon: 5});
+                    	window.parent.layer.close(index);
+                        return true;            			
+        			}
+        		});	
+            }
+		});
+	}
+	//绑定证书
+	function bindCert(id){       
+		var index = parent.layer.open({
+			title:'选择证书',
+			type: 2,
+			content: '../../module/seal/select-cert.html?sealId='+id,
+			area: ['600px', '370px'],
+			btn: ['确定','关闭'],
+			maxmin: true,
+            yes: function(index){
+            	//获取单位数据 
+             	var res = window.parent["layui-layer-iframe" + index].getData();
+                if(res ==null || res ==""){
+                    layer.msg("请选择要绑定的证书",{icon:5});
+                    window.parent.layer.close(index);
+                    return;                	
+                } else{
+                    var sealCertArr = [];
+                    for(var i=0;i<res.length;i++){
+                        var sealCert = {"id":id,"certId":res[i]};
+                        sealCertArr.push(sealCert);
+					}
+              		$.ajax({
+            			type : "POST",
+            			url : apiUrl + '/seal_cert',
+            			dataType : "json",
+            			data:JSON.stringify(sealCertArr),
+            			contentType : 'application/json;charset=utf-8',
+            			success : function(retdata) {
+                        	layer.msg("绑定证书成功", {icon: 1});
+                        	window.parent.layer.close(index);
+                        	doFresh();
+                            return true;
+            			},
+            			error : function(xmlhttp,textStatus,errorThrown){
+            				var o = JSON.parse(xmlhttp.responseText);
+                        	layer.msg("证书绑定失败, 原因: "+o.message, {icon: 5});
+                        	window.parent.layer.close(index);
+                            return true;            			
+            			}
+            		});	
+                }
+            }
+		}); 
+	}
+	//证书解绑
+	function unbindCert(id){       
+  		$.ajax({
+			type : "GET",
+			url : apiUrl + '/unbindCert?sealId='+id,
+			dataType : "json",
+			contentType : 'application/json;charset=utf-8',
+			success : function(retdata) {
+            	layer.msg("证书成功解除绑定!!", {icon: 1});
+            	doFresh();
+                return true;
+			},
+			error : function(xmlhttp,textStatus,errorThrown){
+				var o = JSON.parse(xmlhttp.responseText);
+            	layer.msg("证书解绑失败, 原因: "+o.message, {icon: 5});
+                return true;            			
+			}
+		});	
+	}
+	
+   //删除印章
+   function remove(id) {
+	     var ids = [];
+	     ids.push(id);
+
+		layer.confirm('确实要删除此印章吗? 操作不可恢复', {
+			  btn: ['确定','取消']
+		}, function(){
+			$.ajax({
+				type : "DELETE",
+				url : apiUrl+"/seal",
+				data : JSON.stringify(ids),
+				dataType : "json",
+				contentType:"application/json",
+				success : function(retdata) {
+					layer.msg('删除成功', {icon: 1});
+					doFresh();
+				},
+				error : function(xmlhttp,textStatus,errorThrown){
+					var o = JSON.parse(xmlhttp.responseText);
+					layer.msg('错误信息：' + o.code + '->' + o.message, {icon: 5});
+				}
+			});
+		});		
+    }
+   
+  	 //判断浏览器类型
+     function getBrowser () {
+       var ua = navigator.userAgent;
+       var ret = {},
+       webkit = ua.match( /WebKit\/([\d.]+)/ ),
+       chrome = ua.match( /Chrome\/([\d.]+)/ ) ||
+       ua.match( /CriOS\/([\d.]+)/ ),
+
+       ie = ua.match( /MSIE\s([\d\.]+)/ ) ||
+       ua.match( /(?:trident)(?:.*rv:([\w.]+))?/i ),
+       firefox = ua.match( /Firefox\/([\d.]+)/ ),
+       safari = ua.match( /Safari\/([\d.]+)/ ),
+       opera = ua.match( /OPR\/([\d.]+)/ );
+
+       webkit && (ret.webkit = parseFloat(webkit[1]));
+       chrome && (ret.chrome = parseFloat(chrome[1]));
+       ie && (ret.ie = parseFloat(ie[1]));
+       firefox && (ret.firefox = parseFloat(firefox[1]));
+       safari && (ret.safari = parseFloat(safari[1]));
+       opera && (ret.opera = parseFloat(opera[1]));
+
+       return ret;
+     }
+     
+	
+	function getSealType(){
+		$.ajax({
+			type : "GET",
+			data :{},
+			url : apiUrl+"/dictionary?key=seal_types",
+			dataType : "json",
+			async:false,
+			success : function(data) {
+				$("#type").append("<option value=''>请选择</option>");
+				for(var i=0;i<data.length;i++){
+					var content="<option value='"+data[i].v+"'>"+data[i].title+"</option>";
+					$("#type").append(content);
+				}
+			} 
+		});
+	}
+
+    function modifySeal(sealid){
+        var index =parent.layer.open({
+            title:'印章修改',
+            type: 2,
+            content:'../seal/seal_edit.html?optFlag=modify&sealId='+sealid,
+            area: ['600px', '85%'],
+            btn: ['申请','取消'], //底部按钮区域
+            maxmin: true,
+            yes: function(index,layero){  //第一个按钮的事件
+                var res = window.parent["layui-layer-iframe" + index].getData();
+                var requestMap="POST/api/new_seal";
+                if(res!=null){
+                    //console.log("111");
+                    //top.alert(res);
+                    var resArr=new Array();
+                    resArr.push(res);
+                    var resArrJson=JSON.stringify(resArr);
+                    $.ajax({
+                        type : "POST",
+                        url : apiUrl+"/sealmodify?requestMap="+requestMap,
+                        data : resArrJson,
+                        contentType:"application/json",
+                        dataType : "json",
+                        success : function(data) {
+                            if(data){
+                                layer.msg('操作成功！');
+                                //关闭页面
+                                parent.layer.close(index);
+                                doFresh();
+                            }
+                        },
+                        error : function(xmlhttp,textStatus,errorThrown){
+                            var o = JSON.parse(xmlhttp.responseText);
+                            top.layer.msg(o.message, {icon: 5});
+                        }
+                    });
+                    //top.alert(res);
+                }
+            },
+            btn2:function(index,layero){
+                //关闭页面
+                layer.close(index);
+            }
+        });
+    }
+
+
+	   
+		function doFresh() {
+			$("#t_seals").jqGrid('setGridParam', {
+				postData : {}
+			}).trigger("reloadGrid");
+		}
+	
+	   function search(){
+		   var postData = $('#t_seals').jqGrid("getGridParam", "postData");
+           $.each(postData, function (k, v) {
+               delete postData[k];
+           });
+		   var formData = getFormData("search_form");
+
+		   var stime=new Date(Date.parse(formData.startTime.replace(/-/g,"/"))).getTime()/1000;
+		   var etime=new Date(Date.parse(formData.endTime.replace(/-/g,"/"))).getTime()/1000 + nextDayTime;
+		   var queryData={};
+		   if(formData.type!=""){
+			   queryData['type']=formData.type;
+		   }
+		   if(formData.name!=""){
+			   queryData['name']=formData.name;
+		   }
+		   if(formData.departmentId!=""){
+			   queryData['departmentId']=formData.departmentId;
+		   }
+		   if(formData.lowerLevel!=""){
+			   queryData['lowerLevel']=formData.lowerLevel;
+		   }
+		   if(formData.startTime != ""){
+			   queryData['startTime']=stime;
+		   }
+		   if(formData.endTime!=""){
+			   queryData['endTime']=etime;
+		   }
+
+		   
+	 	 $("#t_seals").jqGrid('setGridParam', {
+				page : 1,
+				postData :queryData
+			}).trigger("reloadGrid"); 
+	   }
+</script>
+
+</html>
