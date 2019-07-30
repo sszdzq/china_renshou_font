@@ -216,11 +216,12 @@
           '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="openKeyWordsModel(\'' + data.id + '\')">设置关键字</a>'+
           '&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="modifySeal(\'' + data.id + '\')">修改</a>';
 
-       /* if(data.num ===0){
+        if(data.num ===0){
           hl = hl+'&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="bindCert(\'' + data.id + '\')">绑定证书</a>';
         }else{
           hl = hl+'&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="unbindCert(\'' + data.id + '\')">证书解绑</a>';
-        }*/
+        }
+
 		hl = hl+'&nbsp;|&nbsp;<a href="javascript:void(0)" style="color:blue" onclick="openSelectService(\'' + data.id + '\')">设置业务类型</a>';
         return hl;
 		
@@ -532,7 +533,7 @@
 		var index = parent.layer.open({
 			title:'选择证书',
 			type: 2,
-			content: '../../module/seal/select-cert.html?sealId='+id,
+			content: '../../module/seal/select-cert.html?noCache='+new Date().getTime(),
 			area: ['600px', '370px'],
 			btn: ['确定','关闭'],
 			maxmin: true,
@@ -540,7 +541,7 @@
             	//获取单位数据 
              	var res = window.parent["layui-layer-iframe" + index].getData();
                 if(res ==null || res ==""){
-                    layer.msg("请选择要绑定的证书",{icon:5});
+                    layer.msg("请选择要绑定的证书！",{icon:5});
                     window.parent.layer.close(index);
                     return;                	
                 } else{
@@ -551,7 +552,7 @@
 					}
               		$.ajax({
             			type : "POST",
-            			url : apiUrl + '/seal_cert',
+            			url : apiUrl + '/seal_cert?noCache='+new Date().getTime(),
             			dataType : "json",
             			data:JSON.stringify(sealCertArr),
             			contentType : 'application/json;charset=utf-8',
@@ -574,9 +575,9 @@
 	}
 	//证书解绑
 	function unbindCert(id){       
-  		$.ajax({
+  		/*$.ajax({
 			type : "GET",
-			url : apiUrl + '/unbindCert?sealId='+id,
+			url : apiUrl + '/unbindCert?sealId='+id+'&noCache='+new Date().getTime(),
 			dataType : "json",
 			contentType : 'application/json;charset=utf-8',
 			success : function(retdata) {
@@ -589,8 +590,51 @@
             	layer.msg("证书解绑失败, 原因: "+o.message, {icon: 5});
                 return true;            			
 			}
-		});	
-	}
+		});	*/
+
+        var index = parent.layer.open({
+            title:'选择证书',
+            type: 2,
+            content: '../../module/seal/select-cert.html?sealId='+id+'&noCache='+new Date().getTime(),
+            area: ['600px', '370px'],
+            btn: ['确定','关闭'],
+            maxmin: true,
+            yes: function(index){
+                //获取单位数据
+                var res = window.parent["layui-layer-iframe" + index].getData();
+                if(res ==null || res ==""){
+                    layer.msg("请选择要解除绑定的证书！",{icon:5});
+                    window.parent.layer.close(index);
+                    return;
+                } else{
+                    var sealCertArr = [];
+                    for(var i=0;i<res.length;i++){
+                        var sealCert = {"id":id,"certId":res[i]};
+                        sealCertArr.push(sealCert);
+                    }
+                    $.ajax({
+                        type : "POST",
+                        url : apiUrl + '/unbindCerts?noCache='+new Date().getTime(),
+                        dataType : "json",
+                        data:JSON.stringify(sealCertArr),
+                        contentType : 'application/json;charset=utf-8',
+                        success : function(retdata) {
+                            window.parent.layer.msg("证书成功解除绑定!!", {icon: 1});
+                            window.parent.layer.close(index);
+                            doFresh();
+                            return true;
+                        },
+                        error : function(xmlhttp,textStatus,errorThrown){
+                            var o = JSON.parse(xmlhttp.responseText);
+                            window.parent.layer.msg("证书解绑失败, 原因: "+o.message, {icon: 5});
+                            window.parent.layer.close(index);
+                            return true;
+                        }
+                    });
+                }
+            }
+        });
+    }
 	
    //删除印章
    function remove(id) {

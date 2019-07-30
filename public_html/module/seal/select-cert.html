@@ -69,13 +69,15 @@
 	}
 	
 	
-	function loadGrid_certs() {
+	function loadGrid_certs(sealId) {
+	    var id=sealId;
+	    console.log(id);
 		//var sealCert = {sealCert:'sealCert'};
 		$("#t_certs").jqGrid(
 			{
 				url : apiUrl + '/certs',
 				datatype : "json",//页面加载的时候不显示数据
-				postData:{sealCert:'sealCert',certQuerySize:5},
+				postData:{sealCert:'sealCert',certQuerySize:5,sealId:id},
 				multiselect: true,
 				gridComplete: hideSelectAll,
 				colNames : [ 'id','证书名称','证书类型'],
