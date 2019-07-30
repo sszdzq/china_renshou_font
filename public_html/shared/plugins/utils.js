@@ -1,6 +1,6 @@
 //获取URL请求路径
 function getUrlPath(){
-	return 'http://192.168.1.22:8080/ESS/api';
+	return 'http://127.0.0.1:8080/ESS/api';
 }
 
 var nextDayTime = 24*60*60 - 1;
