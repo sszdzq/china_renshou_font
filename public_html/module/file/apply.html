@@ -72,10 +72,10 @@
 
 </head>
 <body>
+<input  type="file" name="fileString" id="fz" multiple class="file" style="display:none">
 		<div class="modal right fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
 			<div class="modal-dialog" >
 				<div class="modal-content">
-
 					<div class="modal-header">
 					    <button type="button" class="close"  aria-label="Close" onclick='closeModal()'><span aria-hidden="true">×</span>
 					    </button>
@@ -158,7 +158,11 @@
 									<option value="0" selected="selected">总部</option>
 									<option value="1" >中心</option>
 								</select></td>
-							</tr>
+                                <td class="tdtitle" align="right">批量上传路径：</td>
+                                <td><input   type="text" id="fixfolder" name="fixfolder" disabled>   <span id="batchNumber" style="color:royalblue" name="batchNumber"></span></td>
+
+
+                            </tr>
 							<tr>
 								<td align="right" class="tdtitle">审核过程：</td>
 								<td style="padding-bottom: 5px" colspan="3">
@@ -187,7 +191,9 @@
 									<button type="button" onclick="newloadfile()" class="btn" class="btn btn-default">起草新OFFICE文档</button>
 									<button type="button" onclick="docOpen()" class="btn" class="btn btn-default">打开本地OFFICE文档</button>
 									<button type="button" onclick="pdfOpen()" class="btn" class="btn btn-default">打开PDF文档</button>
-									<button type="button" onclick="selectall()" class="btn" class="btn btn-default">批量提交文档</button>
+									<!--<button type="button" onclick="selectall()" class="btn" class="btn btn-default">批量提交文档</button>-->
+									<!--<button type="button" onclick="fileListShow()" class="btn" class="btn btn-default">批量提交文档</button>-->
+                                    <button type="button" value="选择" onclick="browseFolder('fixfolder')" class="btn btn-default">批量提交文档</button>
 								</td>
 
 							</tr>
@@ -477,14 +483,21 @@
 		var res = $("#fileMessage").getData();
     	//var arryList=new Array();
     	//arryList.push(res);
-    	var resultRet = hwpobj.saveFileToServer(urlPath+'/files/save?noCache='+new Date().getTime(),"lifeFile",res);
-        //console.log(JSON.stringify(res));
-        //console.log(res);
         var resultRetofpdf = hwpobj.savePdfToServer(urlPath+'/files/onlysavepdfFile?noCache='+new Date().getTime(),"lifeFile",res);
-    	if(resultRet != 0){
-			top.layer.msg("保存成功！");
-			window.location.reload();        		
-    	}
+    	if(resultRetofpdf !=0 && resultRetofpdf.indexOf("failed")==-1){
+            var resultRet = hwpobj.saveFileToServer(urlPath+'/files/save?noCache='+new Date().getTime(),"lifeFile",res);
+            if(resultRet != 0){
+                top.layer.msg("保存成功！", { offset: '100px' });
+                window.location.reload();
+            }else{
+                top.layer.msg("保存失败！", { offset: '100px' });
+            }
+    	}else{
+            top.layer.msg("同步pdf保存失败！，终止提交", { offset: '100px' });
+        }
+
+
+
     	
 /*          $.ajax({
             type : "POST",
@@ -542,6 +555,8 @@
 		var allnum=jsfilepath.length;
 		//console.log("filelist----"+filelist);
 		//console.log("jsfilepath------"+jsfilepath);
+        var uploadFlag=true;
+        var uploadErrorMsg="";
 		for(var i=0;i<jsfilepath.length-1;i++){
 			if(jsfilepath[i]!==""){
 				var sealDoc = $("#fileMessage").getData();
@@ -581,15 +596,30 @@
 	        	//sealDoc.docZip = docContent;
 	        	sealDoc.docZip = '';
 	        	//arrayList.push(sealDoc);
-	        	var resultRet = hwpobj.savePatchFileToServer(filepath,urlPath+'/files/save?noCache='+new Date().getTime(),"lifeFile",sealDoc);
-	        	//console.log(JSON.stringify(sealDoc));
-	        	//console.log("filepath"+filepath);
-                //console.log(sealDoc);
+	        	//var resultRet = hwpobj.savePatchFileToServer(filepath,urlPath+'/files/save?noCache='+new Date().getTime(),"lifeFile",sealDoc);
+
                 var resultRetofpdf = hwpobj.savePdfPatchToServer(filepath,urlPath+'/files/onlysavepdfFile?noCache='+new Date().getTime(),"lifeFile",sealDoc);
+                if(resultRetofpdf !=0 && resultRetofpdf.indexOf("failed")==-1){
+                    var resultRet = hwpobj.savePatchFileToServer(filepath,urlPath+'/files/save?noCache='+new Date().getTime(),"lifeFile",sealDoc);
+                    if(resultRet != 0){
+
+                    }else{
+                        uploadFlag=false;
+                        uploadErrorMsg=uploadErrorMsg+mtitlenew+";";
+                    }
+                }else{
+                    uploadFlag=false;
+                    uploadErrorMsg=uploadErrorMsg+mtitlenew+"-转pdf;";
+                }
                 hwpobj.closeDoc();
 			}
 		}
-		top.layer.msg("保存成功！");
+		if(uploadFlag){
+            top.layer.msg("保存成功！", { offset: '100px' });
+        }else{
+            top.layer.msg(uploadErrorMsg+"文件保存失败！", { offset: '100px',icon: 5 });
+        }
+
 		$('#myModal').modal("hide");
 		window.location.reload();
 /* 
@@ -698,6 +728,76 @@
             re = '0' + re;
         }
         return re;
+    }
+
+
+    function fileListShow(){
+        document.getElementById("fz").click();
+        var list=$("input[name=fileString]").val();
+        if(list==null ||list==""){
+            top.layer.msg("请选择提交的文件", { offset: '100px' });
+		}else{
+            var finalStr=list.replace(/, /g,";")+";";
+            document.getElementById("aip").style.display="none";
+            document.getElementById("listall").style.display="block";
+            $("input[name=fileString]").val("");
+            $("#httpmodel").val(1);
+            $("#listallvalue").val(finalStr);
+            $("#filelist").val(finalStr);
+		}
+    }
+
+    function   searchFiles(){
+        var   fso   =   new   ActiveXObject("Scripting.FileSystemObject");
+        var   f   =   fso.GetFolder(document.all.fixfolder.value);
+        var   fc   =   new   Enumerator(f.files);
+        var   s   =   "";
+        var   finalStr = "";
+        var number=0;
+        for   (;   !fc.atEnd();   fc.moveNext())
+        {
+            s   +=   fc.item();
+            s   +=   ";";
+            number++;
+        }
+       /* fk   =   new   Enumerator(f.SubFolders);
+        for   (;   !fk.atEnd();   fk.moveNext())
+        {
+            s   +=   fk.item();
+            s   +=   ";";
+        }*/
+
+        finalStr =s;
+        document.getElementById("aip").style.display="none";
+        document.getElementById("listall").style.display="block";
+        $("#httpmodel").val(1);
+        $("#listallvalue").val(finalStr);
+        $("#filelist").val(finalStr);
+        console.log($("#listallvalue").val()+$("#filelist").val());
+        $("#batchNumber").html("  文件数量:"+number);
+    }
+
+    function browseFolder(path) {
+        try {
+            var Message = "请选择上传文件所在的文件夹"; //选择框提示信息
+            var Shell = new ActiveXObject("Shell.Application");
+            var Folder = Shell.BrowseForFolder(0, Message, 64, 17); //起始目录为：我的电脑
+            //var Folder = Shell.BrowseForFolder(0, Message, 0); //起始目录为：桌面
+            if (Folder != null) {
+                Folder = Folder.items(); // 返回 FolderItems 对象
+                Folder = Folder.item(); // 返回 Folderitem 对象
+                Folder = Folder.Path; // 返回路径
+                if (Folder.charAt(Folder.length - 1) != "\\"){
+                    Folder = Folder + "\\";
+                }
+                document.getElementById(path).value = Folder;
+                searchFiles();
+                return Folder;
+            }
+        }
+        catch (e) {
+            alert(e.message);
+        }
     }
 </SCRIPT>
 </body>
